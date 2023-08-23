@@ -1,10 +1,11 @@
 "use client";
 
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import React, { forwardRef } from "react";
 import * as PIXI from "pixi.js";
 import { PixiComponent, useApp } from "@pixi/react";
 import { Viewport as PixiViewport } from "pixi-viewport";
 import { Container as PixiContainer } from "@pixi/display";
+import { useStoreActions } from "@/hooks/use-store";
 
 export interface ViewportProps {
   width?: number;
@@ -14,6 +15,7 @@ export interface ViewportProps {
 
 export interface PixiComponentViewportProps extends ViewportProps {
   app: PIXI.Application;
+  setViewport: (viewport: PixiViewport) => void;
 }
 
 export const PixiComponentViewport = PixiComponent("Viewport", {
@@ -38,12 +40,9 @@ export const PixiComponentViewport = PixiComponent("Viewport", {
         maxHeight: 10000,
       });
 
+    props.setViewport(viewport);
     return viewport;
   },
-  didMount: () => {
-    console.log("montei porra");
-  },
-
   willUnmount: (instance: PixiViewport, parent: PixiContainer) => {
     // workaround because the ticker is already destroyed by this point by the stage
     instance.options.noTicker = true;
@@ -56,7 +55,16 @@ const Viewport = forwardRef(function Viewport(
   ref: React.Ref<PixiViewport>
 ) {
   const app = useApp();
-  return <PixiComponentViewport ref={ref} app={app} {...props} />;
+  const { setViewport } = useStoreActions();
+
+  return (
+    <PixiComponentViewport
+      ref={ref}
+      app={app}
+      setViewport={setViewport}
+      {...props}
+    />
+  );
 });
 
 export default Viewport;

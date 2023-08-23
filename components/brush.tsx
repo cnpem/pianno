@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import * as PIXI from "pixi.js";
 import { useApp, Graphics } from "@pixi/react";
-import { useViewport } from "@/hooks/use-viewport";
+import { useStoreViewport } from "@/hooks/use-store";
 
 export const Brush = () => {
   const [label, setLabel] = useState(4);
@@ -33,7 +33,7 @@ export const Brush = () => {
     [size, color]
   );
   const app = useApp();
-  const viewport = useViewport();
+  const viewport = useStoreViewport();
 
   useEffect(() => {
     app.stage.on("pointermove", (e) => {

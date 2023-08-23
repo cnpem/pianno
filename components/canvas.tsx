@@ -1,6 +1,5 @@
 "use client";
 
-import { BlurFilter, ColorMatrixFilter } from "pixi.js";
 import * as PIXI from "pixi.js";
 import { Stage, Sprite, useTick, useApp } from "@pixi/react";
 import { useMemo, useRef, useState } from "react";
@@ -20,6 +19,8 @@ const useIteration = (incr = 0.1) => {
 
 const Bunny = () => {
   const theta = useIteration(0.1);
+  const app = useApp();
+
   const bunny = useMemo(
     () => PIXI.Sprite.from("https://pixijs.com/assets/bunny.png"),
     []
@@ -28,26 +29,21 @@ const Bunny = () => {
     <Sprite
       // image="https://pixijs.io/pixi-react/img/bunny.png"
       texture={bunny.texture}
-      x={400}
-      y={270}
+      x={app.screen.width / 2}
+      y={app.screen.height / 2}
       scale={4}
-      anchor={{ x: 0.5, y: 0.5 }}
+      anchor={0.5}
       // rotation={Math.cos(theta) * 0.98}
     />
   );
 };
 
 const CanvasWrapper = () => {
-  // pixel level view
-  PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST;
-  const [view, setView] = useState(null);
-
   const app = useApp();
   app.stage.hitArea = app.screen;
   // app.stage.on("pointermove", (e) => setPos(e.global));
 
   const viewportRef = useRef<PixiViewport>(null);
-
   // useEffect(() => {
   //   if (viewportRef.current !== null) {
   //     console.log(viewportRef.current);
@@ -65,16 +61,15 @@ const CanvasWrapper = () => {
 };
 
 export const Canvas = () => {
+  // disable interpolation when scaling, will make texture be pixelated
+  PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST;
   return (
     <Stage
-      width={800}
-      height={600}
+      width={1000}
+      height={650}
       options={{
-        backgroundAlpha: 1,
-        antialias: false,
-        backgroundColor: 0x012b30,
-        hello: true,
         eventMode: "static",
+        backgroundColor: 0xc165ff,
       }}
     >
       <CanvasWrapper />

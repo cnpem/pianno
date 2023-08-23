@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import * as PIXI from "pixi.js";
 import { useApp, Graphics } from "@pixi/react";
 import { useViewport } from "@/hooks/use-viewport";
@@ -34,17 +34,28 @@ export const Brush = () => {
   );
   const app = useApp();
   const viewport = useViewport();
-  app.stage.onpointermove = (e) => {
-    const currentPos = viewport?.toWorld(e.global) ?? e.global;
-    setPos(new PIXI.Point(currentPos.x - size / 2, currentPos.y - size / 2));
-  };
+
+  useEffect(() => {
+    app.stage.on("pointermove", (e) => {
+      const currentPos = viewport?.toWorld(e.global) ?? e.global;
+      setPos(new PIXI.Point(currentPos.x - size / 2, currentPos.y - size / 2));
+    });
+    return () => {
+      app.stage.off("pointermove");
+    };
+  }, [app.stage, viewport, size]);
+
+  // app.stage.onpointermove = (e) => {
+  //   const currentPos = viewport?.toWorld(e.global) ?? e.global;
+  //   setPos(new PIXI.Point(currentPos.x - size / 2, currentPos.y - size / 2));
+  // };
 
   return (
     <Graphics
       draw={draw}
       x={pos.x}
       y={pos.y}
-      blendMode={PIXI.BLEND_MODES.ADD}
+      blendMode={PIXI.BLEND_MODES.DIFFERENCE}
       alpha={0.7}
     />
   );

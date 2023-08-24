@@ -2,10 +2,12 @@
 
 import * as PIXI from "pixi.js";
 import { Stage, Sprite, useTick, useApp } from "@pixi/react";
-import { useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import Viewport from "./viewport";
 import { Viewport as PixiViewport } from "pixi-viewport";
 import { Brush } from "./brush";
+import { useWindowSize } from "@/hooks/use-window-size";
+import { useStoreViewport } from "@/hooks/use-store";
 
 const useIteration = (incr = 0.1) => {
   const [i, setI] = useState(0);
@@ -41,18 +43,10 @@ const Bunny = () => {
 const CanvasWrapper = () => {
   const app = useApp();
   app.stage.hitArea = app.screen;
-
-  const viewportRef = useRef<PixiViewport>(null);
-  // useEffect(() => {
-  //   if (viewportRef.current !== null) {
-  //     console.log(viewportRef.current);
-  //     viewportRef.current.fit();
-  //     viewportRef.current.update(2);
-  //   }
-  // }, []);
+  const [width, height] = useWindowSize();
 
   return (
-    <Viewport ref={viewportRef}>
+    <Viewport width={width} height={height}>
       <Bunny />
       <Brush />
     </Viewport>
@@ -61,15 +55,16 @@ const CanvasWrapper = () => {
 
 interface CanvasProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export const Canvas = (props: CanvasProps) => {
+const Canvas = (props: CanvasProps) => {
   // disable interpolation when scaling, will make texture be pixelated
   PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST;
+
+  const [width, height] = useWindowSize();
   return (
     <Stage
       id="canvas"
-      // className="p-10"
-      width={window.innerWidth}
-      height={window.innerHeight}
+      width={width}
+      height={height}
       options={{
         eventMode: "static",
         backgroundColor: 0xf0f2f2,
@@ -79,3 +74,5 @@ export const Canvas = (props: CanvasProps) => {
     </Stage>
   );
 };
+
+export default Canvas;

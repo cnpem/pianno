@@ -18,6 +18,7 @@ import {
   useStoreBrushMode,
   useStoreViewport,
 } from "@/hooks/use-store";
+import { useWindowSize } from "@/hooks/use-window-size";
 
 interface IToolbar {
   title: string;
@@ -30,7 +31,7 @@ const ToolItem = ({ title, children }: IToolbar) => {
     <Label
       htmlFor={title}
       title={title}
-      className="flex items-center justify-center rounded-md border border-input bg-popover h-10 w-10 hover:bg-accent peer-data-[state=checked]:border-violet-600 peer-data-[state=checked]:bg-violet-400 peer-data-[state=checked]:[&>svg]:fill-violet-500 peer-data-[state=checked]:[&>svg]:stroke-violet-700"
+      className="cursor-pointer flex items-center justify-center rounded-md border border-input bg-popover h-10 w-10 hover:bg-accent peer-data-[state=checked]:border-violet-600 peer-data-[state=checked]:bg-violet-400 peer-data-[state=checked]:[&>svg]:fill-violet-500 peer-data-[state=checked]:[&>svg]:stroke-violet-700"
     >
       {children}
     </Label>
@@ -79,7 +80,7 @@ const actions = [
   },
 ];
 
-export const Toolbar = () => {
+const Toolbar = () => {
   const viewport = useStoreViewport();
   const brushMode = useStoreBrushMode();
   const { setBrushMode } = useStoreActions();
@@ -87,6 +88,7 @@ export const Toolbar = () => {
     viewport?.moveCenter(w / 2, h / 2);
     viewport?.fit(true, w, h);
   };
+  const [width, height] = useWindowSize();
   return (
     <div className="fixed inset-x-0 top-4 mx-auto flex flex-row bg-background justify-center items-center p-1 gap-2 shadow-lg w-[400px] z-10 rounded-lg">
       <RadioGroup
@@ -113,7 +115,7 @@ export const Toolbar = () => {
             title={action.title}
             variant="outline"
             size={"icon"}
-            onClick={() => recenter(window.innerWidth, window.innerHeight)}
+            onClick={() => recenter(width, height)}
           >
             {action.icon}
           </Button>
@@ -122,3 +124,5 @@ export const Toolbar = () => {
     </div>
   );
 };
+
+export default Toolbar;

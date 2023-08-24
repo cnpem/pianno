@@ -41,7 +41,6 @@ const Bunny = () => {
 const CanvasWrapper = () => {
   const app = useApp();
   app.stage.hitArea = app.screen;
-  // app.stage.on("pointermove", (e) => setPos(e.global));
 
   const viewportRef = useRef<PixiViewport>(null);
   // useEffect(() => {
@@ -60,16 +59,20 @@ const CanvasWrapper = () => {
   );
 };
 
-export const Canvas = () => {
+interface CanvasProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+export const Canvas = (props: CanvasProps) => {
   // disable interpolation when scaling, will make texture be pixelated
   PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST;
   return (
     <Stage
-      width={1000}
-      height={650}
+      id="canvas"
+      // className="p-10"
+      width={window.innerWidth}
+      height={window.innerHeight}
       options={{
         eventMode: "static",
-        backgroundColor: 0xc165ff,
+        backgroundColor: 0xf0f2f2,
       }}
     >
       <CanvasWrapper />

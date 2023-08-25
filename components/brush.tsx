@@ -1,26 +1,12 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, use } from "react";
 import * as PIXI from "pixi.js";
 import { useApp, Graphics } from "@pixi/react";
-import { useStoreViewport } from "@/hooks/use-store";
+import { useStoreCurrentColor, useStoreViewport } from "@/hooks/use-store";
 
 export const Brush = () => {
-  const [label, setLabel] = useState(4);
+  const color = useStoreCurrentColor();
+  
   const [size, setSize] = useState(10);
-
-  // this.colors = ["red", "blue", "yellow", "magenta", "green", "indigo", "darkorange", "cyan", "pink", "yellowgreen"]
-  const colors = [
-    [255, 0, 0],
-    [0, 0, 255],
-    [255, 255, 0],
-    [255, 0, 255],
-    [0, 128, 0],
-    [75, 0, 130],
-    [255, 140, 0],
-    [0, 255, 255],
-    [255, 192, 203],
-    [154, 205, 50],
-  ];
-  const [color, setColor] = useState(colors[label % colors.length]);
   const [pos, setPos] = useState(new PIXI.Point(0, 0));
 
   const draw = useCallback(

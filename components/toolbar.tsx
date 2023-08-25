@@ -1,24 +1,25 @@
 "use client";
 import {
-  Download,
-  Eraser,
-  Grab,
-  Pen,
-  Undo,
-  Redo,
-  Maximize,
-  Image,
+  DownloadIcon,
+  EraserIcon,
+  GrabIcon,
+  PenIcon,
+  UndoIcon,
+  RedoIcon,
+  MaximizeIcon,
+  ImageIcon,
+  RotateCcwIcon,
 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import {
   type BrushMode,
   useStoreActions,
   useStoreBrushMode,
-  useStoreViewport,
 } from "@/hooks/use-store";
 import { useWindowSize } from "@/hooks/use-window-size";
+import { cn } from "@/lib/utils";
 
 interface IToolbar {
   title: string;
@@ -41,60 +42,107 @@ const ToolItem = ({ title, children }: IToolbar) => {
 const tools = [
   {
     title: "pen",
-    icon: <Pen className="h-4 w-4" />,
+    icon: <PenIcon className="h-4 w-4" />,
   },
   {
     title: "eraser",
-    icon: <Eraser className="h-4 w-4" />,
+    icon: <EraserIcon className="h-4 w-4" />,
   },
   {
     title: "grab",
-    icon: <Grab className="h-4 w-4" />,
+    icon: <GrabIcon className="h-4 w-4" />,
   },
 ];
 
-const actions = [
-  {
-    title: "open-image",
-    // eslint-disable-next-line jsx-a11y/alt-text
-    icon: <Image className="h-4 w-4" />,
-  },
-  {
-    title: "undo",
-    icon: <Undo className="h-4 w-4" />,
-  },
-  {
-    title: "redo",
-    icon: <Redo className="h-4 w-4" />,
-  },
-  {
-    title: "save",
-    icon: <Download className="h-4 w-4" />,
-  },
-  {
-    title: "fit-view",
-    icon: <Maximize className="h-4 w-4" />,
-    action: () => {
-      console.log("fit-view");
-    },
-  },
-];
+const OpenImage = () => {
+  const { setImage } = useStoreActions();
+
+  const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const objectUrl = URL.createObjectURL(event.target.files[0]);
+      const reader = new FileReader();
+      let dataUrl: string | ArrayBuffer | null;
+      reader.onload = () => {
+        dataUrl = reader.result;
+      };
+      // convert image src to base64 dataUrl to persist it in store
+      const file = event.target.files[0];
+      reader.readAsDataURL(file);
+
+      const img = new Image();
+      img.src = objectUrl;
+      img.onload = () => {
+        setImage({
+          src: dataUrl as string,
+          width: img.width,
+          height: img.height,
+        });
+      };
+    }
+  };
+
+  return (
+    <div>
+      <input
+        onChange={onImageChange}
+        type="file"
+        accept="image/*"
+        id="img"
+        hidden
+      />
+      <label
+        htmlFor={"img"}
+        title="open image"
+        aria-label="open image"
+        className={cn(
+          buttonVariants({ variant: "outline", size: "icon" }),
+          "cursor-pointer"
+        )}
+      >
+        <ImageIcon className="h-4 w-4" />
+      </label>
+    </div>
+  );
+};
 
 const Toolbar = () => {
-  const viewport = useStoreViewport();
   const brushMode = useStoreBrushMode();
-  const { setBrushMode } = useStoreActions();
-  const recenter = (w: number, h: number) => {
-    viewport?.moveCenter(w / 2, h / 2);
-    viewport?.fit(true, w, h);
-  };
+  const { setBrushMode, recenterViewport, reset } = useStoreActions();
   const [width, height] = useWindowSize();
+  const actions = [
+    {
+      title: "undo",
+      icon: <UndoIcon className="h-4 w-4" />,
+    },
+    {
+      title: "redo",
+      icon: <RedoIcon className="h-4 w-4" />,
+    },
+    {
+      title: "save",
+      icon: <DownloadIcon className="h-4 w-4" />,
+    },
+    {
+      title: "fit-view",
+      icon: <MaximizeIcon className="h-4 w-4" />,
+      action: () => recenterViewport(width, height),
+    },
+    {
+      title: "reset",
+      icon: <RotateCcwIcon className="h-4 w-4" />,
+      action: () => {
+        reset();
+        recenterViewport(width, height);
+      },
+    },
+  ];
+
   return (
-    <div className="fixed inset-x-0 top-4 mx-auto flex flex-row bg-background justify-center items-center p-1 gap-2 shadow-lg w-[400px] z-10 rounded-lg">
+    <div className="fixed inset-x-0 top-4 mx-auto flex flex-row bg-background justify-center items-center p-1 gap-2 shadow-lg w-[420px] z-10 rounded-lg">
       <RadioGroup
         onValueChange={(brush) => setBrushMode(brush as BrushMode)}
-        defaultValue={brushMode}
-        className="grid grid-cols-3 gap-1"
+        value={brushMode}
+        className="flex flex-row gap-1"
       >
         {tools.map((tool) => (
           <div key={tool.title}>
@@ -109,13 +157,14 @@ const Toolbar = () => {
       </RadioGroup>
       <span className="flex text-center text-input">|</span>
       <div className="flex flex-row gap-1">
+        <OpenImage />
         {actions.map((action) => (
           <Button
             key={action.title}
             title={action.title}
             variant="outline"
             size={"icon"}
-            onClick={() => recenter(width, height)}
+            onClick={action?.action}
           >
             {action.icon}
           </Button>

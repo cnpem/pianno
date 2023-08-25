@@ -2,12 +2,12 @@
 
 import * as PIXI from "pixi.js";
 import { Stage, Sprite, useTick, useApp } from "@pixi/react";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Viewport from "./viewport";
-import { Viewport as PixiViewport } from "pixi-viewport";
 import { Brush } from "./brush";
 import { useWindowSize } from "@/hooks/use-window-size";
-import { useStoreViewport } from "@/hooks/use-store";
+import { useStoreImg } from "@/hooks/use-store";
+import Annotation from "./annotation";
 
 const useIteration = (incr = 0.1) => {
   const [i, setI] = useState(0);
@@ -22,20 +22,32 @@ const useIteration = (incr = 0.1) => {
 const Bunny = () => {
   const theta = useIteration(0.1);
   const app = useApp();
+  const src = "https://pixijs.io/pixi-react/img/bunny.png";
 
-  const bunny = useMemo(
-    () => PIXI.Sprite.from("https://pixijs.com/assets/bunny.png"),
-    []
-  );
+  const bunny = useMemo(() => PIXI.Sprite.from(src), [src]);
   return (
     <Sprite
-      // image="https://pixijs.io/pixi-react/img/bunny.png"
       texture={bunny.texture}
       x={app.screen.width / 2}
       y={app.screen.height / 2}
-      scale={4}
       anchor={0.5}
-      // rotation={Math.cos(theta) * 0.98}
+      scale={4}
+      rotation={Math.cos(theta) * 0.98}
+    />
+  );
+};
+
+const Data = () => {
+  const app = useApp();
+  const { src } = useStoreImg();
+
+  const img = useMemo(() => PIXI.Sprite.from(src), [src]);
+  return (
+    <Sprite
+      texture={img.texture}
+      x={app.screen.width / 2}
+      y={app.screen.height / 2}
+      anchor={0.5}
     />
   );
 };
@@ -44,11 +56,19 @@ const CanvasWrapper = () => {
   const app = useApp();
   app.stage.hitArea = app.screen;
   const [width, height] = useWindowSize();
+  const img = useStoreImg();
 
   return (
     <Viewport width={width} height={height}>
-      <Bunny />
-      <Brush />
+      {img.src !== "#" ? (
+        <>
+          <Data />
+          <Annotation width={img.width} height={img.height} />
+          <Brush />
+        </>
+      ) : (
+        <Bunny />
+      )}
     </Viewport>
   );
 };
@@ -68,6 +88,7 @@ const Canvas = (props: CanvasProps) => {
       options={{
         eventMode: "static",
         backgroundColor: 0xf0f2f2,
+        backgroundAlpha: 0.2,
       }}
     >
       <CanvasWrapper />

@@ -1,11 +1,11 @@
-import { useState, useCallback, useEffect, use } from "react";
+import { useState, useCallback, useEffect } from "react";
 import * as PIXI from "pixi.js";
 import { useApp, Graphics } from "@pixi/react";
 import { useStoreCurrentColor, useStoreViewport } from "@/hooks/use-store";
 
 export const Brush = () => {
   const color = useStoreCurrentColor();
-  
+
   const [size, setSize] = useState(10);
   const [pos, setPos] = useState(new PIXI.Point(0, 0));
 
@@ -30,11 +30,6 @@ export const Brush = () => {
       app.stage.off("pointermove");
     };
   }, [app.stage, viewport, size]);
-
-  // app.stage.onpointermove = (e) => {
-  //   const currentPos = viewport?.toWorld(e.global) ?? e.global;
-  //   setPos(new PIXI.Point(currentPos.x - size / 2, currentPos.y - size / 2));
-  // };
 
   return (
     <Graphics

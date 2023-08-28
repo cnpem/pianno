@@ -9,6 +9,8 @@ import {
   MaximizeIcon,
   ImageIcon,
   RotateCcwIcon,
+  BombIcon,
+  Trash2,
 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
@@ -24,6 +26,7 @@ import { cn } from "@/lib/utils";
 interface IToolbar {
   title: string;
   children: React.ReactNode;
+  variant?: "outline" | "default" | "destructive" | "ghost";
   action?: () => void;
 }
 
@@ -39,18 +42,18 @@ const ToolItem = ({ title, children }: IToolbar) => {
   );
 };
 
-const tools = [
+const tools: IToolbar[] = [
   {
     title: "pen",
-    icon: <PenIcon className="h-4 w-4" />,
+    children: <PenIcon className="h-4 w-4" />,
   },
   {
     title: "eraser",
-    icon: <EraserIcon className="h-4 w-4" />,
+    children: <EraserIcon className="h-4 w-4" />,
   },
   {
     title: "grab",
-    icon: <GrabIcon className="h-4 w-4" />,
+    children: <GrabIcon className="h-4 w-4" />,
   },
 ];
 
@@ -109,27 +112,30 @@ const Toolbar = () => {
   const brushMode = useStoreBrushMode();
   const { setBrushMode, recenterViewport, reset } = useStoreActions();
   const [width, height] = useWindowSize();
-  const actions = [
+  const actions: IToolbar[] = [
     {
       title: "undo",
-      icon: <UndoIcon className="h-4 w-4" />,
+      children: <UndoIcon className="h-4 w-4" />,
     },
     {
       title: "redo",
-      icon: <RedoIcon className="h-4 w-4" />,
+      children: <RedoIcon className="h-4 w-4" />,
     },
     {
       title: "save",
-      icon: <DownloadIcon className="h-4 w-4" />,
+      children: <DownloadIcon className="h-4 w-4" />,
     },
     {
       title: "fit-view",
-      icon: <MaximizeIcon className="h-4 w-4" />,
+      children: <MaximizeIcon className="h-4 w-4" />,
       action: () => recenterViewport(width, height),
     },
     {
       title: "reset",
-      icon: <RotateCcwIcon className="h-4 w-4" />,
+      children: (
+        <RotateCcwIcon className="h-4 w-4 hover:animate-reverse-spin" />
+      ),
+      variant: "destructive",
       action: () => {
         reset();
         recenterViewport(width, height);
@@ -151,7 +157,7 @@ const Toolbar = () => {
               id={tool.title}
               className="peer sr-only"
             />
-            <ToolItem title={tool.title}>{tool.icon}</ToolItem>
+            <ToolItem title={tool.title}>{tool.children}</ToolItem>
           </div>
         ))}
       </RadioGroup>
@@ -162,11 +168,11 @@ const Toolbar = () => {
           <Button
             key={action.title}
             title={action.title}
-            variant="outline"
+            variant={action.variant ?? "outline"}
             size={"icon"}
             onClick={action?.action}
           >
-            {action.icon}
+            {action.children}
           </Button>
         ))}
       </div>

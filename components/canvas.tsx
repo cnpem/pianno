@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import Viewport from "./viewport";
 import { Brush } from "./brush";
 import { useWindowSize } from "@/hooks/use-window-size";
-import { useStoreImg, useStoreViewport } from "@/hooks/use-store";
+import { useStoreActions, useStoreImg, useStoreViewport } from "@/hooks/use-store";
 import Annotation from "./annotation";
 
 const useIteration = (incr = 0.1) => {
@@ -39,18 +39,15 @@ const Bunny = () => {
 
 const Data = () => {
   const { src, width, height } = useStoreImg();
-  const viewport = useStoreViewport();
-  viewport?.moveCenter(width / 2, height / 2);
+  // recenter viewport when image changes
+  const { recenterViewport } = useStoreActions();
+  recenterViewport(width, height);
 
   return <Sprite image={src} />;
 };
 
 const CanvasWrapper = () => {
-  const app = useApp();
-  // app.stage.hitArea = app.screen;
-  const [width, height] = useWindowSize();
   const img = useStoreImg();
-  const viewport = useStoreViewport();
 
   return (
     <Viewport>

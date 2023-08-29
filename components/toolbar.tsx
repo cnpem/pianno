@@ -58,7 +58,7 @@ const tools: IToolbar[] = [
 ];
 
 const OpenImage = () => {
-  const { setImage, recenterViewport } = useStoreActions();
+  const { setImage } = useStoreActions();
 
   const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -80,7 +80,6 @@ const OpenImage = () => {
           width: img.width,
           height: img.height,
         });
-        recenterViewport(img.width, img.height);
       };
     }
   };

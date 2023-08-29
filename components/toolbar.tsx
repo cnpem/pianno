@@ -1,4 +1,5 @@
 "use client";
+
 import {
   DownloadIcon,
   EraserIcon,
@@ -9,8 +10,6 @@ import {
   MaximizeIcon,
   ImageIcon,
   RotateCcwIcon,
-  BombIcon,
-  Trash2,
 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
@@ -19,6 +18,7 @@ import {
   type BrushMode,
   useStoreActions,
   useStoreBrushMode,
+  useStoreImg,
 } from "@/hooks/use-store";
 import { useWindowSize } from "@/hooks/use-window-size";
 import { cn } from "@/lib/utils";
@@ -58,7 +58,7 @@ const tools: IToolbar[] = [
 ];
 
 const OpenImage = () => {
-  const { setImage } = useStoreActions();
+  const { setImage, recenterViewport } = useStoreActions();
 
   const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -80,6 +80,7 @@ const OpenImage = () => {
           width: img.width,
           height: img.height,
         });
+        recenterViewport(img.width, img.height);
       };
     }
   };
@@ -112,6 +113,8 @@ const Toolbar = () => {
   const brushMode = useStoreBrushMode();
   const { setBrushMode, recenterViewport, reset } = useStoreActions();
   const [width, height] = useWindowSize();
+  const img = useStoreImg();
+
   const actions: IToolbar[] = [
     {
       title: "undo",
@@ -128,7 +131,11 @@ const Toolbar = () => {
     {
       title: "fit-view",
       children: <MaximizeIcon className="h-4 w-4" />,
-      action: () => recenterViewport(width, height),
+      action: () =>
+        recenterViewport(
+          img.width ? img.width : width,
+          img.height ? img.height : height
+        ),
     },
     {
       title: "reset",

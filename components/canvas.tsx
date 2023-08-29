@@ -1,12 +1,12 @@
 "use client";
 
 import * as PIXI from "pixi.js";
-import { Stage, Sprite, useTick, useApp } from "@pixi/react";
+import { Stage, Sprite, useTick, useApp, Container } from "@pixi/react";
 import { useMemo, useState } from "react";
 import Viewport from "./viewport";
 import { Brush } from "./brush";
 import { useWindowSize } from "@/hooks/use-window-size";
-import { useStoreImg } from "@/hooks/use-store";
+import { useStoreImg, useStoreViewport } from "@/hooks/use-store";
 import Annotation from "./annotation";
 
 const useIteration = (incr = 0.1) => {
@@ -38,28 +38,22 @@ const Bunny = () => {
 };
 
 const Data = () => {
-  const app = useApp();
-  const { src } = useStoreImg();
+  const { src, width, height } = useStoreImg();
+  const viewport = useStoreViewport();
+  viewport?.moveCenter(width / 2, height / 2);
 
-  const img = useMemo(() => PIXI.Sprite.from(src), [src]);
-  return (
-    <Sprite
-      texture={img.texture}
-      x={app.screen.width / 2}
-      y={app.screen.height / 2}
-      anchor={0.5}
-    />
-  );
+  return <Sprite image={src} />;
 };
 
 const CanvasWrapper = () => {
   const app = useApp();
-  app.stage.hitArea = app.screen;
+  // app.stage.hitArea = app.screen;
   const [width, height] = useWindowSize();
   const img = useStoreImg();
+  const viewport = useStoreViewport();
 
   return (
-    <Viewport width={width} height={height}>
+    <Viewport>
       {img.src !== "#" ? (
         <>
           <Data />
@@ -80,15 +74,14 @@ const Canvas = (props: CanvasProps) => {
   PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
   const [width, height] = useWindowSize();
+
   return (
     <Stage
-      id="canvas"
       width={width}
       height={height}
       options={{
         eventMode: "static",
-        backgroundColor: 0xf0f2f2,
-        backgroundAlpha: 0.2,
+        backgroundAlpha: 0,
       }}
     >
       <CanvasWrapper />

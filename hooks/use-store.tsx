@@ -1,3 +1,5 @@
+"use client";
+
 import { create } from "zustand";
 import { type Viewport } from "pixi-viewport";
 import { persist } from "zustand/middleware";
@@ -10,11 +12,19 @@ type Image = {
   src: string;
 };
 
+type Coordinates = {
+  x: number;
+  y: number;
+};
+
 type State = {
   viewport: Viewport | null;
   brushMode: "pen" | "eraser" | "grab";
   colors: Color[];
   currentColor: Color;
+  brushSize: number;
+  annotation: number[];
+  annotationCoords: Set<Coordinates>;
   img: Image;
 };
 
@@ -23,7 +33,11 @@ type Actions = {
   recenterViewport: (width: number, height: number) => void;
   setBrushMode: (mode: "pen" | "eraser" | "grab") => void;
   setColor: (color: Color) => void;
+  setBrushSize: (size: number) => void;
   setImage: (img: Image) => void;
+  setAnnotation: (annotation: number[]) => void;
+  appendAnnotationCoords: (coords: Coordinates) => void;
+  removeAnnotationCoords: (coords: Coordinates) => void;
   reset: () => void;
 };
 
@@ -48,7 +62,10 @@ const initialState: State = {
   viewport: null,
   brushMode: "pen",
   colors,
+  brushSize: 10,
   currentColor: colors[0],
+  annotation: [],
+  annotationCoords: new Set(),
   img: {
     width: 0,
     height: 0,
@@ -69,7 +86,19 @@ const useStore = create<Store>()(
         },
         setBrushMode: (brushMode) => set({ brushMode }),
         setColor: (color) => set({ currentColor: color }),
+        setBrushSize: (brushSize) => set({ brushSize }),
         setImage: (img) => set({ img }),
+        setAnnotation: (annotation) => set({ annotation }),
+        appendAnnotationCoords: (coords) => {
+          const annotationCoords = get().annotationCoords;
+          annotationCoords.add(coords);
+          set({ annotationCoords });
+        },
+        removeAnnotationCoords: (coords) => {
+          const annotationCoords = get().annotationCoords;
+          annotationCoords.delete(coords);
+          set({ annotationCoords });
+        },
         reset: () => {
           const { viewport: _, ...filteredState } = initialState;
           set({ viewport: get().viewport, ...filteredState });
@@ -78,7 +107,6 @@ const useStore = create<Store>()(
     }),
     {
       name: "store",
-      // storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ brushMode: state.brushMode, img: state.img }),
     }
   )
@@ -90,4 +118,8 @@ export const useStoreColors = () => useStore((state) => state.colors);
 export const useStoreCurrentColor = () =>
   useStore((state) => state.currentColor);
 export const useStoreImg = () => useStore((state) => state.img);
+export const useStoreBrushSize = () => useStore((state) => state.brushSize);
+export const useStoreAnnotation = () => useStore((state) => state.annotation);
+export const useStoreAnnotationCoords = () =>
+  useStore((state) => state.annotationCoords);
 export const useStoreActions = () => useStore((state) => state.actions);

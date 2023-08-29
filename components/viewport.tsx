@@ -8,8 +8,6 @@ import { Container as PixiContainer } from "@pixi/display";
 import { useStoreActions } from "@/hooks/use-store";
 
 export interface ViewportProps {
-  width: number;
-  height: number;
   children?: React.ReactNode;
 }
 
@@ -35,14 +33,14 @@ export const PixiComponentViewport = PixiComponent("Viewport", {
         maxWidth: 10000,
         maxHeight: 10000,
       });
-
+    
     props.setViewport(viewport);
     return viewport;
   },
   applyProps: (instance, _, props) => {
     // update viewport screen if the app screen changes
-    instance.screenHeight = props.height;
-    instance.screenWidth = props.width;
+    instance.resize(props.app.screen.width, props.app.screen.height);
+    props.setViewport(instance);
   },
   willUnmount: (instance: PixiViewport, parent: PixiContainer) => {
     // workaround because the ticker is already destroyed by this point by the stage

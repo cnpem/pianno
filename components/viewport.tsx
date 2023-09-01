@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import React, { forwardRef } from "react";
-import * as PIXI from "pixi.js";
-import { PixiComponent, useApp } from "@pixi/react";
-import { Viewport as PixiViewport } from "pixi-viewport";
-import { Container as PixiContainer } from "@pixi/display";
-import { useStoreActions } from "@/hooks/use-store";
+import { useStoreActions } from '@/hooks/use-store';
+import { Container as PixiContainer } from '@pixi/display';
+import { PixiComponent, useApp } from '@pixi/react';
+import { Viewport as PixiViewport } from 'pixi-viewport';
+import * as PIXI from 'pixi.js';
+import React, { forwardRef } from 'react';
 
 export interface ViewportProps {
   children?: React.ReactNode;
@@ -16,14 +16,14 @@ export interface PixiComponentViewportProps extends ViewportProps {
   setViewport: (viewport: PixiViewport) => void;
 }
 
-export const PixiComponentViewport = PixiComponent("Viewport", {
+export const PixiComponentViewport = PixiComponent('Viewport', {
   create: (props: PixiComponentViewportProps) => {
     const viewport = new PixiViewport({
       ticker: props.app.ticker,
       events: props.app.renderer.events,
     });
     viewport
-      .drag({ mouseButtons: "middle" })
+      .drag({ mouseButtons: 'middle' })
       .pinch()
       .wheel()
       .decelerate()
@@ -33,7 +33,7 @@ export const PixiComponentViewport = PixiComponent("Viewport", {
         maxWidth: 10000,
         maxHeight: 10000,
       });
-    
+
     props.setViewport(viewport);
     return viewport;
   },
@@ -51,7 +51,7 @@ export const PixiComponentViewport = PixiComponent("Viewport", {
 
 const Viewport = forwardRef(function Viewport(
   props: ViewportProps,
-  ref: React.Ref<PixiViewport>
+  ref: React.Ref<PixiViewport>,
 ) {
   const app = useApp();
   const { setViewport } = useStoreActions();

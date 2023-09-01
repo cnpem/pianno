@@ -1,11 +1,10 @@
-"use client";
+'use client';
 
-import { create } from "zustand";
-import { type Viewport } from "pixi-viewport";
-import { persist } from "zustand/middleware";
+import { type Viewport } from 'pixi-viewport';
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-export type BrushMode = "pen" | "eraser" | "grab";
-type Color = [number, number, number];
+export type BrushMode = 'pen' | 'eraser' | 'grab';
 type Image = {
   width: number;
   height: number;
@@ -19,9 +18,9 @@ type Coordinates = {
 
 type State = {
   viewport: Viewport | null;
-  brushMode: "pen" | "eraser" | "grab";
-  colors: Color[];
-  currentColor: Color;
+  brushMode: 'pen' | 'eraser' | 'grab';
+  colors: string[];
+  currentColor: string;
   brushSize: number;
   annotation: number[];
   annotationCoords: Set<Coordinates>;
@@ -31,8 +30,8 @@ type State = {
 type Actions = {
   setViewport: (viewport: Viewport) => void;
   recenterViewport: (width: number, height: number) => void;
-  setBrushMode: (mode: "pen" | "eraser" | "grab") => void;
-  setColor: (color: Color) => void;
+  setBrushMode: (mode: 'pen' | 'eraser' | 'grab') => void;
+  setColor: (color: string) => void;
   setBrushSize: (size: number) => void;
   setImage: (img: Image) => void;
   setAnnotation: (annotation: number[]) => void;
@@ -45,22 +44,28 @@ type Store = State & {
   actions: Actions;
 };
 
-const colors: Color[] = [
-  [255, 0, 0],
-  [0, 0, 255],
-  [255, 255, 0],
-  [255, 0, 255],
-  [0, 128, 0],
-  [75, 0, 130],
-  [255, 140, 0],
-  [0, 255, 255],
-  [255, 192, 203],
-  [154, 205, 50],
+const colors: string[] = [
+  '#f44336',
+  '#e91e63',
+  '#9c27b0',
+  '#673ab7',
+  '#3f51b5',
+  '#2196f3',
+  '#03a9f4',
+  '#00bcd4',
+  '#009688',
+  '#4caf50',
+  '#8bc34a',
+  '#cddc39',
+  '#ffeb3b',
+  '#ffc107',
+  '#ff9800',
+  '#ff5722',
 ];
 
 const initialState: State = {
   viewport: null,
-  brushMode: "pen",
+  brushMode: 'pen',
   colors,
   brushSize: 10,
   currentColor: colors[0],
@@ -69,7 +74,7 @@ const initialState: State = {
   img: {
     width: 0,
     height: 0,
-    src: "#",
+    src: '#',
   },
 };
 
@@ -106,10 +111,14 @@ const useStore = create<Store>()(
       },
     }),
     {
-      name: "store",
-      partialize: (state) => ({ brushMode: state.brushMode, img: state.img }),
-    }
-  )
+      name: 'store',
+      partialize: (state) => ({
+        brushMode: state.brushMode,
+        currentColor: state.currentColor,
+        img: state.img,
+      }),
+    },
+  ),
 );
 
 export const useStoreViewport = () => useStore((state) => state.viewport);

@@ -1,32 +1,32 @@
-"use client";
+'use client';
 
-import {
-  DownloadIcon,
-  EraserIcon,
-  GrabIcon,
-  PenIcon,
-  UndoIcon,
-  RedoIcon,
-  MaximizeIcon,
-  ImageIcon,
-  RotateCcwIcon,
-} from "lucide-react";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { Label } from "./ui/label";
-import { Button, buttonVariants } from "./ui/button";
 import {
   type BrushMode,
   useStoreActions,
   useStoreBrushMode,
   useStoreImg,
-} from "@/hooks/use-store";
-import { useWindowSize } from "@/hooks/use-window-size";
-import { cn } from "@/lib/utils";
+} from '@/hooks/use-store';
+import { useWindowSize } from '@/hooks/use-window-size';
+import { cn } from '@/lib/utils';
+import {
+  DownloadIcon,
+  EraserIcon,
+  ImageIcon,
+  MaximizeIcon,
+  PenIcon,
+  RedoIcon,
+  RotateCcwIcon,
+  UndoIcon,
+} from 'lucide-react';
+
+import { Button, buttonVariants } from './ui/button';
+import { Label } from './ui/label';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 
 interface IToolbar {
   title: string;
   children: React.ReactNode;
-  variant?: "outline" | "default" | "destructive" | "ghost";
+  variant?: 'outline' | 'default' | 'destructive' | 'ghost';
   action?: () => void;
 }
 
@@ -35,7 +35,7 @@ const ToolItem = ({ title, children }: IToolbar) => {
     <Label
       htmlFor={title}
       title={title}
-      className="cursor-pointer flex items-center justify-center rounded-md border border-input bg-popover h-10 w-10 hover:bg-accent peer-data-[state=checked]:border-violet-600 peer-data-[state=checked]:bg-violet-400 peer-data-[state=checked]:[&>svg]:fill-violet-500 peer-data-[state=checked]:[&>svg]:stroke-violet-700"
+      className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border border-input bg-popover hover:bg-accent peer-data-[state=checked]:border-violet-600 peer-data-[state=checked]:bg-violet-400 peer-data-[state=checked]:[&>svg]:fill-violet-500 peer-data-[state=checked]:[&>svg]:stroke-violet-700"
     >
       {children}
     </Label>
@@ -44,16 +44,12 @@ const ToolItem = ({ title, children }: IToolbar) => {
 
 const tools: IToolbar[] = [
   {
-    title: "pen",
+    title: 'pen',
     children: <PenIcon className="h-4 w-4" />,
   },
   {
-    title: "eraser",
+    title: 'eraser',
     children: <EraserIcon className="h-4 w-4" />,
-  },
-  {
-    title: "grab",
-    children: <GrabIcon className="h-4 w-4" />,
   },
 ];
 
@@ -94,12 +90,12 @@ const OpenImage = () => {
         hidden
       />
       <label
-        htmlFor={"img"}
+        htmlFor={'img'}
         title="open image"
         aria-label="open image"
         className={cn(
-          buttonVariants({ variant: "outline", size: "icon" }),
-          "cursor-pointer"
+          buttonVariants({ variant: 'outline', size: 'icon' }),
+          'cursor-pointer',
         )}
       >
         <ImageIcon className="h-4 w-4" />
@@ -116,32 +112,32 @@ const Toolbar = () => {
 
   const actions: IToolbar[] = [
     {
-      title: "undo",
+      title: 'undo',
       children: <UndoIcon className="h-4 w-4" />,
     },
     {
-      title: "redo",
+      title: 'redo',
       children: <RedoIcon className="h-4 w-4" />,
     },
     {
-      title: "save",
+      title: 'save',
       children: <DownloadIcon className="h-4 w-4" />,
     },
     {
-      title: "fit-view",
+      title: 'fit-view',
       children: <MaximizeIcon className="h-4 w-4" />,
       action: () =>
         recenterViewport(
           img.width ? img.width : width,
-          img.height ? img.height : height
+          img.height ? img.height : height,
         ),
     },
     {
-      title: "reset",
+      title: 'reset',
       children: (
         <RotateCcwIcon className="h-4 w-4 hover:animate-reverse-spin" />
       ),
-      variant: "destructive",
+      variant: 'destructive',
       action: () => {
         reset();
         recenterViewport(width, height);
@@ -150,7 +146,7 @@ const Toolbar = () => {
   ];
 
   return (
-    <div className="fixed inset-x-0 top-4 mx-auto flex flex-row bg-background justify-center items-center p-1 gap-2 shadow-lg w-[420px] z-10 rounded-lg">
+    <div className="fixed inset-x-0 top-4 z-10 mx-auto flex max-w-2xl w-[380px] flex-row items-center justify-center gap-2 rounded-lg bg-background p-1 shadow-lg">
       <RadioGroup
         onValueChange={(brush) => setBrushMode(brush as BrushMode)}
         value={brushMode}
@@ -174,8 +170,8 @@ const Toolbar = () => {
           <Button
             key={action.title}
             title={action.title}
-            variant={action.variant ?? "outline"}
-            size={"icon"}
+            variant={action.variant ?? 'outline'}
+            size={'icon'}
             onClick={action?.action}
           >
             {action.children}

@@ -1,9 +1,14 @@
-"use client";
+'use client';
 
-import { useState, useCallback, useEffect, use } from "react";
-import * as PIXI from "pixi.js";
-import { useApp, Graphics } from "@pixi/react";
-import { useStoreBrushSize, useStoreCurrentColor, useStoreViewport } from "@/hooks/use-store";
+import {
+  useStoreBrushSize,
+  useStoreCurrentColor,
+  useStoreViewport,
+} from '@/hooks/use-store';
+import { Graphics, useApp } from '@pixi/react';
+import throttle from 'lodash.throttle';
+import * as PIXI from 'pixi.js';
+import { useCallback, useEffect, useState } from 'react';
 
 export const Brush = () => {
   const color = useStoreCurrentColor();
@@ -13,25 +18,30 @@ export const Brush = () => {
 
   const draw = useCallback(
     (g: PIXI.Graphics) => {
-      let fillStyle = "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")";
-      g.beginFill(fillStyle);
+      g.clear();
+      g.beginFill(color);
       g.drawRect(0, 0, size, size);
       g.endFill();
     },
-    [size, color]
+    [size, color],
   );
   const app = useApp();
   const viewport = useStoreViewport();
+  
+  // throttle the pointermove event
+  const t = throttle((e: PIXI.FederatedPointerEvent) => {
+    const currentPos = viewport?.toWorld(e.global) ?? e.global;
+    setPos(new PIXI.Point(currentPos.x - size / 2, currentPos.y - size / 2));
+  }, 16);
+
+  const handlePointerMove = useCallback(t, [t]);
 
   useEffect(() => {
-    app.stage.on("pointermove", (e) => {
-      const currentPos = viewport?.toWorld(e.global) ?? e.global;
-      setPos(new PIXI.Point(currentPos.x - size / 2, currentPos.y - size / 2));
-    });
+    app.stage.on('pointermove', handlePointerMove);
     return () => {
-      app.stage.off("pointermove");
+      app.stage.off('pointermove',handlePointerMove);
     };
-  }, [app.stage, viewport, size]);
+  }, [handlePointerMove, app.stage]);
 
   return (
     <Graphics

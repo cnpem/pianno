@@ -1,13 +1,20 @@
-"use client";
+'use client';
 
-import * as PIXI from "pixi.js";
-import { Stage, Sprite, useTick, useApp, Container } from "@pixi/react";
-import { useMemo, useState } from "react";
-import Viewport from "./viewport";
-import { Brush } from "./brush";
-import { useWindowSize } from "@/hooks/use-window-size";
-import { useStoreActions, useStoreImg, useStoreViewport } from "@/hooks/use-store";
-import Annotation from "./annotation";
+import {
+  useStoreActions,
+  useStoreImg,
+  useStoreViewport,
+} from '@/hooks/use-store';
+import { useWindowSize } from '@/hooks/use-window-size';
+import { Sprite, Stage, Text, useApp, useTick } from '@pixi/react';
+import throttle from 'lodash.throttle';
+import * as PIXI from 'pixi.js';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import Annotation from './annotation';
+import { Brush } from './brush';
+import Sidebar from './sidebar';
+import Viewport from './viewport';
 
 const useIteration = (incr = 0.1) => {
   const [i, setI] = useState(0);
@@ -22,7 +29,7 @@ const useIteration = (incr = 0.1) => {
 const Bunny = () => {
   const theta = useIteration(0.1);
   const app = useApp();
-  const src = "https://pixijs.io/pixi-react/img/bunny.png";
+  const src = 'https://pixijs.io/pixi-react/img/bunny.png';
 
   const bunny = useMemo(() => PIXI.Sprite.from(src), [src]);
   return (
@@ -41,17 +48,40 @@ const Data = () => {
   const { src, width, height } = useStoreImg();
   // recenter viewport when image changes
   const { recenterViewport } = useStoreActions();
-  recenterViewport(width, height);
+  useEffect(() => {
+    recenterViewport(width, height);
+  }, [width, height, recenterViewport]);
 
   return <Sprite image={src} />;
 };
 
-const CanvasWrapper = () => {
+type CanvasWrapperProps = {
+  setPos: (pos: PIXI.Point) => void;
+};
+
+const CanvasWrapper = ({ setPos }: CanvasWrapperProps) => {
   const img = useStoreImg();
+  const viewport = useStoreViewport();
+  const app = useApp();
+
+  // throttle pointermove event
+  const t = throttle((e: PIXI.FederatedPointerEvent) => {
+    const currentPos = viewport?.toWorld(e.global) ?? e.global;
+    setPos(currentPos);
+  }, 16);
+
+  const handlePointerMove = useCallback(t, [t]);
+
+  useEffect(() => {
+    app.stage.on('pointermove', handlePointerMove);
+    return () => {
+      app.stage.off('pointermove', handlePointerMove);
+    };
+  }, [handlePointerMove, app.stage]);
 
   return (
     <Viewport>
-      {img.src !== "#" ? (
+      {img.src !== '#' ? (
         <>
           <Data />
           <Annotation width={img.width} height={img.height} />
@@ -66,23 +96,32 @@ const CanvasWrapper = () => {
 
 interface CanvasProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-const Canvas = (props: CanvasProps) => {
+const Canvas = () => {
   // disable interpolation when scaling, will make texture be pixelated
   PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
   const [width, height] = useWindowSize();
+  const [pos, setPos] = useState<PIXI.Point>(new PIXI.Point(0, 0));
 
   return (
-    <Stage
-      width={width}
-      height={height}
-      options={{
-        eventMode: "static",
-        backgroundAlpha: 0,
-      }}
-    >
-      <CanvasWrapper />
-    </Stage>
+    <div>
+      <div className="fixed bottom-1 left-1">
+        <span className="z-20 rounded-md bg-muted p-1 text-sm font-semibold text-purple-600 shadow-sm selection:bg-transparent">
+          {pos.x.toFixed(2)} | {pos.y.toFixed(2)}
+        </span>
+      </div>
+      <Sidebar />
+      <Stage
+        width={width}
+        height={height}
+        options={{
+          eventMode: 'static',
+          backgroundAlpha: 0,
+        }}
+      >
+        <CanvasWrapper setPos={setPos} />
+      </Stage>
+    </div>
   );
 };
 

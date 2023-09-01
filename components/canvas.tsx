@@ -12,7 +12,7 @@ import * as PIXI from 'pixi.js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Annotation from './annotation';
-import { Brush } from './brush';
+import Brush from './brush';
 import Sidebar from './sidebar';
 import Viewport from './viewport';
 

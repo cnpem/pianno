@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  useStoreBrushMode,
   useStoreBrushSize,
   useStoreCurrentColor,
   useStoreViewport,
@@ -10,7 +11,7 @@ import throttle from 'lodash.throttle';
 import * as PIXI from 'pixi.js';
 import { useCallback, useEffect, useState } from 'react';
 
-export const Brush = () => {
+const Pen = () => {
   const color = useStoreCurrentColor();
 
   const size = useStoreBrushSize();
@@ -27,7 +28,7 @@ export const Brush = () => {
   );
   const app = useApp();
   const viewport = useStoreViewport();
-  
+
   // throttle the pointermove event
   const t = throttle((e: PIXI.FederatedPointerEvent) => {
     const currentPos = viewport?.toWorld(e.global) ?? e.global;
@@ -39,7 +40,7 @@ export const Brush = () => {
   useEffect(() => {
     app.stage.on('pointermove', handlePointerMove);
     return () => {
-      app.stage.off('pointermove',handlePointerMove);
+      app.stage.off('pointermove', handlePointerMove);
     };
   }, [handlePointerMove, app.stage]);
 
@@ -53,3 +54,60 @@ export const Brush = () => {
     />
   );
 };
+
+const Eraser = () => {
+  const color = '#808080';
+
+  const size = useStoreBrushSize();
+  const [pos, setPos] = useState(new PIXI.Point(0, 0));
+
+  const draw = useCallback(
+    (g: PIXI.Graphics) => {
+      g.clear();
+      g.beginFill(color);
+      g.drawRect(0, 0, size, size);
+      g.endFill();
+    },
+    [size, color],
+  );
+  const app = useApp();
+  const viewport = useStoreViewport();
+
+  // throttle the pointermove event
+  const t = throttle((e: PIXI.FederatedPointerEvent) => {
+    const currentPos = viewport?.toWorld(e.global) ?? e.global;
+    setPos(new PIXI.Point(currentPos.x - size / 2, currentPos.y - size / 2));
+  }, 16);
+
+  const handlePointerMove = useCallback(t, [t]);
+
+  useEffect(() => {
+    app.stage.on('pointermove', handlePointerMove);
+    return () => {
+      app.stage.off('pointermove', handlePointerMove);
+    };
+  }, [handlePointerMove, app.stage]);
+
+  return (
+    <Graphics
+      draw={draw}
+      x={pos.x}
+      y={pos.y}
+      blendMode={PIXI.BLEND_MODES.DIFFERENCE}
+      alpha={0.7}
+    />
+  );
+};
+
+const Brush = () => {
+  const brushMode = useStoreBrushMode();
+
+  return (
+    <>
+      {brushMode === 'pen' && <Pen />}
+      {brushMode === 'eraser' && <Eraser />}
+    </>
+  );
+};
+
+export default Brush;

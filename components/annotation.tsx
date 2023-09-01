@@ -1,8 +1,5 @@
-"use client";
+'use client';
 
-import React, { useEffect, useRef } from "react";
-import * as PIXI from "pixi.js";
-import { Sprite, useApp } from "@pixi/react";
 import {
   useStoreActions,
   useStoreAnnotation,
@@ -11,8 +8,12 @@ import {
   useStoreBrushSize,
   useStoreColors,
   useStoreViewport,
-} from "@/hooks/use-store";
-import { useWindowSize } from "@/hooks/use-window-size";
+} from '@/hooks/use-store';
+import { useWindowSize } from '@/hooks/use-window-size';
+import { hexToRgb } from '@/lib/utils';
+import { Container, Sprite, useApp } from '@pixi/react';
+import * as PIXI from 'pixi.js';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 type AnnotationProps = {
   width: number;
@@ -28,18 +29,19 @@ const useInitAnnotation = ({
 }) => {
   const { setAnnotation } = useStoreActions();
   useEffect(() => {
-    const example = new Array(width * height).fill(2);
-    setAnnotation(example);
+    // const annot = Array.from({ length: width * height }, () => -1);
+    const annot = Array.from({length: width * height}, () => Math.floor(Math.random() * 10))
+    setAnnotation(annot);
   }, [height, setAnnotation, width]);
 };
 
 const Annotation = (props: AnnotationProps) => {
   const colors = useStoreColors();
   const app = useApp();
-  const canvas = app.renderer.extract.canvas(app.stage);
+  const canvas = document.createElement('canvas');
   canvas.width = props.width;
   canvas.height = props.height;
-  const context = canvas.getContext("2d");
+  const context = canvas.getContext('2d');
   const [width, height] = useWindowSize();
   const sprite = PIXI.Sprite.from(canvas);
 
@@ -57,7 +59,7 @@ const Annotation = (props: AnnotationProps) => {
   useInitAnnotation({ width: canvas.width, height: canvas.height });
 
   useEffect(() => {
-    const draw = (slice: any) => {
+    const draw = (annot: number[]) => {
       if (!context) return;
 
       context.clearRect(0, 0, canvas.width, canvas.height);
@@ -65,12 +67,13 @@ const Annotation = (props: AnnotationProps) => {
       let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
 
       let data = imageData.data;
-      for (let i = 0; i < slice.length; i++) {
-        if (slice[i] >= 0) {
-          let color = colors[slice[i] % colors.length];
-          data[i * 4] = color[0];
-          data[i * 4 + 1] = color[1];
-          data[i * 4 + 2] = color[2];
+      for (let i = 0; i < annot.length; i++) {
+        if (annot[i] >= 0) {
+          const color = colors[annot[i] % colors.length];
+          const rgb = hexToRgb(color);
+          data[i * 4] = rgb?.r ?? 0;
+          data[i * 4 + 1] = rgb?.g ?? 0;
+          data[i * 4 + 2] = rgb?.b ?? 0;
           data[i * 4 + 3] = 255;
         }
       }
@@ -82,61 +85,13 @@ const Annotation = (props: AnnotationProps) => {
 
   const distanceBetween = (point1: PIXI.Point, point2: PIXI.Point) => {
     return Math.sqrt(
-      Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2)
+      Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2),
     );
   };
 
   const angleBetween = (point1: PIXI.Point, point2: PIXI.Point) => {
     return Math.atan2(point2.x - point1.x, point2.y - point1.y);
   };
-
-  const draw = () => {
-    if (!context) return;
-    if (!prevPosition.current || !currPosition.current) return;
-    if (brushMode == "eraser") {
-      context.globalCompositeOperation = "destination-out";
-    } else {
-      context.globalCompositeOperation = "source-over";
-    }
-
-    if (currPosition.current == prevPosition.current) {
-      let x = Math.round(prevPosition.current.x - brushSize / 2);
-      let y = Math.round(prevPosition.current.y - brushSize / 2);
-      context.drawImage(canvas, x, y, brushSize, brushSize);
-      sprite.texture.update();
-      return [[x, y]];
-    }
-
-    let coords = [];
-    let dist = distanceBetween(prevPosition.current, currPosition.current);
-    let angle = angleBetween(prevPosition.current, currPosition.current);
-    for (let i = 0; i < dist; i++) {
-      let x = Math.round(
-        prevPosition.current.x + Math.sin(angle) * i - brushSize / 2
-      );
-      let y = Math.round(
-        prevPosition.current.y + Math.cos(angle) * i - brushSize / 2
-      );
-      context.drawImage(canvas, x, y, brushSize, brushSize);
-      coords.push([x, y]);
-    }
-    sprite.texture.update();
-    return coords;
-  };
-
-  function onPointerDown(event: PIXI.FederatedPointerEvent) {
-    if (event.pointerType == "mouse") {
-      if (event.button != 0) return;
-    } else if (event.pointerType == "touch") {
-      viewport?.plugins.pause("drag");
-      // canvas.brush.cursor.visible = false
-    }
-
-    setIsPainting(true);
-
-    // currPosition.current = viewport?.toWorld(event.global) ?? event.global;
-    // setPrevPosition(currPosition);
-  }
 
   return (
     <Sprite

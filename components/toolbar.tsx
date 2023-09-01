@@ -145,10 +145,15 @@ const Toolbar = () => {
     },
   ];
 
+  const onBrushChange = (brush: BrushMode) => {
+    setBrushMode(brush);
+    
+  }
+
   return (
-    <div className="fixed inset-x-0 top-4 z-10 mx-auto flex max-w-2xl w-[380px] flex-row items-center justify-center gap-2 rounded-lg bg-background p-1 shadow-lg">
+    <div className="opacity-95 fixed inset-x-0 top-4 z-10 mx-auto flex max-w-2xl w-[380px] flex-row items-center justify-center gap-2 rounded-lg bg-background p-1 shadow-lg">
       <RadioGroup
-        onValueChange={(brush) => setBrushMode(brush as BrushMode)}
+        onValueChange={(brush) => onBrushChange(brush as BrushMode)}
         value={brushMode}
         className="flex flex-row gap-1"
       >

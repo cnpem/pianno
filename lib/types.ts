@@ -1,0 +1,1 @@
+export type BrushMode = 'pen' | 'eraser' | 'grab';

@@ -1,13 +1,14 @@
 'use client';
 
 import {
-  type BrushMode,
   useStoreActions,
   useStoreBrushMode,
   useStoreImg,
 } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
+import { type BrushMode } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { type VariantProps } from 'class-variance-authority';
 import {
   DownloadIcon,
   EraserIcon,
@@ -26,8 +27,8 @@ import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 interface IToolbar {
   title: string;
   children: React.ReactNode;
-  variant?: 'outline' | 'default' | 'destructive' | 'ghost';
-  action?: () => void;
+  variant?: VariantProps<typeof buttonVariants>['variant'];
+  onClick?: () => void;
 }
 
 const ToolItem = ({ title, children }: IToolbar) => {
@@ -126,7 +127,7 @@ const Toolbar = () => {
     {
       title: 'fit-view',
       children: <MaximizeIcon className="h-4 w-4" />,
-      action: () =>
+      onClick: () =>
         recenterViewport(
           img.width ? img.width : width,
           img.height ? img.height : height,
@@ -138,7 +139,7 @@ const Toolbar = () => {
         <RotateCcwIcon className="h-4 w-4 hover:animate-reverse-spin" />
       ),
       variant: 'destructive',
-      action: () => {
+      onClick: () => {
         reset();
         recenterViewport(width, height);
       },
@@ -147,11 +148,10 @@ const Toolbar = () => {
 
   const onBrushChange = (brush: BrushMode) => {
     setBrushMode(brush);
-    
-  }
+  };
 
   return (
-    <div className="opacity-95 fixed inset-x-0 top-4 z-10 mx-auto flex max-w-2xl w-[380px] flex-row items-center justify-center gap-2 rounded-lg bg-background p-1 shadow-lg">
+    <div className="fixed inset-x-0 top-4 z-10 mx-auto flex w-[380px] max-w-2xl flex-row items-center justify-center gap-2 rounded-lg bg-background p-1 opacity-95 shadow-lg">
       <RadioGroup
         onValueChange={(brush) => onBrushChange(brush as BrushMode)}
         value={brushMode}
@@ -177,7 +177,7 @@ const Toolbar = () => {
             title={action.title}
             variant={action.variant ?? 'outline'}
             size={'icon'}
-            onClick={action?.action}
+            onClick={action?.onClick}
           >
             {action.children}
           </Button>

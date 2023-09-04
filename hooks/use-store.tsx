@@ -1,10 +1,10 @@
 'use client';
 
+import { type BrushMode } from '@/lib/types';
 import { type Viewport } from 'pixi-viewport';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type BrushMode = 'pen' | 'eraser' | 'grab';
 type Image = {
   width: number;
   height: number;
@@ -18,7 +18,7 @@ type Coordinates = {
 
 type State = {
   viewport: Viewport | null;
-  brushMode: 'pen' | 'eraser' | 'grab';
+  brushMode: BrushMode;
   colors: string[];
   currentColor: string;
   brushSize: number;
@@ -30,7 +30,7 @@ type State = {
 type Actions = {
   setViewport: (viewport: Viewport) => void;
   recenterViewport: (width: number, height: number) => void;
-  setBrushMode: (mode: 'pen' | 'eraser' | 'grab') => void;
+  setBrushMode: (mode: BrushMode) => void;
   setColor: (color: string) => void;
   setBrushSize: (size: number) => void;
   setImage: (img: Image) => void;

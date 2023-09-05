@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from 'clsx';
+import { type Point } from 'pixi.js';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -21,3 +22,13 @@ export function hexToRgb(hex: string) {
     }
   );
 }
+
+export const distanceBetween = (point1: Point, point2: Point) => {
+  return Math.sqrt(
+    Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2),
+  );
+};
+
+export const angleBetween = (point1: Point, point2: Point) => {
+  return Math.atan2(point2.x - point1.x, point2.y - point1.y);
+};

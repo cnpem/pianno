@@ -11,19 +11,13 @@ type Image = {
   src: string;
 };
 
-type Coordinates = {
-  x: number;
-  y: number;
-};
-
 type State = {
   viewport: Viewport | null;
   brushMode: BrushMode;
   colors: string[];
   currentColor: string;
   brushSize: number;
-  annotation: number[];
-  annotationCoords: Set<Coordinates>;
+  label: Image;
   img: Image;
 };
 
@@ -34,9 +28,7 @@ type Actions = {
   setColor: (color: string) => void;
   setBrushSize: (size: number) => void;
   setImage: (img: Image) => void;
-  setAnnotation: (annotation: number[]) => void;
-  appendAnnotationCoords: (coords: Coordinates) => void;
-  removeAnnotationCoords: (coords: Coordinates) => void;
+  setLabel: (label: Image) => void;
   reset: () => void;
 };
 
@@ -69,8 +61,11 @@ const initialState: State = {
   colors,
   brushSize: 10,
   currentColor: colors[0],
-  annotation: [],
-  annotationCoords: new Set(),
+  label: {
+    width: 0,
+    height: 0,
+    src: '#',
+  },
   img: {
     width: 0,
     height: 0,
@@ -93,17 +88,7 @@ const useStore = create<Store>()(
         setColor: (color) => set({ currentColor: color }),
         setBrushSize: (brushSize) => set({ brushSize }),
         setImage: (img) => set({ img }),
-        setAnnotation: (annotation) => set({ annotation }),
-        appendAnnotationCoords: (coords) => {
-          const annotationCoords = get().annotationCoords;
-          annotationCoords.add(coords);
-          set({ annotationCoords });
-        },
-        removeAnnotationCoords: (coords) => {
-          const annotationCoords = get().annotationCoords;
-          annotationCoords.delete(coords);
-          set({ annotationCoords });
-        },
+        setLabel: (label) => set({ label }),
         reset: () => {
           const { viewport: _, ...filteredState } = initialState;
           set({ viewport: get().viewport, ...filteredState });
@@ -116,6 +101,8 @@ const useStore = create<Store>()(
         brushMode: state.brushMode,
         currentColor: state.currentColor,
         img: state.img,
+        brushSize: state.brushSize,
+        label: state.label,
       }),
     },
   ),
@@ -128,7 +115,5 @@ export const useStoreCurrentColor = () =>
   useStore((state) => state.currentColor);
 export const useStoreImg = () => useStore((state) => state.img);
 export const useStoreBrushSize = () => useStore((state) => state.brushSize);
-export const useStoreAnnotation = () => useStore((state) => state.annotation);
-export const useStoreAnnotationCoords = () =>
-  useStore((state) => state.annotationCoords);
+export const useStoreLabel = () => useStore((state) => state.label);
 export const useStoreActions = () => useStore((state) => state.actions);

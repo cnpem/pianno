@@ -71,8 +71,8 @@ const initialState: State = {
 };
 
 const useStore = create<Store>()(
-  temporal(
-    persist(
+  persist(
+    temporal(
       (set, get) => ({
         ...initialState,
         actions: {
@@ -94,18 +94,18 @@ const useStore = create<Store>()(
         },
       }),
       {
-        name: 'store',
         partialize: (state) => ({
-          brushMode: state.brushMode,
-          currentColor: state.currentColor,
-          img: state.img,
-          brushSize: state.brushSize,
           label: state.label,
         }),
       },
     ),
     {
+      name: 'store',
       partialize: (state) => ({
+        brushMode: state.brushMode,
+        currentColor: state.currentColor,
+        img: state.img,
+        brushSize: state.brushSize,
         label: state.label,
       }),
     },

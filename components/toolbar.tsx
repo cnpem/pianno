@@ -4,6 +4,7 @@ import {
   useStoreActions,
   useStoreBrushMode,
   useStoreImg,
+  useStoreLabel,
 } from '@/hooks/use-store';
 import { useTemporalStore } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
@@ -56,7 +57,49 @@ const tools: IToolbar[] = [
   },
 ];
 
-const OpenImage = () => {
+const DownloadButton = () => {
+  const label = useStoreLabel();
+  const handleDownloadClick = () => {
+    // Create your custom JSON data here
+    const jsonData = {
+      name: 'John Doe',
+      age: 30,
+      email: 'john.doe@example.com',
+    };
+
+    // Convert the JSON data to a Blob object
+    const jsonBlob = new Blob([JSON.stringify(jsonData)], {
+      type: 'application/json',
+    });
+
+    // Create a URL for the Blob object
+    const jsonUrl = URL.createObjectURL(jsonBlob);
+
+    // Create an anchor element for downloading the JSON file
+    const downloadLink = document.createElement('a');
+    downloadLink.href = label;
+    downloadLink.download = 'label.png'; // Set the desired filename
+
+    // Trigger a click event to initiate the download
+    downloadLink.click();
+
+    // Clean up by revoking the URL
+    URL.revokeObjectURL(jsonUrl);
+  };
+
+  return (
+    <Button
+      title={'download label'}
+      variant={'outline'}
+      size={'icon'}
+      onClick={handleDownloadClick}
+    >
+      <DownloadIcon className="h-4 w-4" />
+    </Button>
+  );
+};
+
+const OpenImageButton = () => {
   const { setImage } = useStoreActions();
 
   const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,7 +153,9 @@ const OpenImage = () => {
 const Toolbar = () => {
   const brushMode = useStoreBrushMode();
   const { setBrushMode, recenterViewport, reset } = useStoreActions();
-  const { undo, redo, pastStates, futureStates } = useTemporalStore((state) => state);
+  const { undo, redo, pastStates, futureStates } = useTemporalStore(
+    (state) => state,
+  );
   const canUndo = !!pastStates.length;
   const canRedo = !!futureStates.length;
 
@@ -133,10 +178,6 @@ const Toolbar = () => {
       onClick: () => {
         redo();
       },
-    },
-    {
-      title: 'save',
-      children: <DownloadIcon className="h-4 w-4" />,
     },
     {
       title: 'fit-view',
@@ -184,7 +225,8 @@ const Toolbar = () => {
       </RadioGroup>
       <span className="flex text-center text-input">|</span>
       <div className="flex flex-row gap-1">
-        <OpenImage />
+        <OpenImageButton />
+        <DownloadButton />
         {actions.map((action) => (
           <Button
             key={action.title}

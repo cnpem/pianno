@@ -42,10 +42,11 @@ const Annotation = (props: AnnotationProps) => {
 
   const color = useStoreCurrentColor();
   const label = useStoreLabel();
+  const brushMode = useStoreBrushMode();
   const { setLabel } = useStoreActions();
 
   const canvas = canvasRef.current;
-  const context = canvas?.getContext('2d', { willReadFrequently: true });
+  const context = canvas?.getContext('2d');
   const sprite = useMemo(
     () => PIXI.Sprite.from(canvas ?? PIXI.Texture.EMPTY),
     [canvas],
@@ -68,7 +69,7 @@ const Annotation = (props: AnnotationProps) => {
   const currPosition = useRef<PIXI.Point | null>(null);
 
   const brushSize = useStoreBrushSize();
-  const brushMode = useStoreBrushMode();
+
   const viewport = useStoreViewport();
 
   const [isPainting, setIsPainting] = React.useState(false);
@@ -76,6 +77,7 @@ const Annotation = (props: AnnotationProps) => {
   useEffect(() => {
     const onPointerDown = (e: PIXI.FederatedPointerEvent) => {
       if (!context) return;
+      context.fillStyle = color;
       if (e.pointerType === 'mouse') {
         // only draw on left click
         if (e.button !== 0) return;
@@ -88,17 +90,13 @@ const Annotation = (props: AnnotationProps) => {
       const pos = viewport?.toWorld(e.global) ?? e.global;
       prevPosition.current = pos;
 
-      // draw on click
-      if (brushMode === 'eraser') {
-        context.globalCompositeOperation = 'destination-out';
-      } else {
-        context.globalCompositeOperation = 'source-over';
-        context.fillStyle = color;
-      }
-
       const x = Math.round(prevPosition.current.x - brushSize / 2);
       const y = Math.round(prevPosition.current.y - brushSize / 2);
-      context.fillRect(x, y, brushSize, brushSize);
+      if (brushMode === 'eraser') {
+        context.clearRect(x, y, brushSize, brushSize);
+      } else {
+        context.fillRect(x, y, brushSize, brushSize);
+      }
       sprite.texture.update();
     };
 
@@ -108,13 +106,6 @@ const Annotation = (props: AnnotationProps) => {
       if (!context) return;
       if (!prevPosition.current) return;
       if (isPainting) {
-        if (brushMode === 'eraser') {
-          context.globalCompositeOperation = 'destination-out';
-        } else {
-          context.globalCompositeOperation = 'source-over';
-          context.fillStyle = color;
-        }
-
         const dist = distanceBetween(
           prevPosition.current,
           currPosition.current,
@@ -127,7 +118,11 @@ const Annotation = (props: AnnotationProps) => {
           const y = Math.round(
             prevPosition.current.y + Math.cos(angle) * i - brushSize / 2,
           );
-          context.fillRect(x, y, brushSize, brushSize);
+          if (brushMode === 'eraser') {
+            context.clearRect(x, y, brushSize, brushSize);
+          } else {
+            context.fillRect(x, y, brushSize, brushSize);
+          }
         }
         sprite.texture.update();
         prevPosition.current = currPosition.current;

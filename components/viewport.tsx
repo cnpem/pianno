@@ -1,6 +1,7 @@
 'use client';
 
 import { useStoreActions } from '@/hooks/use-store';
+import { useWindowSize } from '@/hooks/use-window-size';
 import { Container as PixiContainer } from '@pixi/display';
 import { PixiComponent, useApp } from '@pixi/react';
 import { Viewport as PixiViewport } from 'pixi-viewport';
@@ -14,6 +15,8 @@ export interface ViewportProps {
 export interface PixiComponentViewportProps extends ViewportProps {
   app: PIXI.Application;
   setViewport: (viewport: PixiViewport) => void;
+  width?: number;
+  height?: number;
 }
 
 export const PixiComponentViewport = PixiComponent('Viewport', {
@@ -54,6 +57,7 @@ const Viewport = forwardRef(function Viewport(
   ref: React.Ref<PixiViewport>,
 ) {
   const app = useApp();
+  const [width, height] = useWindowSize();
   const { setViewport } = useStoreActions();
 
   return (
@@ -61,6 +65,8 @@ const Viewport = forwardRef(function Viewport(
       ref={ref}
       app={app}
       setViewport={setViewport}
+      width={width}
+      height={height}
       {...props}
     />
   );

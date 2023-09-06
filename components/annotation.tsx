@@ -4,13 +4,12 @@ import {
   useStoreActions,
   useStoreBrushMode,
   useStoreBrushSize,
-  useStoreColors,
   useStoreCurrentColor,
   useStoreLabel,
   useStoreViewport,
 } from '@/hooks/use-store';
 import { angleBetween, distanceBetween } from '@/lib/utils';
-import { Sprite, useApp } from '@pixi/react';
+import { Sprite } from '@pixi/react';
 import * as PIXI from 'pixi.js';
 import React, { useEffect, useMemo, useRef } from 'react';
 
@@ -18,16 +17,6 @@ type AnnotationProps = {
   width: number;
   height: number;
 };
-
-// const useInitAnnotation = ({ width, height }: AnnotationProps) => {
-//   const { setAnnotation } = useStoreActions();
-//   const annotation = useStoreAnnotation();
-//   useEffect(() => {
-//     if (annotation.length > 0) return;
-//     const annot = Array.from({ length: width * height }, () => -1);
-//     setAnnotation(annot);
-//   }, [annotation, height, setAnnotation, width]);
-// };
 
 const useCanvas = ({ width, height }: AnnotationProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -51,28 +40,29 @@ const useCanvas = ({ width, height }: AnnotationProps) => {
 const Annotation = (props: AnnotationProps) => {
   const canvasRef = useCanvas({ width: props.width, height: props.height });
 
-  const colors = useStoreColors();
   const color = useStoreCurrentColor();
   const label = useStoreLabel();
   const { setLabel } = useStoreActions();
-  const app = useApp();
+
   const canvas = canvasRef.current;
   const context = canvas?.getContext('2d', { willReadFrequently: true });
-
-  useEffect(() => {
-    if (label.src !== '#') {
-      const img = new Image();
-      img.src = label.src;
-      img.onload = () => {
-        context?.drawImage(img, 0, 0);
-      };
-    }
-  }, [label.src, context]);
-
   const sprite = useMemo(
     () => PIXI.Sprite.from(canvas ?? PIXI.Texture.EMPTY),
     [canvas],
   );
+
+  useEffect(() => {
+    if (!context) return;
+    if (label !== '#') {
+      const img = new Image();
+      img.src = label;
+      img.onload = () => {
+        context.clearRect(0, 0, props.width, props.height);
+        context.drawImage(img, 0, 0);
+        sprite.texture.update();
+      };
+    }
+  }, [label, context, sprite.texture, props.width, props.height]);
 
   const prevPosition = useRef<PIXI.Point | null>(null);
   const currPosition = useRef<PIXI.Point | null>(null);
@@ -148,11 +138,7 @@ const Annotation = (props: AnnotationProps) => {
       if (!canvas) return;
       viewport?.plugins.resume('drag');
       setIsPainting(false);
-      setLabel({
-        width: props.width,
-        height: props.height,
-        src: canvas.toDataURL(),
-      });
+      setLabel(canvas.toDataURL());
     };
     viewport?.on('pointerdown', onPointerDown);
     viewport?.on('pointerup', onPointerUp);

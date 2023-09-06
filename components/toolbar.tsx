@@ -5,6 +5,7 @@ import {
   useStoreBrushMode,
   useStoreImg,
 } from '@/hooks/use-store';
+import { useTemporalStore } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
 import { type BrushMode } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -28,6 +29,7 @@ interface IToolbar {
   title: string;
   children: React.ReactNode;
   variant?: VariantProps<typeof buttonVariants>['variant'];
+  disabled?: boolean;
   onClick?: () => void;
 }
 
@@ -108,6 +110,10 @@ const OpenImage = () => {
 const Toolbar = () => {
   const brushMode = useStoreBrushMode();
   const { setBrushMode, recenterViewport, reset } = useStoreActions();
+  const { undo, redo, pastStates, futureStates } = useTemporalStore((state) => state);
+  const canUndo = !!pastStates.length;
+  const canRedo = !!futureStates.length;
+
   const [width, height] = useWindowSize();
   const img = useStoreImg();
 
@@ -115,10 +121,18 @@ const Toolbar = () => {
     {
       title: 'undo',
       children: <UndoIcon className="h-4 w-4" />,
+      disabled: !canUndo,
+      onClick: () => {
+        undo();
+      },
     },
     {
       title: 'redo',
       children: <RedoIcon className="h-4 w-4" />,
+      disabled: !canRedo,
+      onClick: () => {
+        redo();
+      },
     },
     {
       title: 'save',
@@ -177,6 +191,7 @@ const Toolbar = () => {
             title={action.title}
             variant={action.variant ?? 'outline'}
             size={'icon'}
+            disabled={action.disabled}
             onClick={action?.onClick}
           >
             {action.children}

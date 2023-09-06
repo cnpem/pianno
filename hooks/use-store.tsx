@@ -2,7 +2,8 @@
 
 import { type BrushMode } from '@/lib/types';
 import { type Viewport } from 'pixi-viewport';
-import { create } from 'zustand';
+import { type TemporalState, temporal } from 'zundo';
+import { create, useStore as useZustandStore } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 type Image = {
@@ -17,7 +18,7 @@ type State = {
   colors: string[];
   currentColor: string;
   brushSize: number;
-  label: Image;
+  label: string; // dataUrl
   img: Image;
 };
 
@@ -28,7 +29,7 @@ type Actions = {
   setColor: (color: string) => void;
   setBrushSize: (size: number) => void;
   setImage: (img: Image) => void;
-  setLabel: (label: Image) => void;
+  setLabel: (label: string) => void;
   reset: () => void;
 };
 
@@ -61,11 +62,7 @@ const initialState: State = {
   colors,
   brushSize: 10,
   currentColor: colors[0],
-  label: {
-    width: 0,
-    height: 0,
-    src: '#',
-  },
+  label: '#',
   img: {
     width: 0,
     height: 0,
@@ -74,39 +71,50 @@ const initialState: State = {
 };
 
 const useStore = create<Store>()(
-  persist(
-    (set, get) => ({
-      ...initialState,
-      actions: {
-        setViewport: (viewport) => set({ viewport }),
-        recenterViewport: (width, height) => {
-          const viewport = get().viewport;
-          viewport?.moveCenter(width / 2, height / 2);
-          viewport?.fit(true, width, height);
+  temporal(
+    persist(
+      (set, get) => ({
+        ...initialState,
+        actions: {
+          setViewport: (viewport) => set({ viewport }),
+          recenterViewport: (width, height) => {
+            const viewport = get().viewport;
+            viewport?.moveCenter(width / 2, height / 2);
+            viewport?.fit(true, width, height);
+          },
+          setBrushMode: (brushMode) => set({ brushMode }),
+          setColor: (color) => set({ currentColor: color }),
+          setBrushSize: (brushSize) => set({ brushSize }),
+          setImage: (img) => set({ img }),
+          setLabel: (label) => set({ label }),
+          reset: () => {
+            const { viewport: _, ...filteredState } = initialState;
+            set({ viewport: get().viewport, ...filteredState });
+          },
         },
-        setBrushMode: (brushMode) => set({ brushMode }),
-        setColor: (color) => set({ currentColor: color }),
-        setBrushSize: (brushSize) => set({ brushSize }),
-        setImage: (img) => set({ img }),
-        setLabel: (label) => set({ label }),
-        reset: () => {
-          const { viewport: _, ...filteredState } = initialState;
-          set({ viewport: get().viewport, ...filteredState });
-        },
+      }),
+      {
+        name: 'store',
+        partialize: (state) => ({
+          brushMode: state.brushMode,
+          currentColor: state.currentColor,
+          img: state.img,
+          brushSize: state.brushSize,
+          label: state.label,
+        }),
       },
-    }),
+    ),
     {
-      name: 'store',
       partialize: (state) => ({
-        brushMode: state.brushMode,
-        currentColor: state.currentColor,
-        img: state.img,
-        brushSize: state.brushSize,
         label: state.label,
       }),
     },
   ),
 );
+
+export const useTemporalStore = <T,>(
+  selector: (state: TemporalState<Partial<State>>) => T,
+) => useZustandStore(useStore.temporal, selector);
 
 export const useStoreViewport = () => useStore((state) => state.viewport);
 export const useStoreBrushMode = () => useStore((state) => state.brushMode);

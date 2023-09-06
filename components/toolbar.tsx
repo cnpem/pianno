@@ -90,6 +90,7 @@ const DownloadButton = () => {
   return (
     <Button
       title={'download label'}
+      disabled={label === '#'}
       variant={'outline'}
       size={'icon'}
       onClick={handleDownloadClick}

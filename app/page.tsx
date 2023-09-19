@@ -10,7 +10,7 @@ const Canvas = dynamic(
 );
 
 const Toolbar = dynamic(
-  () => import('@/components/toolbar').then((m) => m.default),
+  () => import('@/components/toolbar/toolbar').then((m) => m.default),
   {
     ssr: false,
   },

@@ -20,9 +20,9 @@ import {
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { useStoreLabel } from '@/hooks/use-store';
 import { PIMEGA_DEVICES, PIMEGA_GEOMETRIES } from '@/lib/constants';
-import dayjs from 'dayjs';
 import { dataURItoBlob } from '@/lib/utils';
 import { fileSave } from 'browser-fs-access';
+import dayjs from 'dayjs';
 import { BracesIcon, CheckIcon, CopyIcon, SaveIcon } from 'lucide-react';
 import { FC, useState } from 'react';
 
@@ -35,6 +35,7 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
   const [distance, setDistance] = useState('');
   const [copiedText, copy] = useCopyToClipboard();
   const [isCopied, setIsCopied] = useState(false);
+  const [open, setOpen] = useState(false);
   const ready = device && name && geometry && distance;
 
   const label = useStoreLabel();
@@ -63,7 +64,13 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
     fileSave(fileToSave, {
       fileName: 'annot.json',
       extensions: ['.json'],
-    });
+    })
+      .then(() => {
+        setOpen(false);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const handleCopyClick = () => {
@@ -79,7 +86,7 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button title={'save json'} variant={'outline'} size={'icon'}>
           <SaveIcon className="h-4 w-4" />

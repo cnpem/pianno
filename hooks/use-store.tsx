@@ -5,6 +5,7 @@ import { type Viewport } from 'pixi-viewport';
 import { type TemporalState, temporal } from 'zundo';
 import { create, useStore as useZustandStore } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { shallow } from 'zustand/shallow';
 
 type Image = {
   width: number;
@@ -62,7 +63,7 @@ const initialState: State = {
   colors,
   brushSize: 10,
   currentColor: colors[0],
-  label: '#',
+  label: 'data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=', // 1x1 transparent png
   img: {
     width: 0,
     height: 0,
@@ -94,6 +95,7 @@ const useStore = create<Store>()(
         },
       }),
       {
+        equality: shallow,
         partialize: (state) => ({
           label: state.label,
         }),

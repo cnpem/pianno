@@ -16,6 +16,7 @@
     "@radix-ui/react-select": "^1.2.2",
     "@radix-ui/react-slider": "^1.1.2",
     "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-switch": "^1.0.3",
     "@types/lodash.throttle": "^4.1.7",
     "@types/node": "20.4.9",
     "@types/react": "18.2.20",

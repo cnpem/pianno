@@ -8,12 +8,9 @@ import {
 import { useTemporalStore } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
 import { type BrushMode } from '@/lib/types';
-import { cn } from '@/lib/utils';
 import { type VariantProps } from 'class-variance-authority';
 import {
-  DownloadIcon,
   EraserIcon,
-  ImageIcon,
   MaximizeIcon,
   PenIcon,
   RedoIcon,
@@ -25,6 +22,7 @@ import { Button, buttonVariants } from '../ui/button';
 import { Label } from '../ui/label';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import SaveDialog from './save';
+import OpenImageDialog from './open';
 
 interface IToolbar {
   title: string;
@@ -57,61 +55,10 @@ const tools: IToolbar[] = [
   },
 ];
 
-const OpenImageButton = () => {
-  const { setImage } = useStoreActions();
-
-  const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const objectUrl = URL.createObjectURL(event.target.files[0]);
-      const reader = new FileReader();
-      let dataUrl: string | ArrayBuffer | null;
-      reader.onload = () => {
-        dataUrl = reader.result;
-      };
-      // convert image src to base64 dataUrl to persist it in store
-      const file = event.target.files[0];
-      reader.readAsDataURL(file);
-
-      const img = new Image();
-      img.src = objectUrl;
-      img.onload = () => {
-        setImage({
-          src: dataUrl as string,
-          width: img.width,
-          height: img.height,
-        });
-      };
-    }
-  };
-
-  return (
-    <div>
-      <input
-        onChange={onImageChange}
-        type="file"
-        accept="image/*"
-        id="img"
-        hidden
-      />
-      <label
-        htmlFor={'img'}
-        title="open image"
-        aria-label="open image"
-        className={cn(
-          buttonVariants({ variant: 'outline', size: 'icon' }),
-          'cursor-pointer',
-        )}
-      >
-        <ImageIcon className="h-4 w-4" />
-      </label>
-    </div>
-  );
-};
-
 const Toolbar = () => {
   const brushMode = useStoreBrushMode();
   const { setBrushMode, recenterViewport, reset } = useStoreActions();
-  const { undo, redo, pastStates, futureStates } = useTemporalStore(
+  const { undo, redo, clear, pastStates, futureStates } = useTemporalStore(
     (state) => state,
   );
   const canUndo = !!pastStates.length;
@@ -154,6 +101,7 @@ const Toolbar = () => {
       variant: 'destructive',
       onClick: () => {
         reset();
+        clear();
         recenterViewport(width, height);
       },
     },
@@ -183,7 +131,7 @@ const Toolbar = () => {
       </RadioGroup>
       <span className="flex text-center text-input">|</span>
       <div className="flex flex-row gap-1">
-        <OpenImageButton />
+        <OpenImageDialog/>
         <SaveDialog />
         {actions.map((action) => (
           <Button

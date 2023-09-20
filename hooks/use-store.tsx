@@ -1,5 +1,6 @@
 'use client';
 
+import { COLORS } from '@/lib/constants';
 import { type BrushMode } from '@/lib/types';
 import { type Viewport } from 'pixi-viewport';
 import { type TemporalState, temporal } from 'zundo';
@@ -31,6 +32,7 @@ type Actions = {
   setBrushSize: (size: number) => void;
   setImage: (img: Image) => void;
   setLabel: (label: string) => void;
+  resetLabel: () => void;
   reset: () => void;
 };
 
@@ -38,31 +40,12 @@ type Store = State & {
   actions: Actions;
 };
 
-const colors: string[] = [
-  '#f44336',
-  '#e91e63',
-  '#9c27b0',
-  '#673ab7',
-  '#3f51b5',
-  '#2196f3',
-  '#03a9f4',
-  '#00bcd4',
-  '#009688',
-  '#4caf50',
-  '#8bc34a',
-  '#cddc39',
-  '#ffeb3b',
-  '#ffc107',
-  '#ff9800',
-  '#ff5722',
-];
-
 const initialState: State = {
   viewport: null,
   brushMode: 'pen',
-  colors,
+  colors: COLORS,
   brushSize: 10,
-  currentColor: colors[0],
+  currentColor: COLORS[0],
   label: 'data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=', // 1x1 transparent png
   img: {
     width: 0,
@@ -88,6 +71,7 @@ const useStore = create<Store>()(
           setBrushSize: (brushSize) => set({ brushSize }),
           setImage: (img) => set({ img }),
           setLabel: (label) => set({ label }),
+          resetLabel: () => set({ label: initialState.label }),
           reset: () => {
             const { viewport: _, ...filteredState } = initialState;
             set({ viewport: get().viewport, ...filteredState });

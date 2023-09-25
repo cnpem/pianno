@@ -16,7 +16,7 @@ import { useStoreActions } from '@/hooks/use-store';
 import { openImageSchema } from '@/lib/types';
 import { fileOpen } from 'browser-fs-access';
 import { ImageIcon } from 'lucide-react';
-import { FC, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import { z } from 'zod';
 
 interface OpenImageDialogProps {}
@@ -24,8 +24,7 @@ interface OpenImageDialogProps {}
 const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
-  const [width, setWidth] = useState(0);
-  const [height, setHeight] = useState(0);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const { setImage, resetLabel } = useStoreActions();
 
@@ -46,7 +45,11 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
     }
     return data;
   }
-  const convertArraytoDataURL = (arr: number[]) => {
+  const convertArraytoDataURL = (
+    arr: number[],
+    width: number,
+    height: number,
+  ) => {
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -83,7 +86,11 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
             const floatArr = new Float64Array(arrayBuffer);
             const arr = Array.from(floatArr);
             const uint8Array = rescaleToUInt8(arr);
-            const url = convertArraytoDataURL(uint8Array);
+            const url = convertArraytoDataURL(
+              uint8Array,
+              data.width!,
+              data.height!,
+            );
             setImage({
               width: data.width!,
               height: data.height!,
@@ -92,8 +99,6 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
             resetLabel();
           };
           reader.readAsArrayBuffer(file);
-
-          handleOpenChange(false);
         })
         .catch((err) => {
           console.log(err);
@@ -118,8 +123,6 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
             img.src = e.target?.result as string;
           };
           reader.readAsDataURL(file);
-
-          handleOpenChange(false);
         })
         .catch((err) => {
           console.log(err);
@@ -131,14 +134,14 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
     setOpen(open);
     if (!open) {
       setChecked(false);
-      setWidth(0);
-      setHeight(0);
     }
   };
 
   async function submitAction(data: FormData) {
+    formRef.current?.reset();
     const res = await openImage(data);
     handleLoadImage(res);
+    handleOpenChange(false);
   }
 
   return (
@@ -157,7 +160,7 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
               : 'Click load.'}
           </DialogDescription>
         </DialogHeader>
-        <form action={submitAction}>
+        <form action={submitAction} ref={formRef}>
           <div className="flex flex-row items-center gap-2 text-center">
             <span className="font-mono font-semibold">PNG</span>
             <Switch
@@ -171,22 +174,8 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
             <div className="mt-4 grid grid-cols-2 gap-2">
               <Label htmlFor="width">Width</Label>
               <Label htmlFor="height">Height</Label>
-              <Input
-                name="width"
-                required
-                type="number"
-                min={1}
-                max={4096}
-                onChange={(e) => setWidth(parseInt(e.target.value))}
-              />
-              <Input
-                type="number"
-                name="height"
-                required
-                min={1}
-                max={4096}
-                onChange={(e) => setHeight(parseInt(e.target.value))}
-              />
+              <Input name="width" required type="number" min={1} max={4096} />
+              <Input type="number" name="height" required min={1} max={4096} />
             </div>
           )}
           <DialogFooter className="mt-4">

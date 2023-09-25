@@ -1,3 +1,4 @@
+import { openImage } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -12,9 +13,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useStoreActions } from '@/hooks/use-store';
+import { openImageSchema } from '@/lib/types';
 import { fileOpen } from 'browser-fs-access';
 import { ImageIcon } from 'lucide-react';
 import { FC, useState } from 'react';
+import { z } from 'zod';
 
 interface OpenImageDialogProps {}
 
@@ -66,8 +69,8 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
     return dataURL;
   };
 
-  const handleLoadImage = () => {
-    if (checked) {
+  const handleLoadImage = (data: z.infer<typeof openImageSchema>) => {
+    if (data.checked) {
       fileOpen({
         mimeTypes: ['application/octet-stream'],
         extensions: ['.raw', '.b', '.bin'],
@@ -82,8 +85,8 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
             const uint8Array = rescaleToUInt8(arr);
             const url = convertArraytoDataURL(uint8Array);
             setImage({
-              width: width,
-              height: height,
+              width: data.width!,
+              height: data.height!,
               src: url!,
             });
             resetLabel();
@@ -133,6 +136,11 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
     }
   };
 
+  async function submitAction(data: FormData) {
+    const res = await openImage(data);
+    handleLoadImage(res);
+  }
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
@@ -149,17 +157,23 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
               : 'Click load.'}
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-4">
+        <form action={submitAction}>
           <div className="flex flex-row items-center gap-2 text-center">
             <span className="font-mono font-semibold">PNG</span>
-            <Switch checked={checked} onCheckedChange={setChecked} />
+            <Switch
+              name="checked"
+              checked={checked}
+              onCheckedChange={setChecked}
+            />
             <span className="font-mono font-semibold">RAW</span>
           </div>
           {checked && (
-            <div className="grid grid-cols-2 gap-2">
-              <Label>Width</Label>
-              <Label>Height</Label>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <Label htmlFor="width">Width</Label>
+              <Label htmlFor="height">Height</Label>
               <Input
+                name="width"
+                required
                 type="number"
                 min={1}
                 max={4096}
@@ -167,22 +181,18 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
               />
               <Input
                 type="number"
+                name="height"
+                required
                 min={1}
                 max={4096}
                 onChange={(e) => setHeight(parseInt(e.target.value))}
               />
             </div>
           )}
-        </div>
-        <DialogFooter>
-          {checked ? (
-            <Button onClick={handleLoadImage} disabled={!width || !height}>
-              Load
-            </Button>
-          ) : (
-            <Button onClick={handleLoadImage}>Load</Button>
-          )}
-        </DialogFooter>
+          <DialogFooter className="mt-4">
+            <Button type="submit">Load</Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

@@ -1,3 +1,5 @@
+'use client';
+
 import { openImage } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import {

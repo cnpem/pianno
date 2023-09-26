@@ -73,8 +73,9 @@ const useStore = create<Store>()(
           setLabel: (label) => set({ label }),
           resetLabel: () => set({ label: initialState.label }),
           reset: () => {
-            const { viewport: _, ...filteredState } = initialState;
-            set({ viewport: get().viewport, ...filteredState });
+            set(initialState);
+            // force reload to reset viewport
+            window.location.reload();
           },
         },
       }),

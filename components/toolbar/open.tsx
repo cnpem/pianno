@@ -1,6 +1,7 @@
 'use client';
 
 import { openImage } from '@/app/actions';
+import { useTemporalStore } from '@/hooks/use-store';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -26,6 +27,9 @@ interface OpenImageDialogProps {}
 const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
+  const { clear } = useTemporalStore(
+    (state) => state,
+  );
   const formRef = useRef<HTMLFormElement>(null);
 
   const { setImage, resetLabel } = useStoreActions();
@@ -99,6 +103,7 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
               src: url!,
             });
             resetLabel();
+            clear();
           };
           reader.readAsArrayBuffer(file);
         })
@@ -120,7 +125,9 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
                 height: img.height,
                 src: e.target?.result as string,
               });
+              // soft reset on image load
               resetLabel();
+              clear();
             };
             img.src = e.target?.result as string;
           };
@@ -149,7 +156,7 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button title={'save json'} variant={'outline'} size={'icon'}>
+        <Button title={'load image'} variant={'outline'} size={'icon'}>
           <ImageIcon className="h-4 w-4" />
         </Button>
       </DialogTrigger>

@@ -32,7 +32,7 @@ import { z } from 'zod';
 interface SaveDialogProps {}
 
 const SaveDialog: FC<SaveDialogProps> = ({}) => {
-  const [copiedText, copy] = useCopyToClipboard();
+  const [_, copy] = useCopyToClipboard();
   const [isCopied, setIsCopied] = useState(false);
   const [open, setOpen] = useState(false);
 

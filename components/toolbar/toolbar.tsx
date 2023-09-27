@@ -11,6 +11,7 @@ import { type BrushMode } from '@/lib/types';
 import { type VariantProps } from 'class-variance-authority';
 import {
   EraserIcon,
+  ImageIcon,
   MaximizeIcon,
   PenIcon,
   RedoIcon,
@@ -21,8 +22,8 @@ import {
 import { Button, buttonVariants } from '../ui/button';
 import { Label } from '../ui/label';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import SaveDialog from './save';
 import OpenImageDialog from './open';
+import SaveDialog from './save';
 
 interface IToolbar {
   title: string;
@@ -112,41 +113,54 @@ const Toolbar = () => {
   };
 
   return (
-    <div className="fixed inset-x-0 top-4 z-10 mx-auto flex w-[380px] max-w-2xl flex-row items-center justify-center gap-2 rounded-lg bg-background p-1 opacity-95 shadow-lg">
-      <RadioGroup
-        onValueChange={(brush) => onBrushChange(brush as BrushMode)}
-        value={brushMode}
-        className="flex flex-row gap-1"
-      >
-        {tools.map((tool) => (
-          <div key={tool.title}>
-            <RadioGroupItem
-              value={tool.title}
-              id={tool.title}
-              className="peer sr-only"
-            />
-            <ToolItem title={tool.title}>{tool.children}</ToolItem>
-          </div>
-        ))}
-      </RadioGroup>
-      <span className="flex text-center text-input">|</span>
-      <div className="flex flex-row gap-1">
-        <OpenImageDialog/>
-        <SaveDialog />
-        {actions.map((action) => (
-          <Button
-            key={action.title}
-            title={action.title}
-            variant={action.variant ?? 'outline'}
-            size={'icon'}
-            disabled={action.disabled}
-            onClick={action?.onClick}
-          >
-            {action.children}
-          </Button>
-        ))}
+    <>
+      <div className="fixed inset-x-0 top-4 z-10 mx-auto flex w-[380px] max-w-2xl flex-row items-center justify-center gap-2 rounded-lg bg-background p-1 opacity-95 shadow-lg">
+        <RadioGroup
+          onValueChange={(brush) => onBrushChange(brush as BrushMode)}
+          value={brushMode}
+          className="flex flex-row gap-1"
+        >
+          {tools.map((tool) => (
+            <div key={tool.title}>
+              <RadioGroupItem
+                value={tool.title}
+                id={tool.title}
+                className="peer sr-only"
+              />
+              <ToolItem title={tool.title}>{tool.children}</ToolItem>
+            </div>
+          ))}
+        </RadioGroup>
+        <span className="flex text-center text-input">|</span>
+        <div className="flex flex-row gap-1">
+          <OpenImageDialog />
+          <SaveDialog />
+          {actions.map((action) => (
+            <Button
+              key={action.title}
+              title={action.title}
+              variant={action.variant ?? 'outline'}
+              size={'icon'}
+              disabled={action.disabled}
+              onClick={action?.onClick}
+            >
+              {action.children}
+            </Button>
+          ))}
+        </div>
       </div>
-    </div>
+      {
+        // show message if no image is loaded
+        img.src === '#' && (
+          <div className="fixed inset-x-0 top-20 z-10 text-center text-input">
+            <span className="items-center justify-center font-mono font-semibold">
+              Please load an image to start{' '}
+              <ImageIcon className="inline h-4 w-4 stroke-purple-800" />{' '}
+            </span>
+          </div>
+        )
+      }
+    </>
   );
 };
 

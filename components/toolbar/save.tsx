@@ -118,6 +118,7 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
                   #
                 </Label>
                 <Input
+                  id="device-hash"
                   name="device-hash"
                   type="number"
                   className="w-full"
@@ -151,11 +152,12 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
                 Distance <span className="font-light">(mm)</span>
               </Label>
               <Input
+                id="distance"
                 name="distance"
                 type="number"
+                className="col-span-3"
                 min={0}
                 required
-                className="col-span-3"
               />
             </div>
           </div>

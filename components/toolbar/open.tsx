@@ -1,7 +1,6 @@
 'use client';
 
 import { openImage } from '@/app/actions';
-import { useTemporalStore } from '@/hooks/use-store';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -15,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { useTemporalStore } from '@/hooks/use-store';
 import { useStoreActions } from '@/hooks/use-store';
 import { openImageSchema } from '@/lib/types';
 import { fileOpen } from 'browser-fs-access';
@@ -27,9 +27,7 @@ interface OpenImageDialogProps {}
 const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
-  const { clear } = useTemporalStore(
-    (state) => state,
-  );
+  const { clear } = useTemporalStore((state) => state);
   const formRef = useRef<HTMLFormElement>(null);
 
   const { setImage, resetLabel } = useStoreActions();
@@ -183,8 +181,22 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
             <div className="mt-4 grid grid-cols-2 gap-2">
               <Label htmlFor="width">Width</Label>
               <Label htmlFor="height">Height</Label>
-              <Input name="width" required type="number" min={1} max={4096} />
-              <Input type="number" name="height" required min={1} max={4096} />
+              <Input
+                id="width"
+                name="width"
+                type="number"
+                min={1}
+                max={4096}
+                required
+              />
+              <Input
+                id="height"
+                name="height"
+                type="number"
+                min={1}
+                max={4096}
+                required
+              />
             </div>
           )}
           <DialogFooter className="mt-4">

@@ -15,6 +15,7 @@ import Annotation from './annotation';
 import Brush from './brush';
 import Sidebar from './sidebar';
 import Viewport from './viewport';
+import AnnotationBar from './annotation-bar';
 
 const useIteration = (incr = 0.1) => {
   const [i, setI] = useState(0);
@@ -111,6 +112,7 @@ const Canvas = () => {
         </span>
       </div>
       <Sidebar />
+      <AnnotationBar/>
       <Stage
         width={width}
         height={height}

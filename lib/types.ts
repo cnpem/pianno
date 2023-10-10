@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { z } from 'zod';
 
-export type BrushMode = 'pen' | 'eraser' | 'grab';
+export type BrushMode = 'pen' | 'eraser' | 'lens';
 
 export const openImageSchema = z.object({
   checked: z.nullable(z.string()),
@@ -16,3 +16,10 @@ export const annotationSchema = z.object({
   distance: z.coerce.number(),
   image: z.string(),
 });
+
+export type Annotation = {
+  x: number;
+  y: number;
+  distance: number;
+  type: 'horizontal' | 'vertical' | 'euclidean';
+};

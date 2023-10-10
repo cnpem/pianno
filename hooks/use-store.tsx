@@ -1,7 +1,7 @@
 'use client';
 
 import { COLORS } from '@/lib/constants';
-import { type BrushMode } from '@/lib/types';
+import type { Annotation, BrushMode } from '@/lib/types';
 import { type Viewport } from 'pixi-viewport';
 import { type TemporalState, temporal } from 'zundo';
 import { create, useStore as useZustandStore } from 'zustand';
@@ -22,6 +22,7 @@ type State = {
   brushSize: number;
   label: string; // dataUrl
   img: Image;
+  annotation: Annotation[];
 };
 
 type Actions = {
@@ -32,6 +33,10 @@ type Actions = {
   setBrushSize: (size: number) => void;
   setImage: (img: Image) => void;
   setLabel: (label: string) => void;
+  setAnnotation: (annotation: Annotation[]) => void;
+  addAnnotation: (annotation: Annotation) => void;
+  removeAnnotation: (annotation: Annotation) => void;
+  resetAnnotation: () => void;
   resetLabel: () => void;
   reset: () => void;
 };
@@ -52,6 +57,7 @@ const initialState: State = {
     height: 0,
     src: '#',
   },
+  annotation: [],
 };
 
 const useStore = create<Store>()(
@@ -71,6 +77,64 @@ const useStore = create<Store>()(
           setBrushSize: (brushSize) => set({ brushSize }),
           setImage: (img) => set({ img }),
           setLabel: (label) => set({ label }),
+          setAnnotation: (annotation) => set({ annotation }),
+          addAnnotation: (annotation) => {
+            //check if annotation already exists
+            const annotations = get().annotation;
+            const index = annotations.findIndex(
+              (a) => a.x === annotation.x && a.y === annotation.y,
+            );
+            if (index === -1) {
+              set((state) => ({
+                annotation: [...state.annotation, annotation],
+              }));
+            } else {
+              // update annotation
+              set((state) => ({
+                annotation: [
+                  ...state.annotation.slice(0, index),
+                  annotation,
+                  ...state.annotation.slice(index + 1),
+                ],
+              }));
+            }
+          },
+          removeAnnotation: (annotation) => {
+            const annotations = get().annotation;
+            const index = annotations.findIndex(
+              (a) => a.x === annotation.x && a.y === annotation.y,
+            );
+            if (index !== -1) {
+              set((state) => ({
+                annotation: [
+                  ...state.annotation.slice(0, index),
+                  ...state.annotation.slice(index + 1),
+                ],
+              }));
+              // move pair to the end of the array if it exists
+              if(index % 2){
+                const pairIndex = index - 1;
+                set((state) => ({
+                  annotation: [
+                    ...state.annotation.slice(0, pairIndex),
+                    ...state.annotation.slice(pairIndex + 1),
+                    state.annotation[pairIndex],
+                  ],
+                }));
+              }
+              else if(index%2 === 0  && index !== annotations.length - 1){
+                const pairIndex = index + 1;
+                set((state) => ({
+                  annotation: [
+                    ...state.annotation.slice(0, pairIndex),
+                    ...state.annotation.slice(pairIndex + 1),
+                    state.annotation[pairIndex],
+                  ],
+                }));
+              }
+            }
+          },
+          resetAnnotation: () => set({ annotation: initialState.annotation }),
           resetLabel: () => set({ label: initialState.label }),
           reset: () => {
             set(initialState);

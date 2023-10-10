@@ -32,6 +32,7 @@ const useCanvas = ({ width, height }: AnnotationProps) => {
     return () => {
       canvas?.remove();
       canvasRef.current?.remove();
+      canvasRef.current = null;
     };
   }, [height, width]);
   return canvasRef;
@@ -54,15 +55,13 @@ const Annotation = (props: AnnotationProps) => {
 
   useEffect(() => {
     if (!context) return;
-    if (label !== '#') {
-      const img = new Image();
-      img.src = label;
-      img.onload = () => {
-        context.clearRect(0, 0, props.width, props.height);
-        context.drawImage(img, 0, 0);
-        sprite.texture.update();
-      };
-    }
+    const img = new Image();
+    img.src = label;
+    img.onload = () => {
+      context.clearRect(0, 0, props.width, props.height);
+      context.drawImage(img, 0, 0);
+      sprite.texture.update();
+    };
   }, [label, context, sprite.texture, props.width, props.height]);
 
   const prevPosition = useRef<PIXI.Point | null>(null);
@@ -94,7 +93,7 @@ const Annotation = (props: AnnotationProps) => {
       const y = Math.round(prevPosition.current.y - brushSize / 2);
       if (brushMode === 'eraser') {
         context.clearRect(x, y, brushSize, brushSize);
-      } else {
+      } else if (brushMode === 'pen') {
         context.fillRect(x, y, brushSize, brushSize);
       }
       sprite.texture.update();
@@ -120,7 +119,7 @@ const Annotation = (props: AnnotationProps) => {
           );
           if (brushMode === 'eraser') {
             context.clearRect(x, y, brushSize, brushSize);
-          } else {
+          } else if (brushMode === 'pen') {
             context.fillRect(x, y, brushSize, brushSize);
           }
         }

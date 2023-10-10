@@ -56,3 +56,16 @@ export const dataURItoBlob = (dataURI: string) => {
   var blob = new Blob([ab], { type: mimeString });
   return blob;
 };
+
+export const getAnnotationTypeFromColor = (color: string) => {
+  switch (color) {
+    case '#f44336':
+      return 'horizontal';
+    case '#4caf50':
+      return 'vertical';
+    case '#2196f3':
+      return 'euclidean';
+    default:
+      return 'euclidean';
+  }
+}

@@ -24,6 +24,7 @@ import { Label } from '../ui/label';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import OpenImageDialog from './open';
 import SaveDialog from './save';
+import Tools from './tools';
 
 interface IToolbar {
   title: string;
@@ -114,23 +115,8 @@ const Toolbar = () => {
 
   return (
     <>
-      <div className="fixed inset-x-0 top-4 z-10 mx-auto flex w-[380px] max-w-2xl flex-row items-center justify-center gap-2 rounded-lg bg-background p-1 opacity-95 shadow-lg">
-        <RadioGroup
-          onValueChange={(brush) => onBrushChange(brush as BrushMode)}
-          value={brushMode}
-          className="flex flex-row gap-1"
-        >
-          {tools.map((tool) => (
-            <div key={tool.title}>
-              <RadioGroupItem
-                value={tool.title}
-                id={tool.title}
-                className="peer sr-only"
-              />
-              <ToolItem title={tool.title}>{tool.children}</ToolItem>
-            </div>
-          ))}
-        </RadioGroup>
+      <div className="fixed inset-x-0 top-4 z-10 mx-auto flex w-[420px] max-w-2xl flex-row items-center justify-center gap-2 rounded-lg bg-background p-1 opacity-95 shadow-lg">
+        <Tools/>
         <span className="flex text-center text-input">|</span>
         <div className="flex flex-row gap-1">
           <OpenImageDialog />

@@ -2,7 +2,7 @@
 
 import { useStoreActions } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
-import { Container as PixiContainer } from '@pixi/display';
+import type { Container as PixiContainer } from '@pixi/display';
 import { PixiComponent, useApp } from '@pixi/react';
 import { Viewport as PixiViewport } from 'pixi-viewport';
 import * as PIXI from 'pixi.js';

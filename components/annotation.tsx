@@ -8,8 +8,13 @@ import {
   useStoreLabel,
   useStoreViewport,
 } from '@/hooks/use-store';
-import { angleBetween, distanceBetween } from '@/lib/utils';
+import {
+  angleBetween,
+  distanceBetween,
+  getAnnotationTypeFromColor,
+} from '@/lib/utils';
 import { Sprite } from '@pixi/react';
+import { nanoid } from 'nanoid';
 import * as PIXI from 'pixi.js';
 import React, { useEffect, useMemo, useRef } from 'react';
 
@@ -44,7 +49,7 @@ const Annotation = (props: AnnotationProps) => {
   const color = useStoreCurrentColor();
   const label = useStoreLabel();
   const brushMode = useStoreBrushMode();
-  const { setLabel } = useStoreActions();
+  const { setLabel, addAnnotation, removeAnnotation } = useStoreActions();
 
   const canvas = canvasRef.current;
   const context = canvas?.getContext('2d');
@@ -93,8 +98,20 @@ const Annotation = (props: AnnotationProps) => {
       const y = Math.round(prevPosition.current.y - brushSize / 2);
       if (brushMode === 'eraser') {
         context.clearRect(x, y, brushSize, brushSize);
+        for (let i = 0; i < brushSize; i++) {
+          for (let j = 0; j < brushSize; j++) {
+            removeAnnotation({ x: x + i, y: y + j });
+          }
+        }
       } else if (brushMode === 'pen') {
         context.fillRect(x, y, brushSize, brushSize);
+        addAnnotation({
+          id: nanoid(),
+          x,
+          y,
+          type: getAnnotationTypeFromColor(color),
+          distance: -1,
+        });
       }
       sprite.texture.update();
     };
@@ -119,8 +136,20 @@ const Annotation = (props: AnnotationProps) => {
           );
           if (brushMode === 'eraser') {
             context.clearRect(x, y, brushSize, brushSize);
+            for (let i = 0; i < brushSize; i++) {
+              for (let j = 0; j < brushSize; j++) {
+                removeAnnotation({ x: x + i, y: y + j });
+              }
+            }
           } else if (brushMode === 'pen') {
             context.fillRect(x, y, brushSize, brushSize);
+            addAnnotation({
+              id: nanoid(),
+              x,
+              y,
+              type: getAnnotationTypeFromColor(color),
+              distance: -1,
+            });
           }
         }
         sprite.texture.update();
@@ -143,6 +172,7 @@ const Annotation = (props: AnnotationProps) => {
       viewport?.off('pointermove', onPointerMove);
     };
   }, [
+    addAnnotation,
     brushMode,
     brushSize,
     canvas,
@@ -151,6 +181,7 @@ const Annotation = (props: AnnotationProps) => {
     isPainting,
     props.height,
     props.width,
+    removeAnnotation,
     setLabel,
     sprite.texture,
     viewport,

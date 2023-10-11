@@ -1,8 +1,9 @@
 'use client';
 
+import { useStoreActions, useStoreAnnotation } from '@/hooks/use-store';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
-import { ChevronDown, ChevronUp, Dog, Zap } from 'lucide-react';
-import { FC, useState } from 'react';
+import { Braces, ChevronDown, ChevronUp } from 'lucide-react';
+import { FC } from 'react';
 
 import {
   Accordion,
@@ -17,56 +18,27 @@ import { ScrollArea } from './ui/scroll-area';
 interface AnnotationBarProps {}
 
 const AnnotationBar: FC<AnnotationBarProps> = ({}) => {
-  //list of 10 animals
-  const example = [
-    'cat',
-    'dog',
-    'bird',
-    'fish',
-    'snake',
-    'turtle',
-    'rabbit',
-    'hamster',
-    'lizard',
-    'frog',
-  ];
+  const annotations = useStoreAnnotation();
+  const { setAnnotation } = useStoreActions();
 
   const [parent] = useAutoAnimate<HTMLDivElement>();
 
-  const [animals, setAnimals] = useState(example);
-
   const moveUp = (id: number) => {
-    //swap animal at id with previous
-    const newAnimals = [...animals];
-    const temp = newAnimals[id - 1];
-    newAnimals[id - 1] = newAnimals[id];
-    newAnimals[id] = temp;
-    setAnimals(newAnimals);
+    //swap annotation at id with previous
+    const newAnnotations = [...annotations];
+    const temp = newAnnotations[id - 1];
+    newAnnotations[id - 1] = newAnnotations[id];
+    newAnnotations[id] = temp;
+    setAnnotation(newAnnotations);
   };
 
   const moveDown = (id: number) => {
-    //swap animal at id with next
-    const newAnimals = [...animals];
-    const temp = newAnimals[id + 1];
-    newAnimals[id + 1] = newAnimals[id];
-    newAnimals[id] = temp;
-    setAnimals(newAnimals);
-  };
-
-  const moveToLast = (id: number) => {
-    //move animal at id to end of list
-    const newAnimals = [...animals];
-    const temp = newAnimals[id];
-    newAnimals.splice(id, 1);
-    newAnimals.push(temp);
-    setAnimals(newAnimals);
-  };
-
-  const remove = (id: number) => {
-    //remove animal at id
-    const newAnimals = [...animals];
-    newAnimals.splice(id, 1);
-    setAnimals(newAnimals);
+    //swap annotation at id with next
+    const newAnnotations = [...annotations];
+    const temp = newAnnotations[id + 1];
+    newAnnotations[id + 1] = newAnnotations[id];
+    newAnnotations[id] = temp;
+    setAnnotation(newAnnotations);
   };
 
   return (
@@ -80,18 +52,19 @@ const AnnotationBar: FC<AnnotationBarProps> = ({}) => {
           title="toggle annotation list"
           className="flex items-center justify-center rounded-md bg-white p-2 shadow-lg"
         >
-          <Dog className="mr-2 h-4 w-4" />
+          <Braces className="mr-1 h-4 w-4" />
+          <p className="text-xs font-semibold text-purple-700">Annotations</p>
         </AccordionTrigger>
         <AccordionContent>
-          <ScrollArea className="h-screen">
+          <ScrollArea className="h-[calc(100vh-65px)]">
             <div ref={parent} className="flex flex-col gap-2 p-4">
-              {animals.map((animal, id) => (
+              {annotations.map((annotation, id) => (
                 <Card
-                  key={animal}
+                  key={annotation?.id}
                   className="flex flex-row items-center gap-2 p-2"
                 >
-                  <input id={animal} type="checkbox" />
-                  <label htmlFor={animal}>{animal}</label>
+                  <input id={annotation?.id} type="checkbox" />
+                  <label htmlFor={annotation?.id}>{`${annotation?.x} ${annotation?.y}`}</label>
                   <Button
                     onClick={() => moveUp(id)}
                     size="icon"
@@ -106,18 +79,9 @@ const AnnotationBar: FC<AnnotationBarProps> = ({}) => {
                     size="icon"
                     className="h-5 w-5"
                     variant="ghost"
-                    disabled={id === animals.length - 1}
+                    disabled={id === annotations.length - 1}
                   >
                     <ChevronDown className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    onClick={() => moveToLast(id)}
-                    size="icon"
-                    className="h-5 w-5"
-                    variant="ghost"
-                    disabled={id === animals.length - 1}
-                  >
-                    <Zap className="h-4 w-4" />
                   </Button>
                 </Card>
               ))}

@@ -6,10 +6,10 @@ import {
   useStoreViewport,
 } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
-import { Sprite, Stage, Text, useApp, useTick } from '@pixi/react';
+import { Sprite, Stage, useApp, useTick } from '@pixi/react';
 import throttle from 'lodash.throttle';
 import * as PIXI from 'pixi.js';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import Annotation from './annotation';
 import Brush from './brush';
@@ -30,17 +30,15 @@ const useIteration = (incr = 0.1) => {
 const Bunny = () => {
   const theta = useIteration(0.1);
   const app = useApp();
-  const src = 'https://pixijs.io/pixi-react/img/bunny.png';
+  const src = '/dino.png';
 
-  const bunny = useMemo(() => PIXI.Sprite.from(src), [src]);
   return (
     <Sprite
-      texture={bunny.texture}
+      image={src}
       x={app.screen.width / 2}
-      y={app.screen.height / 2}
+      y={app.screen.height / 2 + Math.sin(theta) * 100}
       anchor={0.5}
-      scale={4}
-      rotation={Math.cos(theta) * 0.98}
+      // rotation={Math.cos(theta) * 0.98}
     />
   );
 };

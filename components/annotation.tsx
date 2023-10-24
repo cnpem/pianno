@@ -188,8 +188,7 @@ const Annotation = (props: AnnotationProps) => {
   ]);
 
   return (
-    <Sprite
-      // image="https://pixijs.io/pixi-react/img/bunny.png"
+    <Sprite 
       texture={sprite.texture}
       blendMode={PIXI.BLEND_MODES.OVERLAY}
     />

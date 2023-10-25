@@ -1,32 +1,33 @@
+import type { BrushMode } from '@/lib/types';
+
 import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useStoreActions, useStoreBrushMode } from '@/hooks/use-store';
 import { VariantProps } from 'class-variance-authority';
 import { EraserIcon, GlassesIcon, PenIcon } from 'lucide-react';
 import { FC } from 'react';
 
 import { buttonVariants } from '../ui/button';
-import { useStoreActions, useStoreBrushMode } from '@/hooks/use-store';
-import type { BrushMode } from '@/lib/types';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 interface IToolbar {
-  title: string;
   children: React.ReactNode;
-  variant?: VariantProps<typeof buttonVariants>['variant'];
   disabled?: boolean;
   onClick?: () => void;
+  title: string;
+  variant?: VariantProps<typeof buttonVariants>['variant'];
 }
 
 type Tool = {
-    title: string;
     icon: React.ReactNode;
+    title: string;
     };
 
-const ToolItem = ({ title, icon }: Tool) => {
+const ToolItem = ({ icon, title }: Tool) => {
   return (
     <Label
+      className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border border-input bg-popover hover:bg-accent peer-data-[state=checked]:border-violet-600 peer-data-[state=checked]:bg-violet-400 peer-data-[state=checked]:[&>svg]:fill-violet-500 peer-data-[state=checked]:[&>svg]:stroke-violet-700"
       htmlFor={title}
       title={title}
-      className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border border-input bg-popover hover:bg-accent peer-data-[state=checked]:border-violet-600 peer-data-[state=checked]:bg-violet-400 peer-data-[state=checked]:[&>svg]:fill-violet-500 peer-data-[state=checked]:[&>svg]:stroke-violet-700"
     >
       {icon}
     </Label>
@@ -35,16 +36,16 @@ const ToolItem = ({ title, icon }: Tool) => {
 
 const tools: Tool[] = [
     {
-        title: 'pen',
         icon: <PenIcon className="h-4 w-4" />,
+        title: 'pen',
     },
     {
-        title: 'eraser',
         icon: <EraserIcon className="h-4 w-4" />,
+        title: 'eraser',
     },
     {
-        title: 'lens',
         icon: <GlassesIcon className="h-4 w-4" />,
+        title: 'lens',
     },
     ];
 
@@ -55,18 +56,18 @@ const Tools: FC<ToolsProps> = ({}) => {
     const {setBrushMode} = useStoreActions();
   return (
     <RadioGroup
+          className="flex flex-row gap-1"
           onValueChange={(brush) => setBrushMode(brush as BrushMode)}
           value={brushMode}
-          className="flex flex-row gap-1"
         >
           {tools.map((tool) => (
             <div key={tool.title}>
               <RadioGroupItem
-                value={tool.title}
-                id={tool.title}
                 className="peer sr-only"
+                id={tool.title}
+                value={tool.title}
               />
-              <ToolItem title={tool.title} icon={tool.icon}/>
+              <ToolItem icon={tool.icon} title={tool.title}/>
             </div>
           ))}
         </RadioGroup>

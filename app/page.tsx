@@ -4,8 +4,8 @@ import dynamic from 'next/dynamic';
 const Canvas = dynamic(
   () => import('@/components/canvas').then((m) => m.default),
   {
-    ssr: false,
     loading: () => <Loading />,
+    ssr: false,
   },
 );
 

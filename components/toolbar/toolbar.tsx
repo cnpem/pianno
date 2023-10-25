@@ -1,66 +1,34 @@
 'use client';
 
-import {
-  useStoreActions,
-  useStoreBrushMode,
-  useStoreImg,
-} from '@/hooks/use-store';
+import { useStoreActions, useStoreImg } from '@/hooks/use-store';
 import { useTemporalStore } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
 import { type BrushMode } from '@/lib/types';
 import { type VariantProps } from 'class-variance-authority';
 import {
-  EraserIcon,
   ImageIcon,
   MaximizeIcon,
-  PenIcon,
   RedoIcon,
   RotateCcwIcon,
   UndoIcon,
 } from 'lucide-react';
 
 import { Button, buttonVariants } from '../ui/button';
-import { Label } from '../ui/label';
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import OpenImageDialog from './open';
 import SaveDialog from './save';
 import Tools from './tools';
 
 interface IToolbar {
-  title: string;
   children: React.ReactNode;
-  variant?: VariantProps<typeof buttonVariants>['variant'];
   disabled?: boolean;
   onClick?: () => void;
+  title: string;
+  variant?: VariantProps<typeof buttonVariants>['variant'];
 }
 
-const ToolItem = ({ title, children }: IToolbar) => {
-  return (
-    <Label
-      htmlFor={title}
-      title={title}
-      className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border border-input bg-popover hover:bg-accent peer-data-[state=checked]:border-violet-600 peer-data-[state=checked]:bg-violet-400 peer-data-[state=checked]:[&>svg]:fill-violet-500 peer-data-[state=checked]:[&>svg]:stroke-violet-700"
-    >
-      {children}
-    </Label>
-  );
-};
-
-const tools: IToolbar[] = [
-  {
-    title: 'pen',
-    children: <PenIcon className="h-4 w-4" />,
-  },
-  {
-    title: 'eraser',
-    children: <EraserIcon className="h-4 w-4" />,
-  },
-];
-
 const Toolbar = () => {
-  const brushMode = useStoreBrushMode();
-  const { setBrushMode, recenterViewport, reset } = useStoreActions();
-  const { undo, redo, clear, pastStates, futureStates } = useTemporalStore(
+  const { recenterViewport, reset, setBrushMode } = useStoreActions();
+  const { clear, futureStates, pastStates, redo, undo } = useTemporalStore(
     (state) => state,
   );
   const canUndo = !!pastStates.length;
@@ -71,41 +39,41 @@ const Toolbar = () => {
 
   const actions: IToolbar[] = [
     {
-      title: 'undo',
       children: <UndoIcon className="h-4 w-4" />,
       disabled: !canUndo,
       onClick: () => {
         undo();
       },
+      title: 'undo',
     },
     {
-      title: 'redo',
       children: <RedoIcon className="h-4 w-4" />,
       disabled: !canRedo,
       onClick: () => {
         redo();
       },
+      title: 'redo',
     },
     {
-      title: 'fit-view',
       children: <MaximizeIcon className="h-4 w-4" />,
       onClick: () =>
         recenterViewport(
           img.width ? img.width : width,
           img.height ? img.height : height,
         ),
+      title: 'fit-view',
     },
     {
-      title: 'reset',
       children: (
         <RotateCcwIcon className="h-4 w-4 hover:animate-reverse-spin" />
       ),
-      variant: 'destructive',
       onClick: () => {
         reset();
         clear();
         recenterViewport(width, height);
       },
+      title: 'reset',
+      variant: 'destructive',
     },
   ];
 
@@ -116,19 +84,19 @@ const Toolbar = () => {
   return (
     <>
       <div className="fixed inset-x-0 top-4 z-10 mx-auto flex w-[420px] max-w-2xl flex-row items-center justify-center gap-2 rounded-lg bg-background p-1 opacity-95 shadow-lg">
-        <Tools/>
+        <Tools />
         <span className="flex text-center text-input">|</span>
         <div className="flex flex-row gap-1">
           <OpenImageDialog />
           <SaveDialog />
           {actions.map((action) => (
             <Button
+              disabled={action.disabled}
               key={action.title}
+              onClick={action?.onClick}
+              size={'icon'}
               title={action.title}
               variant={action.variant ?? 'outline'}
-              size={'icon'}
-              disabled={action.disabled}
-              onClick={action?.onClick}
             >
               {action.children}
             </Button>

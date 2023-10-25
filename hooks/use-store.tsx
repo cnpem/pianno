@@ -1,7 +1,8 @@
 'use client';
 
-import { COLORS } from '@/lib/constants';
 import type { Annotation, BrushMode } from '@/lib/types';
+
+import { COLORS } from '@/lib/constants';
 import { type Viewport } from 'pixi-viewport';
 import { type TemporalState, temporal } from 'zundo';
 import { create, useStore as useZustandStore } from 'zustand';
@@ -9,36 +10,36 @@ import { persist } from 'zustand/middleware';
 import { shallow } from 'zustand/shallow';
 
 type Image = {
-  width: number;
   height: number;
   src: string;
+  width: number;
 };
 
 type State = {
-  viewport: Viewport | null;
+  annotation: Annotation[];
   brushMode: BrushMode;
+  brushSize: number;
   colors: string[];
   currentColor: string;
-  brushSize: number;
-  label: string; // dataUrl
   img: Image;
-  annotation: Annotation[];
+  label: string; // dataUrl
+  viewport: Viewport | null;
 };
 
 type Actions = {
-  setViewport: (viewport: Viewport) => void;
-  recenterViewport: (width: number, height: number) => void;
-  setBrushMode: (mode: BrushMode) => void;
-  setColor: (color: string) => void;
-  setBrushSize: (size: number) => void;
-  setImage: (img: Image) => void;
-  setLabel: (label: string) => void;
-  setAnnotation: (annotation: Annotation[]) => void;
   addAnnotation: (annotation: Annotation) => void;
+  recenterViewport: (width: number, height: number) => void;
   removeAnnotation: (position: { x: number; y: number }) => void;
+  reset: () => void;
   resetAnnotation: () => void;
   resetLabel: () => void;
-  reset: () => void;
+  setAnnotation: (annotation: Annotation[]) => void;
+  setBrushMode: (mode: BrushMode) => void;
+  setBrushSize: (size: number) => void;
+  setColor: (color: string) => void;
+  setImage: (img: Image) => void;
+  setLabel: (label: string) => void;
+  setViewport: (viewport: Viewport) => void;
 };
 
 type Store = State & {
@@ -46,18 +47,18 @@ type Store = State & {
 };
 
 const initialState: State = {
-  viewport: null,
+  annotation: [],
   brushMode: 'pen',
-  colors: COLORS,
   brushSize: 10,
+  colors: COLORS,
   currentColor: COLORS[0],
-  label: 'data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=', // 1x1 transparent png
   img: {
-    width: 0,
     height: 0,
     src: '#',
+    width: 0,
   },
-  annotation: [],
+  label: 'data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=', // 1x1 transparent png
+  viewport: null,
 };
 
 const useStore = create<Store>()(
@@ -66,18 +67,6 @@ const useStore = create<Store>()(
       (set, get) => ({
         ...initialState,
         actions: {
-          setViewport: (viewport) => set({ viewport }),
-          recenterViewport: (width, height) => {
-            const viewport = get().viewport;
-            viewport?.moveCenter(width / 2, height / 2);
-            viewport?.fit(true, width, height);
-          },
-          setBrushMode: (brushMode) => set({ brushMode }),
-          setColor: (color) => set({ currentColor: color }),
-          setBrushSize: (brushSize) => set({ brushSize }),
-          setImage: (img) => set({ img }),
-          setLabel: (label) => set({ label }),
-          setAnnotation: (annotation) => set({ annotation }),
           addAnnotation: (annotation) => {
             //check if annotation already exists
             const annotations = get().annotation;
@@ -99,6 +88,11 @@ const useStore = create<Store>()(
               }));
             }
           },
+          recenterViewport: (width, height) => {
+            const viewport = get().viewport;
+            viewport?.moveCenter(width / 2, height / 2);
+            viewport?.fit(true, width, height);
+          },
           removeAnnotation: (position) => {
             const annotations = get().annotation;
             const index = annotations.findIndex(
@@ -119,13 +113,20 @@ const useStore = create<Store>()(
               });
             }
           },
-          resetAnnotation: () => set({ annotation: initialState.annotation }),
-          resetLabel: () => set({ label: initialState.label }),
           reset: () => {
             set(initialState);
             // force reload to reset viewport
             window.location.reload();
           },
+          resetAnnotation: () => set({ annotation: initialState.annotation }),
+          resetLabel: () => set({ label: initialState.label }),
+          setAnnotation: (annotation) => set({ annotation }),
+          setBrushMode: (brushMode) => set({ brushMode }),
+          setBrushSize: (brushSize) => set({ brushSize }),
+          setColor: (color) => set({ currentColor: color }),
+          setImage: (img) => set({ img }),
+          setLabel: (label) => set({ label }),
+          setViewport: (viewport) => set({ viewport }),
         },
       }),
       {
@@ -139,9 +140,9 @@ const useStore = create<Store>()(
       name: 'store',
       partialize: (state) => ({
         brushMode: state.brushMode,
+        brushSize: state.brushSize,
         currentColor: state.currentColor,
         img: state.img,
-        brushSize: state.brushSize,
         label: state.label,
       }),
     },

@@ -45,8 +45,8 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
     });
     // Save the file
     fileSave(fileToSave, {
-      fileName: 'annot.json',
       extensions: ['.json'],
+      fileName: 'annot.json',
     })
       .then(() => {
         setOpen(false);
@@ -77,9 +77,9 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
-        <Button title={'save json'} variant={'outline'} size={'icon'}>
+        <Button size={'icon'} title={'save json'} variant={'outline'}>
           <SaveIcon className="h-4 w-4" />
         </Button>
       </DialogTrigger>
@@ -101,9 +101,9 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
                 <SelectContent>
                   {PIMEGA_DEVICES.map((device) => (
                     <SelectItem
+                      className="cursor-pointer"
                       key={device}
                       value={device}
-                      className="cursor-pointer"
                     >
                       {device}
                     </SelectItem>
@@ -112,19 +112,19 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
               </Select>
               <div className="flex flex-row items-center gap-2">
                 <Label
-                  htmlFor="device-hash"
                   className=" font-semibold text-muted-foreground"
+                  htmlFor="device-hash"
                 >
                   #
                 </Label>
                 <Input
-                  id="device-hash"
-                  name="device-hash"
-                  type="number"
                   className="w-full"
-                  min={1}
+                  id="device-hash"
                   max={5}
+                  min={1}
+                  name="device-hash"
                   required
+                  type="number"
                 />
               </div>
               <Select name="geometry" required>
@@ -134,9 +134,9 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
                 <SelectContent>
                   {PIMEGA_GEOMETRIES.map((geometry) => (
                     <SelectItem
+                      className="cursor-pointer"
                       key={geometry}
                       value={geometry}
-                      className="cursor-pointer"
                     >
                       {geometry}
                     </SelectItem>
@@ -146,25 +146,25 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
             </div>
             <div className="grid grid-cols-4 items-center gap-2">
               <Label
-                htmlFor="distance"
                 className="text-left text-xs font-semibold text-muted-foreground"
+                htmlFor="distance"
               >
                 Distance <span className="font-light">(mm)</span>
               </Label>
               <Input
-                id="distance"
-                name="distance"
-                type="number"
                 className="col-span-3"
+                id="distance"
                 min={0}
+                name="distance"
                 required
+                type="number"
               />
             </div>
           </div>
           <DialogFooter>
             <div className="flex flex-row gap-4">
               {!isCopied ? (
-                <Button variant="outline" type="submit" formAction={copyAction}>
+                <Button formAction={copyAction} type="submit" variant="outline">
                   <CopyIcon className="mr-2 h-4 w-4" />
                   Copy to clipboard
                 </Button>
@@ -174,7 +174,7 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
                   Copied!
                 </Button>
               )}
-              <Button variant="default" type="submit" formAction={saveAction}>
+              <Button formAction={saveAction} type="submit" variant="default">
                 <BracesIcon className="mr-2 h-4 w-4" />
                 Save JSON
               </Button>

@@ -18,18 +18,21 @@ const ColorPicker: FC<ColorPickerProps> = ({}) => {
   return (
     <div className="grid grid-rows-3 gap-2">
       {colors.map((color) => (
-        <div key={color} className="flex flex-col items-center justify-center gap-1">
+        <div
+          className="flex flex-col items-center justify-center gap-1"
+          key={color}
+        >
           <div
-            title={getAnnotationTypeFromColor(color)}
             className={cn(
               color === currentColor && 'border-2',
               'h-4 w-8 cursor-pointer rounded-sm transition-all hover:scale-125',
             )}
-            style={{
-              borderColor: color,
-              backgroundColor: color === currentColor ? 'transparent' : color,
-            }}
             onClick={() => setColor(color)}
+            style={{
+              backgroundColor: color === currentColor ? 'transparent' : color,
+              borderColor: color,
+            }}
+            title={getAnnotationTypeFromColor(color)}
           ></div>
           <p className="text-center text-xs text-muted-foreground">
             {getAnnotationTypeFromColor(color)}

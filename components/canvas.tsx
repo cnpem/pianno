@@ -12,10 +12,10 @@ import * as PIXI from 'pixi.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import Annotation from './annotation';
+import AnnotationBar from './annotation-bar';
 import Brush from './brush';
 import Sidebar from './sidebar';
 import Viewport from './viewport';
-import AnnotationBar from './annotation-bar';
 
 const useIteration = (incr = 0.1) => {
   const [i, setI] = useState(0);
@@ -34,17 +34,17 @@ const Bunny = () => {
 
   return (
     <Sprite
+      anchor={0.5}
       image={src}
       x={app.screen.width / 2}
       y={app.screen.height / 2 + Math.sin(theta) * 100}
-      anchor={0.5}
       // rotation={Math.cos(theta) * 0.98}
     />
   );
 };
 
 const Data = () => {
-  const { src, width, height } = useStoreImg();
+  const { height, src, width } = useStoreImg();
   // recenter viewport when image changes
   const { recenterViewport } = useStoreActions();
   useEffect(() => {
@@ -83,7 +83,7 @@ const CanvasWrapper = ({ setPos }: CanvasWrapperProps) => {
       {img.src !== '#' ? (
         <>
           <Data />
-          <Annotation width={img.width} height={img.height} />
+          <Annotation height={img.height} width={img.width} />
           <Brush />
         </>
       ) : (
@@ -110,14 +110,14 @@ const Canvas = () => {
         </span>
       </div>
       <Sidebar />
-      <AnnotationBar/>
+      <AnnotationBar />
       <Stage
-        width={width}
         height={height}
         options={{
-          eventMode: 'static',
           backgroundAlpha: 0,
+          eventMode: 'static',
         }}
+        width={width}
       >
         <CanvasWrapper setPos={setPos} />
       </Stage>

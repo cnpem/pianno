@@ -44,42 +44,44 @@ const AnnotationBar: FC<AnnotationBarProps> = ({}) => {
   return (
     <Accordion
       className="fixed right-4 top-4 opacity-90"
-      type="single"
       collapsible
+      type="single"
     >
       <AccordionItem value="animalz">
         <AccordionTrigger
-          title="toggle annotation list"
           className="flex items-center justify-center rounded-md bg-white p-2 shadow-lg"
+          title="toggle annotation list"
         >
           <Braces className="mr-1 h-4 w-4" />
           <p className="text-xs font-semibold text-purple-700">Annotations</p>
         </AccordionTrigger>
         <AccordionContent>
           <ScrollArea className="h-[calc(100vh-65px)]">
-            <div ref={parent} className="flex flex-col gap-2 p-4">
+            <div className="flex flex-col gap-2 p-4" ref={parent}>
               {annotations.map((annotation, id) => (
                 <Card
-                  key={annotation?.id}
                   className="flex flex-row items-center gap-2 p-2"
+                  key={annotation?.id}
                 >
                   <input id={annotation?.id} type="checkbox" />
-                  <label htmlFor={annotation?.id}>{`${annotation?.x} ${annotation?.y}`}</label>
+                  <label
+                    htmlFor={annotation?.id}
+                  >{`${annotation?.x} ${annotation?.y}`}</label>
                   <Button
+                    className="h-5 w-5"
+                    disabled={id === 0}
                     onClick={() => moveUp(id)}
                     size="icon"
-                    className="h-5 w-5"
                     variant="ghost"
-                    disabled={id === 0}
                   >
                     <ChevronUp className="h-4 w-4" />
                   </Button>
                   <Button
+                    className="h-5 w-5"
+                    disabled={id === annotations.length - 1}
                     onClick={() => moveDown(id)}
                     size="icon"
-                    className="h-5 w-5"
                     variant="ghost"
-                    disabled={id === annotations.length - 1}
                   >
                     <ChevronDown className="h-4 w-4" />
                   </Button>

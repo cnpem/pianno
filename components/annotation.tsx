@@ -19,11 +19,11 @@ import * as PIXI from 'pixi.js';
 import React, { useEffect, useMemo, useRef } from 'react';
 
 type AnnotationProps = {
-  width: number;
   height: number;
+  width: number;
 };
 
-const useCanvas = ({ width, height }: AnnotationProps) => {
+const useCanvas = ({ height, width }: AnnotationProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   useEffect(() => {
     let canvas = canvasRef.current;
@@ -44,12 +44,12 @@ const useCanvas = ({ width, height }: AnnotationProps) => {
 };
 
 const Annotation = (props: AnnotationProps) => {
-  const canvasRef = useCanvas({ width: props.width, height: props.height });
+  const canvasRef = useCanvas({ height: props.height, width: props.width });
 
   const color = useStoreCurrentColor();
   const label = useStoreLabel();
   const brushMode = useStoreBrushMode();
-  const { setLabel, addAnnotation, removeAnnotation } = useStoreActions();
+  const { addAnnotation, removeAnnotation, setLabel } = useStoreActions();
 
   const canvas = canvasRef.current;
   const context = canvas?.getContext('2d');
@@ -106,11 +106,11 @@ const Annotation = (props: AnnotationProps) => {
       } else if (brushMode === 'pen') {
         context.fillRect(x, y, brushSize, brushSize);
         addAnnotation({
+          distance: -1,
           id: nanoid(),
+          type: getAnnotationTypeFromColor(color),
           x,
           y,
-          type: getAnnotationTypeFromColor(color),
-          distance: -1,
         });
       }
       sprite.texture.update();
@@ -144,11 +144,11 @@ const Annotation = (props: AnnotationProps) => {
           } else if (brushMode === 'pen') {
             context.fillRect(x, y, brushSize, brushSize);
             addAnnotation({
+              distance: -1,
               id: nanoid(),
+              type: getAnnotationTypeFromColor(color),
               x,
               y,
-              type: getAnnotationTypeFromColor(color),
-              distance: -1,
             });
           }
         }
@@ -188,10 +188,7 @@ const Annotation = (props: AnnotationProps) => {
   ]);
 
   return (
-    <Sprite 
-      texture={sprite.texture}
-      blendMode={PIXI.BLEND_MODES.OVERLAY}
-    />
+    <Sprite blendMode={PIXI.BLEND_MODES.OVERLAY} texture={sprite.texture} />
   );
 };
 

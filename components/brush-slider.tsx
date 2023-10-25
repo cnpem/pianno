@@ -16,13 +16,13 @@ const BrushSlider: FC<BrushSliderProps> = ({}) => {
   return (
     <div className="mt-4 flex w-full flex-col gap-2 px-2">
       <Slider
-        title={`${brushMode} size`}
         className="w-full"
-        value={[brushSize]}
-        onValueChange={(value) => setBrushSize(value[0])}
-        step={1}
         max={40}
         min={1}
+        onValueChange={(value) => setBrushSize(value[0])}
+        step={1}
+        title={`${brushMode} size`}
+        value={[brushSize]}
       />
       <span className="text-center text-xs text-slate-400">
         {brushMode} size: {brushSize}

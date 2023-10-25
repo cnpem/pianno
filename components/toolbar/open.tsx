@@ -30,7 +30,7 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
   const { clear } = useTemporalStore((state) => state);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const { setImage, resetLabel } = useStoreActions();
+  const { resetLabel, setImage } = useStoreActions();
 
   function rescaleToUInt8(data: number[]) {
     let max = 0;
@@ -79,8 +79,8 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
   const handleLoadImage = (data: z.infer<typeof openImageSchema>) => {
     if (data.checked) {
       fileOpen({
-        mimeTypes: ['application/octet-stream'],
         extensions: ['.raw', '.b', '.bin'],
+        mimeTypes: ['application/octet-stream'],
       })
         .then((file) => {
           const reader = new FileReader();
@@ -96,9 +96,9 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
               data.height!,
             );
             setImage({
-              width: data.width!,
               height: data.height!,
               src: url!,
+              width: data.width!,
             });
             resetLabel();
             clear();
@@ -110,8 +110,8 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
         });
     } else {
       fileOpen({
-        mimeTypes: ['image/png', 'image/jpeg', 'image/gif'],
         extensions: ['.png', '.jpg', '.jpeg', '.gif'],
+        mimeTypes: ['image/png', 'image/jpeg', 'image/gif'],
       })
         .then((file) => {
           const reader = new FileReader();
@@ -119,9 +119,9 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
             const img = new Image();
             img.onload = () => {
               setImage({
-                width: img.width,
                 height: img.height,
                 src: e.target?.result as string,
+                width: img.width,
               });
               // soft reset on image load
               resetLabel();
@@ -152,9 +152,9 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog onOpenChange={handleOpenChange} open={open}>
       <DialogTrigger asChild>
-        <Button title={'load image'} variant={'outline'} size={'icon'}>
+        <Button size={'icon'} title={'load image'} variant={'outline'}>
           <ImageIcon className="h-4 w-4" />
         </Button>
       </DialogTrigger>
@@ -171,8 +171,8 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
           <div className="flex flex-row items-center gap-2 text-center">
             <span className="font-mono font-semibold">PNG</span>
             <Switch
-              name="checked"
               checked={checked}
+              name="checked"
               onCheckedChange={setChecked}
             />
             <span className="font-mono font-semibold">RAW</span>
@@ -183,19 +183,19 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
               <Label htmlFor="height">Height</Label>
               <Input
                 id="width"
-                name="width"
-                type="number"
-                min={1}
                 max={4096}
+                min={1}
+                name="width"
                 required
+                type="number"
               />
               <Input
                 id="height"
-                name="height"
-                type="number"
-                min={1}
                 max={4096}
+                min={1}
+                name="height"
                 required
+                type="number"
               />
             </div>
           )}

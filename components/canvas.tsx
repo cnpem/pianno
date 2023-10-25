@@ -28,7 +28,7 @@ const useIteration = (incr = 0.1) => {
 };
 
 const Bunny = () => {
-  const theta = useIteration(0.1);
+  const theta = useIteration(0.04);
   const app = useApp();
   const src = '/dino.png';
 
@@ -36,6 +36,7 @@ const Bunny = () => {
     <Sprite
       anchor={0.5}
       image={src}
+      scale={0.4}
       x={app.screen.width / 2}
       y={app.screen.height / 2 + Math.sin(theta) * 100}
       // rotation={Math.cos(theta) * 0.98}

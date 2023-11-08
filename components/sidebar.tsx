@@ -21,14 +21,6 @@ const EraserBar = () => {
   );
 };
 
-const LensBar = () => {
-  return (
-    <div className="fixed inset-y-0 left-1 z-10 my-auto flex h-[50px] flex-col items-center justify-center rounded-lg bg-background opacity-90 shadow-lg">
-      <BrushSlider />
-    </div>
-  );
-};
-
 interface SidebarProps {}
 
 const Sidebar: FC<SidebarProps> = ({}) => {
@@ -38,7 +30,6 @@ const Sidebar: FC<SidebarProps> = ({}) => {
     <>
       {brushMode === 'pen' && <PenBar />}
       {brushMode === 'eraser' && <EraserBar />}
-      {brushMode === 'lens' && <LensBar />}
     </>
   );
 };

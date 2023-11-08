@@ -1,7 +1,9 @@
 import dayjs from 'dayjs';
 import { z } from 'zod';
 
-export type BrushMode = 'eraser' | 'lens' | 'pen';
+import { ANNOTATION_DISTANCE_TYPES } from './constants';
+
+export type BrushMode = 'eraser' | 'pen';
 
 export const openImageSchema = z.object({
   checked: z.nullable(z.string()),
@@ -13,14 +15,30 @@ export const annotationSchema = z.object({
   date: z.string().refine((s) => dayjs(s, 'YYYY-MM-DD HH:mm:ss').isValid()),
   distance: z.coerce.number(),
   geometry: z.string(),
-  image: z.string(),
+  pair_distance: z.array(z.coerce.number()),
+  pair_distance_type: z.array(z.string()),
   pimega_name: z.string().refine((s) => s.startsWith('pi')),
 });
 
+type AnnotationSchema = z.infer<typeof annotationSchema>;
+export type AnnotationData = AnnotationSchema & {
+  pairs: AnnotationGroup;
+};
+
+export type DistanceTypes = typeof ANNOTATION_DISTANCE_TYPES[number];
+
 export type Annotation = {
+  color: string;
   distance: number;
-  id: string;
-  type: 'euclidean' | 'horizontal' | 'vertical';
+  type: DistanceTypes;
   x: number;
   y: number;
+};
+
+export type AnnotationObject = {
+  [key: string]: Annotation;
+};
+
+export type AnnotationGroup = {
+  [key: string]: Annotation[];
 };

@@ -17,7 +17,7 @@ const BrushSlider: FC<BrushSliderProps> = ({}) => {
     <div className="mt-4 flex w-full flex-col gap-2 px-2">
       <Slider
         className="w-full"
-        max={40}
+        max={20}
         min={1}
         onValueChange={(value) => setBrushSize(value[0])}
         step={1}

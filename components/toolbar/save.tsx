@@ -1,6 +1,6 @@
 'use client';
 
-import { exportAnnotation } from '@/app/actions';
+import { exportAnnotation, getAnnotationGroup } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -23,20 +24,33 @@ import {
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { useStoreLabel } from '@/hooks/use-store';
 import { PIMEGA_DEVICES, PIMEGA_GEOMETRIES } from '@/lib/constants';
-import { annotationSchema } from '@/lib/types';
+import { ANNOTATION_DISTANCE_TYPES } from '@/lib/constants';
+import { AnnotationGroup, annotationSchema } from '@/lib/types';
 import { fileSave } from 'browser-fs-access';
 import { BracesIcon, CheckIcon, CopyIcon, SaveIcon } from 'lucide-react';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { z } from 'zod';
 
-interface SaveDialogProps {}
+import { PreviewCanvas } from '../canvas';
 
-const SaveDialog: FC<SaveDialogProps> = ({}) => {
+interface SaveDialogProps {
+  disabled?: boolean;
+}
+
+const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
   const [_, copy] = useCopyToClipboard();
   const [isCopied, setIsCopied] = useState(false);
   const [open, setOpen] = useState(false);
 
   const label = useStoreLabel();
+
+  const [pairs, setPairs] = useState<AnnotationGroup | null>(null);
+
+  useEffect(() => {
+    getAnnotationGroup(label).then((res) => {
+      setPairs(res);
+    });
+  }, [label]);
 
   const handleSaveClick = (data: z.infer<typeof annotationSchema>) => {
     // Create a blob of the data
@@ -49,7 +63,7 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
       fileName: 'annot.json',
     })
       .then(() => {
-        setOpen(false);
+        handleOpenChange(false);
       })
       .catch((err) => {
         console.log(err);
@@ -76,14 +90,26 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
     handleCopyClick(res);
   }
 
+  function handleOpenChange(open: boolean) {
+    setOpen(open);
+    if (!open) {
+      window.location.reload();
+    }
+  }
+
   return (
-    <Dialog onOpenChange={setOpen} open={open}>
+    <Dialog onOpenChange={handleOpenChange} open={open}>
       <DialogTrigger asChild>
-        <Button size={'icon'} title={'save json'} variant={'outline'}>
+        <Button
+          disabled={disabled}
+          size={'icon'}
+          title={'save json'}
+          variant={'outline'}
+        >
           <SaveIcon className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[725px]">
         <DialogHeader>
           <DialogTitle>Save your Annotations</DialogTitle>
           <DialogDescription>
@@ -160,6 +186,63 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
                 type="number"
               />
             </div>
+          </div>
+          <div className="mb-2 flex flex-row items-center gap-2">
+            <div className="border-2 border-red-800">
+              <PreviewCanvas />
+            </div>
+
+            <ScrollArea className="h-[200px] border-2 border-purple-800">
+              <div className="flex flex-col gap-2">
+                {Object.keys(pairs || {}).map((key, index) => (
+                  <div
+                    className={
+                      'flex flex-row items-center gap-2 rounded-md p-2'
+                    }
+                    key={key}
+                  > 
+                  <div className='rounded-md p-2 w-full text-center items-center justify-center' style={{ backgroundColor: key }}>
+                    <p
+                      className= 'text-xs font-semibold text-white'
+                      
+                    >
+                      {index}
+                    </p>
+                  </div>
+                    <Label
+                      className="text-left text-xs font-semibold text-muted-foreground"
+                      htmlFor={'pair-distance'}
+                    >
+                      distance
+                    </Label>
+                    <Input
+                      className="w-full"
+                      id={'pair-distance'}
+                      min={-1}
+                      name={'pair-distance'}
+                      required
+                      type="number"
+                    />
+                    <Select name="pair-distance-type" required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ANNOTATION_DISTANCE_TYPES.map((type) => (
+                          <SelectItem
+                            className="cursor-pointer"
+                            key={type}
+                            value={type}
+                          >
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
           </div>
           <DialogFooter>
             <div className="flex flex-row gap-4">

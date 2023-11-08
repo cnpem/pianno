@@ -72,7 +72,7 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
     }
     context.putImageData(imageData, 0, 0);
     const dataURL = canvas.toDataURL();
-    canvas.remove();
+    // canvas.remove();
     return dataURL;
   };
 
@@ -144,11 +144,16 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
     }
   };
 
-  async function submitAction(data: FormData) {
+  function submitAction(data: FormData) {
     formRef.current?.reset();
-    const res = await openImage(data);
-    handleLoadImage(res);
-    handleOpenChange(false);
+    openImage(data)
+      .then((res) => {
+        handleLoadImage(res);
+        handleOpenChange(false);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   return (

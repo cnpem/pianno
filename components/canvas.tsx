@@ -3,6 +3,8 @@
 import {
   useStoreActions,
   useStoreImg,
+  useStoreLabel,
+  useStoreToggled,
   useStoreViewport,
 } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
@@ -12,8 +14,8 @@ import * as PIXI from 'pixi.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import Annotation from './annotation';
-import AnnotationBar from './annotation-bar';
 import Brush from './brush';
+import Pairs from './pairs';
 import Sidebar from './sidebar';
 import Viewport from './viewport';
 
@@ -61,6 +63,7 @@ type CanvasWrapperProps = {
 
 const CanvasWrapper = ({ setPos }: CanvasWrapperProps) => {
   const img = useStoreImg();
+  const toggled = useStoreToggled();
   const viewport = useStoreViewport();
   const app = useApp();
 
@@ -85,6 +88,7 @@ const CanvasWrapper = ({ setPos }: CanvasWrapperProps) => {
         <>
           <Data />
           <Annotation height={img.height} width={img.width} />
+          {toggled && <Pairs />}
           <Brush />
         </>
       ) : (
@@ -111,7 +115,6 @@ const Canvas = () => {
         </span>
       </div>
       <Sidebar />
-      <AnnotationBar />
       <Stage
         height={height}
         options={{
@@ -123,6 +126,34 @@ const Canvas = () => {
         <CanvasWrapper setPos={setPos} />
       </Stage>
     </div>
+  );
+};
+
+export const PreviewCanvas = () => {
+  const img = useStoreImg();
+  const label = useStoreLabel();
+
+  return (
+    <Stage
+      height={200}
+      options={{
+        backgroundAlpha: 0,
+        eventMode: 'static',
+      }}
+      width={350}
+    >
+      <Viewport>
+        {img.src !== '#' ? (
+          <>
+            <Data />
+            <Sprite image={label} />
+            <Pairs />
+          </>
+        ) : (
+          <Bunny />
+        )}
+      </Viewport>
+    </Stage>
   );
 };
 

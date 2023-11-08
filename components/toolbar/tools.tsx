@@ -3,19 +3,9 @@ import type { BrushMode } from '@/lib/types';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useStoreActions, useStoreBrushMode } from '@/hooks/use-store';
-import { VariantProps } from 'class-variance-authority';
-import { EraserIcon, GlassesIcon, PenIcon } from 'lucide-react';
+import { EraserIcon, PenIcon } from 'lucide-react';
 import { FC } from 'react';
 
-import { buttonVariants } from '../ui/button';
-
-interface IToolbar {
-  children: React.ReactNode;
-  disabled?: boolean;
-  onClick?: () => void;
-  title: string;
-  variant?: VariantProps<typeof buttonVariants>['variant'];
-}
 
 type Tool = {
     icon: React.ReactNode;
@@ -42,10 +32,6 @@ const tools: Tool[] = [
     {
         icon: <EraserIcon className="h-4 w-4" />,
         title: 'eraser',
-    },
-    {
-        icon: <GlassesIcon className="h-4 w-4" />,
-        title: 'lens',
     },
     ];
 

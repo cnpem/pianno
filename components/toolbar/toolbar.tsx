@@ -3,7 +3,6 @@
 import { useStoreActions, useStoreImg } from '@/hooks/use-store';
 import { useTemporalStore } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
-import { type BrushMode } from '@/lib/types';
 import { type VariantProps } from 'class-variance-authority';
 import {
   ImageIcon,
@@ -16,6 +15,7 @@ import {
 import { Button, buttonVariants } from '../ui/button';
 import OpenImageDialog from './open';
 import SaveDialog from './save';
+import TogglePairs from './toggle-pairs';
 import Tools from './tools';
 
 interface IToolbar {
@@ -27,7 +27,7 @@ interface IToolbar {
 }
 
 const Toolbar = () => {
-  const { recenterViewport, reset, setBrushMode } = useStoreActions();
+  const { recenterViewport, reset } = useStoreActions();
   const { clear, futureStates, pastStates, redo, undo } = useTemporalStore(
     (state) => state,
   );
@@ -36,6 +36,7 @@ const Toolbar = () => {
 
   const [width, height] = useWindowSize();
   const img = useStoreImg();
+  const canClick = img.src !== '#';
 
   const actions: IToolbar[] = [
     {
@@ -77,10 +78,6 @@ const Toolbar = () => {
     },
   ];
 
-  const onBrushChange = (brush: BrushMode) => {
-    setBrushMode(brush);
-  };
-
   return (
     <>
       <div className="fixed inset-x-0 top-4 z-10 mx-auto flex w-[420px] max-w-2xl flex-row items-center justify-center gap-2 rounded-lg bg-background p-1 opacity-95 shadow-lg">
@@ -88,7 +85,8 @@ const Toolbar = () => {
         <span className="flex text-center text-input">|</span>
         <div className="flex flex-row gap-1">
           <OpenImageDialog />
-          <SaveDialog />
+          <SaveDialog disabled={!canClick} />
+          <TogglePairs disabled={!canClick} />
           {actions.map((action) => (
             <Button
               disabled={action.disabled}

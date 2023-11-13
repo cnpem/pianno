@@ -51,6 +51,13 @@ export async function exportAnnotation(
   const canvas = createCanvas(1, 1); // Create a canvas (size doesn't matter at this point)
   const ctx = canvas.getContext('2d');
 
+  if (dataurl === 'data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=') {
+    return {
+      ...parsed.data,
+      pairs: annotationGroup,
+    };
+  }
+
   return new Promise((resolve, reject) => {
     loadImage(dataurl)
       .then((img) => {
@@ -122,6 +129,10 @@ export async function getAnnotationGroup(
   const annotationGroup: AnnotationGroup = {};
   const canvas = createCanvas(1, 1); // Create a canvas (size doesn't matter at this point)
   const ctx = canvas.getContext('2d');
+
+  if (dataurl === 'data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=') {
+    return annotationGroup;
+  }
 
   return new Promise((resolve, reject) => {
     loadImage(dataurl)

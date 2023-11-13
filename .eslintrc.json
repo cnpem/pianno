@@ -4,6 +4,7 @@
     "plugin:perfectionist/recommended-natural"
   ],
   "ignorePatterns":[
-    "components/ui/*"
+    "components/ui/*",
+    "docs/*"
   ]
 }

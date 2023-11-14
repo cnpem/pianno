@@ -1,6 +1,4 @@
-module.exports = {
-    plugins: {
-      tailwindcss: {},
-    },
-  }
+export const plugins = {
+  tailwindcss: {},
+};
   

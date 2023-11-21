@@ -22,16 +22,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
-import { useStoreLabel } from '@/hooks/use-store';
+import { useStoreLabel, useStoreViewport } from '@/hooks/use-store';
 import { PIMEGA_DEVICES, PIMEGA_GEOMETRIES } from '@/lib/constants';
 import { ANNOTATION_DISTANCE_TYPES } from '@/lib/constants';
 import { AnnotationGroup, annotationSchema } from '@/lib/types';
 import { fileSave } from 'browser-fs-access';
 import { BracesIcon, CheckIcon, CopyIcon, SaveIcon } from 'lucide-react';
-import { FC, useEffect, useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
+import { FC, useEffect, useReducer, useState } from 'react';
 import { z } from 'zod';
 
 import { PreviewCanvas } from '../canvas';
+import { Toggle } from '../ui/toggle';
 
 interface SaveDialogProps {
   disabled?: boolean;
@@ -41,8 +43,10 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
   const [_, copy] = useCopyToClipboard();
   const [isCopied, setIsCopied] = useState(false);
   const [open, setOpen] = useState(false);
+  const [toggled, toggle] = useReducer((state) => !state, false);
 
   const label = useStoreLabel();
+  const viewport = useStoreViewport();
 
   const [pairs, setPairs] = useState<AnnotationGroup | null>(null);
 
@@ -189,26 +193,31 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
           </div>
           <div className="mb-2 flex flex-row items-center gap-2">
             <div className="border-2 border-red-800">
-              <PreviewCanvas />
+              <PreviewCanvas toggled={toggled}/>
             </div>
 
             <ScrollArea className="h-[200px] border-2 border-purple-800">
               <div className="flex flex-col gap-2">
-                {Object.keys(pairs || {}).map((key, index) => (
+                {Object.entries(pairs || {}).map(([key, value], index) => (
                   <div
                     className={
                       'flex flex-row items-center gap-2 rounded-md p-2'
                     }
                     key={key}
-                  > 
-                  <div className='rounded-md p-2 w-full text-center items-center justify-center' style={{ backgroundColor: key }}>
-                    <p
-                      className= 'text-xs font-semibold text-white'
-                      
+                  >
+                    <Button
+                      onClick={() => {
+                        viewport?.snap(value[0].x, value[0].y,{
+                          removeOnComplete: true,
+                        });
+                        viewport?.setZoom(2);
+                      }}
+                      style={{ backgroundColor: key }}
+                      type="button"
+                      variant={'default'}
                     >
                       {index}
-                    </p>
-                  </div>
+                    </Button>
                     <Label
                       className="text-left text-xs font-semibold text-muted-foreground"
                       htmlFor={'pair-distance'}
@@ -246,6 +255,13 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
           </div>
           <DialogFooter>
             <div className="flex flex-row gap-4">
+            <Toggle
+      aria-label="toggle pairs"
+      onPressedChange={toggle}
+      pressed={toggled}
+    >
+      {toggled ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+    </Toggle>
               {!isCopied ? (
                 <Button formAction={copyAction} type="submit" variant="outline">
                   <CopyIcon className="mr-2 h-4 w-4" />

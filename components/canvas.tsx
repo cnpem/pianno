@@ -129,7 +129,7 @@ const Canvas = () => {
   );
 };
 
-export const PreviewCanvas = () => {
+export const PreviewCanvas = ({ toggled }: { toggled: boolean }) => {
   const img = useStoreImg();
   const label = useStoreLabel();
 
@@ -147,7 +147,7 @@ export const PreviewCanvas = () => {
           <>
             <Data />
             <Sprite image={label} />
-            <Pairs />
+            {toggled && <Pairs />}
           </>
         ) : (
           <Bunny />

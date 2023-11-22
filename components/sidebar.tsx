@@ -8,7 +8,6 @@ const PenBar = () => {
   return (
     <div className="fixed inset-y-0 left-1 z-10 my-auto flex h-[200px] flex-col items-center justify-center rounded-lg bg-background opacity-90 shadow-lg">
       <ColorPicker />
-      <BrushSlider />
     </div>
   );
 };

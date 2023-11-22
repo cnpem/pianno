@@ -9,4 +9,6 @@ services:
     working_dir: /app
     ports:
       - '3000:3000'
+    environment:
+      - HOSTNAME=localhost
     image: pianno

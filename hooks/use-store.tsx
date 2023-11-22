@@ -45,7 +45,7 @@ type Store = State & {
 
 const initialState: State = {
   brushMode: 'pen',
-  brushSize: 10,
+  brushSize: 1,
   colors: COLORS,
   currentColor: COLORS[0],
   img: {

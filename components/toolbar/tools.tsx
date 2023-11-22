@@ -6,11 +6,10 @@ import { useStoreActions, useStoreBrushMode } from '@/hooks/use-store';
 import { EraserIcon, PenIcon } from 'lucide-react';
 import { FC } from 'react';
 
-
 type Tool = {
-    icon: React.ReactNode;
-    title: string;
-    };
+  icon: React.ReactNode;
+  title: string;
+};
 
 const ToolItem = ({ icon, title }: Tool) => {
   return (
@@ -25,38 +24,45 @@ const ToolItem = ({ icon, title }: Tool) => {
 };
 
 const tools: Tool[] = [
-    {
-        icon: <PenIcon className="h-4 w-4" />,
-        title: 'pen',
-    },
-    {
-        icon: <EraserIcon className="h-4 w-4" />,
-        title: 'eraser',
-    },
-    ];
+  {
+    icon: <PenIcon className="h-4 w-4" />,
+    title: 'pen',
+  },
+  {
+    icon: <EraserIcon className="h-4 w-4" />,
+    title: 'eraser',
+  },
+];
 
 interface ToolsProps {}
 
 const Tools: FC<ToolsProps> = ({}) => {
-    const brushMode = useStoreBrushMode();
-    const {setBrushMode} = useStoreActions();
+  const brushMode = useStoreBrushMode();
+  const { setBrushMode, setBrushSize } = useStoreActions();
   return (
     <RadioGroup
-          className="flex flex-row gap-1"
-          onValueChange={(brush) => setBrushMode(brush as BrushMode)}
-          value={brushMode}
-        >
-          {tools.map((tool) => (
-            <div key={tool.title}>
-              <RadioGroupItem
-                className="peer sr-only"
-                id={tool.title}
-                value={tool.title}
-              />
-              <ToolItem icon={tool.icon} title={tool.title}/>
-            </div>
-          ))}
-        </RadioGroup>
+      className="flex flex-row gap-1"
+      onValueChange={(brush) => {
+        if (brush === 'pen') {
+          setBrushSize(1);
+        } else if (brush === 'eraser') {
+          setBrushSize(10);
+        }
+        setBrushMode(brush as BrushMode);
+      }}
+      value={brushMode}
+    >
+      {tools.map((tool) => (
+        <div key={tool.title}>
+          <RadioGroupItem
+            className="peer sr-only"
+            id={tool.title}
+            value={tool.title}
+          />
+          <ToolItem icon={tool.icon} title={tool.title} />
+        </div>
+      ))}
+    </RadioGroup>
   );
 };
 

@@ -9,7 +9,6 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Pianno',
-      favicon: './src/assets/favicon.svg',
       logo: {
         light: './src/assets/logo-semibold.svg',
         dark: './src/assets/logo-semibold-dark.svg',

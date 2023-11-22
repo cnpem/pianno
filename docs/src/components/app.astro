@@ -1,0 +1,11 @@
+---
+import type { Props } from '@astrojs/starlight/props';
+import { Icon } from '@astrojs/starlight/components';
+
+import Default from '@astrojs/starlight/components/SocialIcons.astro';
+---
+
+<a title='pianno app' href="ssc-pianno.vercel.app">
+    <img alt='pianno app' class='hover:opacity-75 mt-2 w-5 h-5' src='./src/assets/favicon.svg'>
+</a>
+<Default {...Astro.props}><slot /></Default>

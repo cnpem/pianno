@@ -8,9 +8,17 @@ export default defineConfig({
   base: '/pianno',
   integrations: [
     starlight({
-      title: 'Docs with Tailwind',
+      title: 'Pianno',
+      favicon: './src/assets/favicon.svg',
+      logo: {
+        light: './src/assets/logo-semibold.svg',
+        dark: './src/assets/logo-semibold-dark.svg',
+      },
+      components: {
+        SocialIcons: './src/components/app.astro',
+      },
       social: {
-        github: 'https://github.com/withastro/starlight',
+        github: 'https://github.com/matyson/pianno',
       },
       sidebar: [
         {

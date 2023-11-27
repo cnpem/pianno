@@ -69,3 +69,18 @@ export const dataURItoBlob = (dataURI: string) => {
   var blob = new Blob([ab], { type: mimeString });
   return blob;
 };
+
+export const generateCustomColors = (length: number) => {
+  const colorStep = Math.floor(200 / length);
+  const intensity = Array.from({ length }, (_, i) => 55 + (i * colorStep));
+  const colors = {
+    blues: intensity.map((i) => rgbToHex(0, 0, i)),
+    greens: intensity.map((i) => rgbToHex(0, i, 0)),
+    reds: intensity.map((i) => rgbToHex(i, 0, 0)),
+  };
+  return {
+    colorStep,
+    colors,
+    length: intensity.length
+  }
+}

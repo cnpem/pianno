@@ -2,12 +2,18 @@
 
 import type { BrushMode } from '@/lib/types';
 
-import { COLORS } from '@/lib/constants';
+import { VIRIDIS_COLORS } from '@/lib/constants';
 import { type Viewport } from 'pixi-viewport';
 import { type TemporalState, temporal } from 'zundo';
 import { create, useStore as useZustandStore } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { shallow } from 'zustand/shallow';
+
+const annotationColorPallete = {
+  euclideanColors: VIRIDIS_COLORS.purples,
+  horizontalColors: VIRIDIS_COLORS.teals,
+  verticalColors: VIRIDIS_COLORS.yellows,
+};
 
 type Image = {
   height: number;
@@ -18,7 +24,7 @@ type Image = {
 type State = {
   brushMode: BrushMode;
   brushSize: number;
-  colors: string[];
+  colors: typeof annotationColorPallete;
   currentColor: string;
   img: Image;
   label: string; // dataUrl
@@ -35,6 +41,7 @@ type Actions = {
   setColor: (color: string) => void;
   setImage: (img: Image) => void;
   setLabel: (label: string) => void;
+  setNewColor: (color: string, colorLabel: keyof typeof annotationColorPallete) => void;
   setViewport: (viewport: Viewport) => void;
   toggle: () => void;
 };
@@ -46,8 +53,8 @@ type Store = State & {
 const initialState: State = {
   brushMode: 'pen',
   brushSize: 1,
-  colors: COLORS,
-  currentColor: COLORS[0],
+  colors: annotationColorPallete,
+  currentColor: annotationColorPallete.verticalColors[0],
   img: {
     height: 0,
     src: '#',
@@ -81,6 +88,21 @@ const useStore = create<Store>()(
           setColor: (color) => set({ currentColor: color }),
           setImage: (img) => set({ img }),
           setLabel: (label) => set({ label }),
+          setNewColor: (color, colorLabel) => {
+            const colors = get().colors;
+            // check if the color already exists in one of the color arrays
+            const colorExists = Object.values(colors).some((colorArr) =>
+              colorArr.includes(color),
+            );
+            // if it does, don't add it
+            if (colorExists) return;
+            const newColors = {
+              ...colors,
+              [colorLabel]: [...colors[colorLabel], color],
+            };
+            set({ colors: newColors });
+            set({ currentColor: color });
+          },
           setViewport: (viewport) => set({ viewport }),
           toggle: () => set((state) => ({ toggled: !state.toggled })),
         },

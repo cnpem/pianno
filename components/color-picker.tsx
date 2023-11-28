@@ -8,6 +8,7 @@ import {
 import { cn } from '@/lib/utils';
 import { MoveDiagonal, MoveHorizontal, MoveVertical } from 'lucide-react';
 import { FC } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 
 import { buttonVariants } from './ui/button';
 import { Input } from './ui/input';
@@ -20,6 +21,9 @@ const ColorPicker: FC<ColorPickerProps> = ({}) => {
     useStoreColors();
   const currentColor = useStoreCurrentColor();
   const { setColor, setNewColor } = useStoreActions();
+  const debounced: typeof setNewColor = useDebouncedCallback((value, type) => {
+    setNewColor(value, type);
+  }, 300);
 
   return (
     <div className="grid grid-cols-3 gap-1 p-2">
@@ -33,7 +37,7 @@ const ColorPicker: FC<ColorPickerProps> = ({}) => {
         <Input
           className="sr-only"
           defaultValue={verticalColors.slice(-1)}
-          onChange={(e) => setNewColor(e.target.value, 'verticalColors')}
+          onChange={(e) => debounced(e.target.value, 'verticalColors')}
           type="color"
         />
       </Label>
@@ -47,7 +51,7 @@ const ColorPicker: FC<ColorPickerProps> = ({}) => {
         <Input
           className="sr-only"
           defaultValue={horizontalColors.slice(-1)}
-          onChange={(e) => setNewColor(e.target.value, 'horizontalColors')}
+          onChange={(e) => debounced(e.target.value, 'horizontalColors')}
           type="color"
         />
       </Label>
@@ -61,7 +65,7 @@ const ColorPicker: FC<ColorPickerProps> = ({}) => {
         <Input
           className="sr-only"
           defaultValue={euclideanColors.slice(-1)}
-          onChange={(e) => setNewColor(e.target.value, 'euclideanColors')}
+          onChange={(e) => debounced(e.target.value, 'euclideanColors')}
           type="color"
         />
       </Label>

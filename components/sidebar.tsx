@@ -6,7 +6,7 @@ import ColorPicker from './color-picker';
 
 const PenBar = () => {
   return (
-    <div className="fixed h-fit z-10 inset-y-0 left-1 my-auto grow w-20 items-center justify-center rounded-lg bg-background opacity-90 shadow-lg">
+    <div className="fixed inset-y-0 left-1 z-10 my-auto h-fit items-center rounded-lg bg-background opacity-90 shadow-lg">
       <ColorPicker />
     </div>
   );
@@ -14,7 +14,7 @@ const PenBar = () => {
 
 const EraserBar = () => {
   return (
-    <div className="inset-y-0 left-1 z-10 my-auto flex items-center justify-center rounded-lg bg-background opacity-90 shadow-lg">
+    <div className="fixed inset-y-0 left-1 z-10 my-auto h-fit items-center rounded-lg bg-background opacity-90 shadow-lg">
       <BrushSlider />
     </div>
   );

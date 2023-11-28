@@ -22,19 +22,50 @@ const ColorPicker: FC<ColorPickerProps> = ({}) => {
   const { setColor, setNewColor } = useStoreActions();
 
   return (
-    <div className="grid grid-cols-3 p-2">
-      <div className="col-span-1" id="vertical-pallete">
-        {/* vertical input */}
-        <Label className='cursor-pointer'>
-          <MoveVertical size={16} />
-          <Input
-            className="h-0 w-0 collapse"
-            defaultValue={verticalColors.slice(-1)}
-            onChange={(e) => setNewColor(e.target.value, 'verticalColors')}
-            type="color"
-          />
-        </Label>
-        {/* vertical pallete */}
+    <div className="grid grid-cols-3 gap-1 p-2">
+      <Label
+        className={cn(
+          buttonVariants({ size: 'icon', variant: 'outline' }),
+          'h-6 w-6 cursor-pointer',
+        )}
+      >
+        <MoveVertical className="h-4 w-4" />
+        <Input
+          className="sr-only"
+          defaultValue={verticalColors.slice(-1)}
+          onChange={(e) => setNewColor(e.target.value, 'verticalColors')}
+          type="color"
+        />
+      </Label>
+      <Label
+        className={cn(
+          buttonVariants({ size: 'icon', variant: 'outline' }),
+          'h-6 w-6 cursor-pointer',
+        )}
+      >
+        <MoveHorizontal size={16} />
+        <Input
+          className="sr-only"
+          defaultValue={horizontalColors.slice(-1)}
+          onChange={(e) => setNewColor(e.target.value, 'horizontalColors')}
+          type="color"
+        />
+      </Label>
+      <Label
+        className={cn(
+          buttonVariants({ size: 'icon', variant: 'outline' }),
+          'h-6 w-6 cursor-pointer',
+        )}
+      >
+        <MoveDiagonal size={16} />
+        <Input
+          className="sr-only"
+          defaultValue={euclideanColors.slice(-1)}
+          onChange={(e) => setNewColor(e.target.value, 'euclideanColors')}
+          type="color"
+        />
+      </Label>
+      <div className="col-span-1 ml-1" id="vertical-pallete">
         <div className="space-y-1">
           {verticalColors.map((color) => (
             <div
@@ -53,18 +84,7 @@ const ColorPicker: FC<ColorPickerProps> = ({}) => {
           ))}
         </div>
       </div>
-      <div className="col-span-1" id="horizontal-pallete">
-        {/* horizontal input */}
-        <Label className='cursor-pointer'>
-          <MoveHorizontal size={16} />
-          <Input
-            className="h-0 w-0 invisible"
-            defaultValue={horizontalColors.slice(-1)}
-            onChange={(e) => setNewColor(e.target.value, 'horizontalColors')}
-            type="color"
-          />
-        </Label>
-        {/* horizontal pallete */}
+      <div className="col-span-1 ml-1" id="horizontal-pallete">
         <div className="space-y-1">
           {horizontalColors.map((color) => (
             <div
@@ -83,18 +103,7 @@ const ColorPicker: FC<ColorPickerProps> = ({}) => {
           ))}
         </div>
       </div>
-      <div className="col-span-1" id="euclidean-pallete">
-        {/* euclidean input */}
-        <Label className='cursor-pointer'>
-          <MoveDiagonal size={16} />
-          <Input
-            className="h-0 w-0 invisible"
-            defaultValue={euclideanColors.slice(-1)}
-            onChange={(e) => setNewColor(e.target.value, 'euclideanColors')}
-            type="color"
-          />
-        </Label>
-        {/* euclidean pallete */}
+      <div className="col-span-1 ml-1" id="euclidean-pallete">
         <div className="space-y-1">
           {euclideanColors.map((color) => (
             <div

@@ -119,6 +119,7 @@ const useStore = create<Store>()(
       partialize: (state) => ({
         brushMode: state.brushMode,
         brushSize: state.brushSize,
+        colors: state.colors,
         currentColor: state.currentColor,
         img: state.img,
         label: state.label,

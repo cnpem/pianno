@@ -30,6 +30,7 @@ import { fileSave } from 'browser-fs-access';
 import { BracesIcon, CheckIcon, CopyIcon, SaveIcon } from 'lucide-react';
 import { Eye, EyeOff } from 'lucide-react';
 import { FC, useEffect, useReducer, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { z } from 'zod';
 
 import { PreviewCanvas } from '../canvas';
@@ -55,6 +56,10 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
       setPairs(res);
     });
   }, [label]);
+
+  useHotkeys(['4'], () => {
+    if(!disabled) setOpen(true);
+  });
 
   const handleSaveClick = (data: z.infer<typeof annotationSchema>) => {
     // Create a blob of the data
@@ -105,11 +110,15 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
     <Dialog onOpenChange={handleOpenChange} open={open}>
       <DialogTrigger asChild>
         <Button
+          className="group relative"
           disabled={disabled}
           size={'icon'}
-          title={'save json'}
+          title={'save json -- 4'}
           variant={'outline'}
         >
+          <p className="absolute right-1 top-0 text-xs text-input group-hover:text-accent-foreground">
+                4
+              </p>
           <SaveIcon className="h-4 w-4" />
         </Button>
       </DialogTrigger>

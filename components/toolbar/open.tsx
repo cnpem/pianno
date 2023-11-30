@@ -20,6 +20,7 @@ import { openImageSchema } from '@/lib/types';
 import { fileOpen } from 'browser-fs-access';
 import { ImageIcon } from 'lucide-react';
 import { FC, useRef, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { z } from 'zod';
 
 interface OpenImageDialogProps {}
@@ -31,6 +32,10 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
   const formRef = useRef<HTMLFormElement>(null);
 
   const { resetLabel, setImage } = useStoreActions();
+
+  useHotkeys(['3'], () => {
+    setOpen(true);
+  });
 
   function rescaleToUInt8(data: number[]) {
     let max = 0;
@@ -159,7 +164,15 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
   return (
     <Dialog onOpenChange={handleOpenChange} open={open}>
       <DialogTrigger asChild>
-        <Button size={'icon'} title={'load image'} variant={'outline'}>
+        <Button
+          className="group relative"
+          size={'icon'}
+          title={'load image -- 3'}
+          variant={'outline'}
+        >
+          <p className="absolute right-1 top-0 text-xs text-input group-hover:text-accent-foreground">
+            3
+          </p>
           <ImageIcon className="h-4 w-4" />
         </Button>
       </DialogTrigger>

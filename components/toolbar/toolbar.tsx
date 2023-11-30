@@ -11,16 +11,17 @@ import {
   RotateCcwIcon,
   UndoIcon,
 } from 'lucide-react';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 import { Button, buttonVariants } from '../ui/button';
 import OpenImageDialog from './open';
 import SaveDialog from './save';
 import TogglePairs from './toggle-pairs';
 import Tools from './tools';
-
 interface IToolbar {
   children: React.ReactNode;
   disabled?: boolean;
+  hotkey?: string;
   onClick?: () => void;
   title: string;
   variant?: VariantProps<typeof buttonVariants>['variant'];
@@ -38,31 +39,47 @@ const Toolbar = () => {
   const img = useStoreImg();
   const canClick = img.src !== '#';
 
+  useHotkeys(['6', 'ctrl+z'], () => {
+    if (canUndo) undo();
+  });
+  useHotkeys(['7', 'ctrl+y'], () => {
+    if (canRedo) redo();
+  });
+  useHotkeys(['8'], () => {
+    recenterViewport(
+      img.width ? img.width : width,
+      img.height ? img.height : height,
+    );
+  });
+
   const actions: IToolbar[] = [
     {
       children: <UndoIcon className="h-4 w-4" />,
       disabled: !canUndo,
+      hotkey: '6',
       onClick: () => {
         undo();
       },
-      title: 'undo',
+      title: 'undo -- 6 or ctrl+z',
     },
     {
       children: <RedoIcon className="h-4 w-4" />,
       disabled: !canRedo,
+      hotkey: '7',
       onClick: () => {
         redo();
       },
-      title: 'redo',
+      title: 'redo -- 7 or ctrl+y',
     },
     {
       children: <MaximizeIcon className="h-4 w-4" />,
+      hotkey: '8',
       onClick: () =>
         recenterViewport(
           img.width ? img.width : width,
           img.height ? img.height : height,
         ),
-      title: 'fit-view',
+      title: 'fit-view -- 8',
     },
     {
       children: (
@@ -80,7 +97,7 @@ const Toolbar = () => {
 
   return (
     <>
-      <div className="fixed inset-x-0 top-4 z-10 mx-auto flex w-[420px] max-w-2xl flex-row items-center justify-center gap-2 rounded-lg bg-background p-1 opacity-95 shadow-lg">
+      <div className="fixed inset-x-0 top-4 z-10 mx-auto flex w-fit flex-row items-center justify-center gap-2 rounded-lg bg-background p-1 opacity-95 shadow-lg">
         <Tools />
         <span className="flex text-center text-input">|</span>
         <div className="flex flex-row gap-1">
@@ -89,6 +106,7 @@ const Toolbar = () => {
           <TogglePairs disabled={!canClick} />
           {actions.map((action) => (
             <Button
+              className="group relative"
               disabled={action.disabled}
               key={action.title}
               onClick={action?.onClick}
@@ -96,6 +114,9 @@ const Toolbar = () => {
               title={action.title}
               variant={action.variant ?? 'outline'}
             >
+              <p className="absolute right-1 top-0 text-xs text-input group-hover:text-accent-foreground">
+                {action.hotkey}
+              </p>
               {action.children}
             </Button>
           ))}

@@ -5,6 +5,7 @@
   ],
   "ignorePatterns":[
     "components/ui/*",
-    "docs/*"
+    "docs/*",
+    "tailwind.config.ts"
   ]
 }

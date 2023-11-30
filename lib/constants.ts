@@ -8,6 +8,8 @@ export const ANNOTATION_DISTANCE_TYPES = [
   'vertical',
 ];
 
+export const RAW_DATA_TYPES = ['float32', 'float64', 'int32'];
+
 // 16 colors
 // which are not too similar to each other
 // export const COLORS = [

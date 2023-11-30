@@ -7,6 +7,7 @@ export type BrushMode = 'eraser' | 'pen';
 
 export const openImageSchema = z.object({
   checked: z.nullable(z.string()),
+  dtype: z.nullable(z.enum(['float32', 'float64', 'int32'])),
   height: z.nullable(z.coerce.number()),
   width: z.nullable(z.coerce.number()),
 });
@@ -25,7 +26,7 @@ export type AnnotationData = AnnotationSchema & {
   pairs: AnnotationGroup;
 };
 
-export type DistanceTypes = typeof ANNOTATION_DISTANCE_TYPES[number];
+export type DistanceTypes = (typeof ANNOTATION_DISTANCE_TYPES)[number];
 
 export type Annotation = {
   color: string;

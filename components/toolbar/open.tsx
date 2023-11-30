@@ -16,12 +16,21 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useTemporalStore } from '@/hooks/use-store';
 import { useStoreActions } from '@/hooks/use-store';
+import { RAW_DATA_TYPES } from '@/lib/constants';
 import { openImageSchema } from '@/lib/types';
 import { fileOpen } from 'browser-fs-access';
 import { ImageIcon } from 'lucide-react';
 import { FC, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { z } from 'zod';
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 
 interface OpenImageDialogProps {}
 
@@ -91,9 +100,22 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
           const reader = new FileReader();
           reader.onload = (e) => {
             const arrayBuffer = e.target?.result as ArrayBuffer;
-            // TODO: should include dtype?
-            const floatArr = new Float64Array(arrayBuffer);
-            const arr = Array.from(floatArr);
+            let typedArray;
+            switch (data.dtype) {
+              case 'float64':
+                typedArray = Float64Array;
+                break;
+              case 'float32':
+                typedArray = Float32Array;
+                break;
+              case 'int32':
+                typedArray = Int32Array;
+                break;
+              default:
+                typedArray = Float64Array;
+                break;
+            }
+            const arr = Array.from(new typedArray(arrayBuffer));
             const uint8Array = rescaleToUInt8(arr);
             const url = convertArraytoDataURL(
               uint8Array,
@@ -196,9 +218,10 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
             <span className="font-mono font-semibold">RAW</span>
           </div>
           {checked && (
-            <div className="mt-4 grid grid-cols-2 gap-2">
+            <div className="mt-4 grid grid-cols-3 gap-2">
               <Label htmlFor="width">Width</Label>
               <Label htmlFor="height">Height</Label>
+              <Label htmlFor="dtype">Data type</Label>
               <Input
                 id="width"
                 max={4096}
@@ -215,6 +238,22 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
                 required
                 type="number"
               />
+              <Select name="dtype" required>
+                <SelectTrigger id="dtype">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {RAW_DATA_TYPES.map((dtype) => (
+                    <SelectItem
+                      className="cursor-pointer"
+                      key={dtype}
+                      value={dtype}
+                    >
+                      {dtype}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           )}
           <DialogFooter className="mt-4">

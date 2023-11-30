@@ -8,7 +8,15 @@ import {
   useStoreViewport,
 } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
-import { Sprite, Stage, useApp, useTick } from '@pixi/react';
+import { ColorMapFilter } from '@pixi/filter-color-map';
+import {
+  Container,
+  Sprite,
+  Stage,
+  useApp,
+  useTick,
+  withFilters,
+} from '@pixi/react';
 import throttle from 'lodash.throttle';
 import * as PIXI from 'pixi.js';
 import { useCallback, useEffect, useState } from 'react';
@@ -28,6 +36,10 @@ const useIteration = (incr = 0.1) => {
 
   return i;
 };
+
+const Filters = withFilters(Container, {
+  colormap: ColorMapFilter,
+});
 
 const Bunny = () => {
   const theta = useIteration(0.04);
@@ -54,7 +66,16 @@ const Data = () => {
     recenterViewport(width, height);
   }, [width, height, recenterViewport]);
 
-  return <Sprite image={src} />;
+  return (
+    <Filters
+      colormap={{
+        colorMap: PIXI.Texture.from('/cmaps/gray_colormap.png'),
+        nearest: true,
+      }}
+    >
+      <Sprite image={src} />
+    </Filters>
+  );
 };
 
 type CanvasWrapperProps = {

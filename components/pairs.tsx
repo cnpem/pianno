@@ -1,7 +1,6 @@
 import { getAnnotationGroup } from '@/app/actions';
 import { useStoreColors, useStoreImg, useStoreLabel } from '@/hooks/use-store';
 import { AnnotationGroup } from '@/lib/types';
-import { hexToRgb } from '@/lib/utils';
 import { Graphics } from '@pixi/react';
 import * as PIXI from 'pixi.js';
 import { FC, useCallback, useEffect, useState } from 'react';
@@ -10,86 +9,214 @@ interface PairsProps {}
 
 type annotationMarkerProps = {
   color: string;
-  direction: 'circle' | 'pointing-down' | 'pointing-left' | 'pointing-right' | 'pointing-up';
   graphics: PIXI.Graphics;
   radius: number;
+  shape:
+    | 'alert'
+    | 'circle'
+    | 'pointing-down'
+    | 'pointing-left'
+    | 'pointing-right'
+    | 'pointing-up'
+    | 'ring';
   x: number;
   y: number;
 };
 const annotationMarker = (props: annotationMarkerProps) => {
-  const { color, direction, graphics, radius, x, y } = props;
-  console.log('color', color, hexToRgb(color));
-  graphics.beginFill(color);
-  switch (direction) {
+  const { color, graphics, radius, shape, x, y } = props;
+  switch (shape) {
     case 'pointing-right':
-      graphics.drawPolygon([x, y, x - radius/2 - radius, y - radius*1.73/2, x - radius/2 - radius, y + radius*1.73/2]);
+      graphics.lineStyle(radius / 4, color, 1);
+      graphics.beginFill(color);
+      graphics.drawPolygon([
+        x,
+        y,
+        x - radius / 2 - radius,
+        y - (radius * 1.73) / 2,
+        x - radius / 2 - radius,
+        y + (radius * 1.73) / 2,
+      ]);
+      graphics.endFill();
       break;
     case 'pointing-left':
-      graphics.drawPolygon([x, y, x + radius/2 + radius, y - radius*1.73/2, x + radius/2 + radius, y + radius*1.73/2]);
-      break;
-    case 'pointing-up':
-      graphics.drawPolygon([x, y, x - radius*1.73/2, y - radius/2 - radius, x + radius*1.73/2, y - radius/2 - radius]);
+      graphics.lineStyle(radius / 4, color, 1);
+      graphics.beginFill(color);
+      graphics.drawPolygon([
+        x,
+        y,
+        x + radius / 2 + radius,
+        y - (radius * 1.73) / 2,
+        x + radius / 2 + radius,
+        y + (radius * 1.73) / 2,
+      ]);
+      graphics.endFill();
       break;
     case 'pointing-down':
-      graphics.drawPolygon([x, y, x - radius*1.73/2, y + radius/2 + radius, x + radius*1.73/2, y + radius/2 + radius]);
+      graphics.lineStyle(radius / 4, color, 1);
+      graphics.beginFill(color);
+      graphics.drawPolygon([
+        x,
+        y,
+        x - (radius * 1.73) / 2,
+        y - radius / 2 - radius,
+        x + (radius * 1.73) / 2,
+        y - radius / 2 - radius,
+      ]);
+      graphics.endFill();
+      break;
+    case 'pointing-up':
+      graphics.lineStyle(radius / 4, color, 1);
+      graphics.beginFill(color);
+      graphics.drawPolygon([
+        x,
+        y,
+        x - (radius * 1.73) / 2,
+        y + radius / 2 + radius,
+        x + (radius * 1.73) / 2,
+        y + radius / 2 + radius,
+      ]);
+      graphics.endFill();
       break;
     case 'circle':
+      graphics.lineStyle(radius / 4, color, 1);
+      graphics.beginFill(color);
+      graphics.drawCircle(x, y, radius);
+      graphics.endFill();
+      break;
+    case 'ring':
+      graphics.lineStyle(radius / 4, color, 1);
       graphics.drawCircle(x, y, radius);
       break;
+    case 'alert':
+      // draw an x marker over the point
+      graphics.lineStyle(radius / 1.44, color, 1);
+      graphics.moveTo(x - radius, y - radius);
+      graphics.lineTo(x + radius, y + radius);
+      graphics.moveTo(x - radius, y + radius);
+      graphics.lineTo(x + radius, y - radius);
+      break;
   }
-  graphics.endFill();
   return graphics;
 };
 
 const Pairs: FC<PairsProps> = ({}) => {
   const label = useStoreLabel();
-  const [pairs, setPairs] = useState<AnnotationGroup | null>(null);
-  const img = useStoreImg(); 
+  const [annotationPoints, setAnnotationPoints] =
+    useState<AnnotationGroup | null>(null);
+  const img = useStoreImg();
   const colors = useStoreColors();
 
   useEffect(() => {
-      getAnnotationGroup(label).then((data) => {
-        if (!data) return;
-        setPairs(data);
-      });
+    getAnnotationGroup(label).then((data) => {
+      if (!data) return;
+      setAnnotationPoints(data);
+    });
   }, [label]);
 
   const draw = useCallback(
     (g: PIXI.Graphics) => {
       g.clear();
-      if (pairs) {
-        const { height, width } = img; 
-        Object.values(pairs).forEach((pair, index) => {
-          if (pair.length < 2) return;
-          const pairColor = pair[0].color;
-          // line style for the pair
-          g.lineStyle(Math.max(height, width) * 0.002, pairColor, 1);
+      if (annotationPoints) {
+        const { height, width } = img;
+        Object.values(annotationPoints).forEach((labelPoints, _) => {
+          if (!labelPoints) return;
+          const [a, b, ...outliers] = labelPoints;
+          const color = a.color;
           const markerRadius = Math.max(height, width) * 0.01;
-          if (colors.verticalColors.includes(pairColor)) {
+          if (!b) {
+            // marking single point
+            annotationMarker({
+              color,
+              graphics: g,
+              radius: markerRadius,
+              shape: 'ring',
+              x: a.x,
+              y: a.y,
+            });
+            return;
+          }
+          if (!!outliers.length) {
+            // marking outliers
+            outliers.forEach((outlier) => {
+              annotationMarker({
+                color,
+                graphics: g,
+                radius: markerRadius,
+                shape: 'alert',
+                x: outlier.x,
+                y: outlier.y,
+              });
+            });
+          }
+          if (colors.verticalColors.includes(color)) {
             // red means vertical annotation => sort pairs by y and makers are vertical aligned triangles
-            const [a, b] = pair.sort((a, b) => a.y - b.y);
-            annotationMarker({ color: pairColor, direction: 'pointing-up', graphics: g, radius: markerRadius, x: a.x, y: a.y });
-            annotationMarker({ color: pairColor, direction: 'pointing-down', graphics: g, radius: markerRadius, x: b.x, y: b.y });
-          };
-          if (colors.horizontalColors.includes(pairColor)) {
+            // the top one is pointing down and the bottom one is pointing up
+            const [top, bottom] = [a, b].sort((a, b) => a.y - b.y);
+            annotationMarker({
+              color,
+              graphics: g,
+              radius: markerRadius,
+              shape: 'pointing-down',
+              x: top.x,
+              y: top.y,
+            });
+            annotationMarker({
+              color,
+              graphics: g,
+              radius: markerRadius,
+              shape: 'pointing-up',
+              x: bottom.x,
+              y: bottom.y,
+            });
+          }
+          if (colors.horizontalColors.includes(color)) {
             // green means horizontal annotation => sort pairs by x and makers are horizontal aligned triangles
-            const [a, b] = pair.sort((a, b) => a.x - b.x);
-            annotationMarker({ color: pairColor, direction: 'pointing-left', graphics: g, radius: markerRadius, x: b.x, y: b.y });
-            annotationMarker({ color: pairColor, direction: 'pointing-right', graphics: g, radius: markerRadius, x: a.x, y: a.y });
-          };
-          if (colors.euclideanColors.includes(pairColor)) {
+            // the left one is pointing right and the right one is pointing left
+            const [left, right] = [a, b].sort((a, b) => a.x - b.x);
+            annotationMarker({
+              color,
+              graphics: g,
+              radius: markerRadius,
+              shape: 'pointing-left',
+              x: right.x,
+              y: right.y,
+            });
+            annotationMarker({
+              color,
+              graphics: g,
+              radius: markerRadius,
+              shape: 'pointing-right',
+              x: left.x,
+              y: left.y,
+            });
+          }
+          if (colors.euclideanColors.includes(color)) {
             // blue means point annotation => no need to sort and markers are circles
-            const [a, b] = pair;
-            annotationMarker({ color: pairColor, direction: 'circle', graphics: g, radius: markerRadius, x: a.x, y: a.y });
-            annotationMarker({ color: pairColor, direction: 'circle', graphics: g, radius: markerRadius, x: b.x, y: b.y });
-          };
-          const [a, b] = pair;
+            annotationMarker({
+              color,
+              graphics: g,
+              radius: markerRadius,
+              shape: 'circle',
+              x: a.x,
+              y: a.y,
+            });
+            annotationMarker({
+              color,
+              graphics: g,
+              radius: markerRadius,
+              shape: 'circle',
+              x: b.x,
+              y: b.y,
+            });
+          }
+          // drawing a line between a and b
+          g.lineStyle(markerRadius / 4, color, 1);
           g.moveTo(a.x, a.y);
           g.lineTo(b.x, b.y);
         });
       }
     },
-    [colors, pairs, img],
+    [colors, annotationPoints, img],
   );
 
   return <Graphics blendMode={PIXI.BLEND_MODES.OVERLAY} draw={draw} />;

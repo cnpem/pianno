@@ -4,17 +4,12 @@ import { useStoreActions, useStoreImg } from '@/hooks/use-store';
 import { useTemporalStore } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
 import { type VariantProps } from 'class-variance-authority';
-import {
-  ImageIcon,
-  MaximizeIcon,
-  RedoIcon,
-  RotateCcwIcon,
-  UndoIcon,
-} from 'lucide-react';
+import { ImageIcon, MaximizeIcon, RedoIcon, UndoIcon } from 'lucide-react';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 import { Button, buttonVariants } from '../ui/button';
 import OpenImageDialog from './open';
+import Reset from './reset';
 import SaveDialog from './save';
 import TogglePairs from './toggle-pairs';
 import Tools from './tools';
@@ -28,8 +23,8 @@ interface IToolbar {
 }
 
 const Toolbar = () => {
-  const { recenterViewport, reset } = useStoreActions();
-  const { clear, futureStates, pastStates, redo, undo } = useTemporalStore(
+  const { recenterViewport } = useStoreActions();
+  const { futureStates, pastStates, redo, undo } = useTemporalStore(
     (state) => state,
   );
   const canUndo = !!pastStates.length;
@@ -81,18 +76,6 @@ const Toolbar = () => {
         ),
       title: 'fit-view -- 8',
     },
-    {
-      children: (
-        <RotateCcwIcon className="h-4 w-4 hover:animate-reverse-spin" />
-      ),
-      onClick: () => {
-        reset();
-        clear();
-        recenterViewport(width, height);
-      },
-      title: 'reset',
-      variant: 'destructive',
-    },
   ];
 
   return (
@@ -120,6 +103,7 @@ const Toolbar = () => {
               {action.children}
             </Button>
           ))}
+          <Reset />
         </div>
       </div>
       {

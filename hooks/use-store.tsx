@@ -2,18 +2,12 @@
 
 import type { BrushMode } from '@/lib/types';
 
-import { VIRIDIS_COLORS } from '@/lib/constants';
+import { annotationColorPallete } from '@/lib/constants';
 import { type Viewport } from 'pixi-viewport';
 import { type TemporalState, temporal } from 'zundo';
 import { create, useStore as useZustandStore } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { shallow } from 'zustand/shallow';
-
-const annotationColorPallete = {
-  euclideanColors: VIRIDIS_COLORS.purples,
-  horizontalColors: VIRIDIS_COLORS.teals,
-  verticalColors: VIRIDIS_COLORS.yellows,
-};
 
 type Image = {
   height: number;
@@ -41,7 +35,10 @@ type Actions = {
   setColor: (color: string) => void;
   setImage: (img: Image) => void;
   setLabel: (label: string) => void;
-  setNewColor: (color: string, colorLabel: keyof typeof annotationColorPallete) => void;
+  setNewColor: (
+    color: string,
+    colorLabel: keyof typeof annotationColorPallete,
+  ) => void;
   setViewport: (viewport: Viewport) => void;
   toggle: () => void;
 };
@@ -54,14 +51,14 @@ const initialState: State = {
   brushMode: 'pen',
   brushSize: 1,
   colors: annotationColorPallete,
-  currentColor: annotationColorPallete.verticalColors[0],
+  currentColor: annotationColorPallete.euclidean[0],
   img: {
     height: 0,
     src: '#',
     width: 0,
   },
   label: 'data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=', // 1x1 transparent png
-  toggled: false,
+  toggled: true,
   viewport: null,
 };
 

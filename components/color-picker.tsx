@@ -18,8 +18,7 @@ import { Popover } from './ui/popover';
 interface ColorPickerProps {}
 
 const ColorPicker: FC<ColorPickerProps> = ({}) => {
-  const { euclideanColors, horizontalColors, verticalColors } =
-    useStoreColors();
+  const { euclidean, horizontal, vertical } = useStoreColors();
   const currentColor = useStoreCurrentColor();
   const { setColor, setNewColor } = useStoreActions();
   const debounced: typeof setNewColor = useDebouncedCallback((value, type) => {
@@ -28,12 +27,12 @@ const ColorPicker: FC<ColorPickerProps> = ({}) => {
 
   return (
     <div className="grid grid-cols-3 gap-1 p-2">
-      <PopoverPicker colorLabel="verticalColors" />
-      <PopoverPicker colorLabel="horizontalColors" />
-      <PopoverPicker colorLabel="euclideanColors" />
+      <PopoverPicker colorLabel="vertical" />
+      <PopoverPicker colorLabel="horizontal" />
+      <PopoverPicker colorLabel="euclidean" />
       <div className="col-span-1 ml-1" id="vertical-pallete">
         <div className="space-y-1">
-          {verticalColors.map((color) => (
+          {vertical.map((color) => (
             <div
               className={cn(
                 color === currentColor && 'border-4',
@@ -52,7 +51,7 @@ const ColorPicker: FC<ColorPickerProps> = ({}) => {
       </div>
       <div className="col-span-1 ml-1" id="horizontal-pallete">
         <div className="space-y-1">
-          {horizontalColors.map((color) => (
+          {horizontal.map((color) => (
             <div
               className={cn(
                 color === currentColor && 'border-4',
@@ -71,7 +70,7 @@ const ColorPicker: FC<ColorPickerProps> = ({}) => {
       </div>
       <div className="col-span-1 ml-1" id="euclidean-pallete">
         <div className="space-y-1">
-          {euclideanColors.map((color) => (
+          {euclidean.map((color) => (
             <div
               className={cn(
                 color === currentColor && 'border-4',
@@ -95,10 +94,9 @@ const ColorPicker: FC<ColorPickerProps> = ({}) => {
 const PopoverPicker = ({
   colorLabel,
 }: {
-  colorLabel: 'euclideanColors' | 'horizontalColors' | 'verticalColors';
+  colorLabel: 'euclidean' | 'horizontal' | 'vertical';
 }) => {
-  const { euclideanColors, horizontalColors, verticalColors } =
-    useStoreColors();
+  const { euclidean, horizontal, vertical } = useStoreColors();
   const { setNewColor } = useStoreActions();
   const debounced = useDebouncedCallback((value) => {
     setNewColor(value, colorLabel);
@@ -107,15 +105,11 @@ const PopoverPicker = ({
     <Popover>
       <PopoverTrigger asChild>
         <Button className="h-6 w-6" size={'icon'} variant="outline">
-          {colorLabel === 'verticalColors' && (
-            <MoveVertical className="h-4 w-4" />
-          )}
-          {colorLabel === 'horizontalColors' && (
+          {colorLabel === 'vertical' && <MoveVertical className="h-4 w-4" />}
+          {colorLabel === 'horizontal' && (
             <MoveHorizontal className="h-4 w-4" />
           )}
-          {colorLabel === 'euclideanColors' && (
-            <MoveDiagonal className="h-4 w-4" />
-          )}
+          {colorLabel === 'euclidean' && <MoveDiagonal className="h-4 w-4" />}
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -123,23 +117,23 @@ const PopoverPicker = ({
         className="h-32 w-32 rounded-lg border bg-background p-1 shadow-lg"
         side="top"
       >
-        {colorLabel === 'euclideanColors' && (
+        {colorLabel === 'euclidean' && (
           <HexColorPicker
-            color={euclideanColors.slice(-1)[0]}
+            color={euclidean.slice(-1)[0]}
             onChange={debounced}
             style={{ height: '100%', width: '100%' }}
           />
         )}
-        {colorLabel === 'horizontalColors' && (
+        {colorLabel === 'horizontal' && (
           <HexColorPicker
-            color={horizontalColors.slice(-1)[0]}
+            color={horizontal.slice(-1)[0]}
             onChange={debounced}
             style={{ height: '100%', width: '100%' }}
           />
         )}
-        {colorLabel === 'verticalColors' && (
+        {colorLabel === 'vertical' && (
           <HexColorPicker
-            color={verticalColors.slice(-1)[0]}
+            color={vertical.slice(-1)[0]}
             onChange={debounced}
             style={{ height: '100%', width: '100%' }}
           />

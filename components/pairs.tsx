@@ -148,7 +148,7 @@ const Pairs: FC<PairsProps> = ({}) => {
               });
             });
           }
-          if (colors.verticalColors.includes(color)) {
+          if (colors.vertical.includes(color)) {
             // red means vertical annotation => sort pairs by y and makers are vertical aligned triangles
             // the top one is pointing down and the bottom one is pointing up
             const [top, bottom] = [a, b].sort((a, b) => a.y - b.y);
@@ -169,7 +169,7 @@ const Pairs: FC<PairsProps> = ({}) => {
               y: bottom.y,
             });
           }
-          if (colors.horizontalColors.includes(color)) {
+          if (colors.horizontal.includes(color)) {
             // green means horizontal annotation => sort pairs by x and makers are horizontal aligned triangles
             // the left one is pointing right and the right one is pointing left
             const [left, right] = [a, b].sort((a, b) => a.x - b.x);
@@ -190,7 +190,7 @@ const Pairs: FC<PairsProps> = ({}) => {
               y: left.y,
             });
           }
-          if (colors.euclideanColors.includes(color)) {
+          if (colors.euclidean.includes(color)) {
             // blue means point annotation => no need to sort and markers are circles
             annotationMarker({
               color,

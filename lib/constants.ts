@@ -2,12 +2,6 @@ export const PIMEGA_DEVICES = ['pi135D', 'pi450D', 'pi540D'];
 
 export const PIMEGA_GEOMETRIES = ['planar', 'nonplanar', 'arc', 'tower'];
 
-export const ANNOTATION_DISTANCE_TYPES = [
-  'euclidean',
-  'horizontal',
-  'vertical',
-];
-
 export const RAW_DATA_TYPES = ['float32', 'float64', 'int32'];
 
 // 16 colors
@@ -61,24 +55,20 @@ export const RAW_DATA_TYPES = ['float32', 'float64', 'int32'];
 //   ],
 // };
 
-export const VIRIDIS_COLORS = {
-  purples: [
-    '#3e4989',
-    '#423f85',
-    '#482878',
-    '#440154',
-  ],
-  teals: [
-    '#21a685',
-    '#1f9e89',
-    '#228c8d',
-    '#26828e',
-  ],
-  yellows: [
-    '#b5de2b',
-    '#d0e11c',
-    '#e7e419',
-    '#fde725',
-  ],
+const VIRIDIS_COLORS = {
+  purples: ['#3e4989', '#423f85', '#482878', '#440154'],
+  teals: ['#21a685', '#1f9e89', '#228c8d', '#26828e'],
+  yellows: ['#b5de2b', '#d0e11c', '#e7e419', '#fde725'],
 };
-  
+
+export const ANNOTATION_DISTANCE_TYPES = [
+  'euclidean',
+  'horizontal',
+  'vertical',
+];
+
+export const annotationColorPallete = {
+  euclidean: VIRIDIS_COLORS.purples,
+  horizontal: VIRIDIS_COLORS.teals,
+  vertical: VIRIDIS_COLORS.yellows,
+};

@@ -10,6 +10,9 @@ import {
 import { rgbToHex } from '@/lib/utils';
 import { createCanvas, loadImage } from 'canvas';
 import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(timezone);
 
 export async function openImage(data: FormData) {
   const parsed = openImageSchema.safeParse({
@@ -30,6 +33,7 @@ export async function exportAnnotation(
 ): Promise<Partial<AnnotationData>> {
   const device = data.get('device');
   const hash = data.get('device-hash');
+  dayjs.tz.setDefault('America/Sao_Paulo');
 
   const pimega_name = `${device}#${hash}`;
 

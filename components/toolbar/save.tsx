@@ -3,12 +3,13 @@
 import { exportAnnotation, getAnnotationGroup } from '@/app/actions';
 import {
   AlertDialog,
-  AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import {
@@ -40,7 +41,13 @@ import { PIMEGA_DEVICES, PIMEGA_GEOMETRIES } from '@/lib/constants';
 import { ANNOTATION_DISTANCE_TYPES } from '@/lib/constants';
 import { AnnotationGroup, annotationSchema } from '@/lib/types';
 import { fileSave } from 'browser-fs-access';
-import { BracesIcon, CheckIcon, CopyIcon, SaveIcon } from 'lucide-react';
+import {
+  BanIcon,
+  BracesIcon,
+  CheckIcon,
+  CopyIcon,
+  SaveIcon,
+} from 'lucide-react';
 import { Eye, EyeOff } from 'lucide-react';
 import { FC, useEffect, useReducer, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -48,12 +55,6 @@ import { z } from 'zod';
 
 import { PreviewCanvas } from '../canvas';
 import { Toggle } from '../ui/toggle';
-
-type alertMessage = {
-  callback: () => void;
-  description: string;
-  title: string;
-};
 
 interface SaveDialogProps {
   disabled?: boolean;
@@ -64,13 +65,14 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
   const [isCopied, setIsCopied] = useState(false);
   const [open, setOpen] = useState(false);
   const [toggled, toggle] = useReducer((state) => !state, true);
-  const [alert, setAlert] = useState<alertMessage | null>(null);
 
   const colors = useStoreColors();
   const label = useStoreLabel();
   const viewport = useStoreViewport();
 
   const [pairs, setPairs] = useState<AnnotationGroup | null>(null);
+  const forbidden =
+    pairs && Object.values(pairs).some((pair) => pair.length !== 2);
 
   useEffect(() => {
     getAnnotationGroup(label).then((res) => {
@@ -123,24 +125,9 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
   }
 
   function handleOpenChange(open: boolean) {
-    // check if there are pairs with size > 2
-    const forbidden =
-      pairs && Object.values(pairs).some((pair) => pair.length !== 2);
-    if (forbidden) {
-      setAlert({
-        callback: () => {
-          setOpen(false);
-          setAlert(null);
-        },
-        description:
-          'The annotations should be in pairs. Please check annotations with a X marker or single points surrounded by a circle and remove them before saving.',
-        title: "Can't save!",
-      });
-    }
     setOpen(open);
     if (!open) {
       window.location.reload();
-      setAlert(null);
     }
   }
 
@@ -152,69 +139,82 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
   };
 
   return (
-    <Dialog onOpenChange={handleOpenChange} open={open}>
-      <DialogTrigger asChild>
-        <Button
-          className="group relative"
-          disabled={disabled}
-          size={'icon'}
-          title={'save json -- 4'}
-          variant={'outline'}
-        >
-          <p className="absolute right-1 top-0 text-xs text-input group-hover:text-accent-foreground">
-            4
-          </p>
-          <SaveIcon className="h-4 w-4" />
-        </Button>
-      </DialogTrigger>
-      <AlertDialog open={open && !!alert}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{alert?.title}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {alert?.description}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction
-              onClick={() => {
-                alert?.callback ? alert.callback() : setAlert(null);
-              }}
+    <>
+      {!!forbidden ? (
+        <AlertDialog onOpenChange={setOpen} open={open}>
+          <AlertDialogTrigger>
+            <Button
+              className="group relative"
+              disabled={disabled}
+              size={'icon'}
+              title={'save json -- 4'}
+              variant={'outline'}
             >
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      {!alert && (
-        <DialogContent className="sm:max-w-[725px]">
-          <DialogHeader>
-            <DialogTitle>Save your Annotations</DialogTitle>
-            <DialogDescription>
-              Fill in the following fields with the annotation metadata. Click
-              save or copy to clipboard when you are done.
-            </DialogDescription>
-          </DialogHeader>
-          <form>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-5 items-center gap-2">
-                <Select name="device" required>
-                  <SelectTrigger className="col-span-2">
-                    <SelectValue placeholder="Device" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PIMEGA_DEVICES.map((device) => (
-                      <SelectItem
-                        className="cursor-pointer"
-                        key={device}
-                        value={device}
-                      >
-                        {device}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <p className="absolute right-1 top-0 text-xs text-input group-hover:text-accent-foreground">
+                4
+              </p>
+              <SaveIcon className="h-4 w-4 group-hover:hidden group-hover:animate-out" />
+              <BanIcon className="hidden h-4 w-4 scale-125 stroke-red-600 group-hover:block group-hover:animate-in" />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{"Can't save!"}</AlertDialogTitle>
+              <AlertDialogDescription>
+                The annotations should be in pairs. Please check annotations
+                with a <p className="inline font-bold text-violet-700">X</p>{' '}
+                marker or single points surrounded by a circle and remove them
+                before saving.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Go back</AlertDialogCancel>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      ) : (
+        <Dialog onOpenChange={handleOpenChange} open={open}>
+          <DialogTrigger asChild>
+            <Button
+              className="group relative"
+              disabled={disabled}
+              size={'icon'}
+              title={'save json -- 4'}
+              variant={'outline'}
+            >
+              <p className="absolute right-1 top-0 text-xs text-input group-hover:text-accent-foreground">
+                4
+              </p>
+              <SaveIcon className="h-4 w-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[725px]">
+            <DialogHeader>
+              <DialogTitle>Save your Annotations</DialogTitle>
+              <DialogDescription>
+                Fill in the following fields with the annotation metadata. Click
+                save or copy to clipboard when you are done.
+              </DialogDescription>
+            </DialogHeader>
+            <form>
+              <div className="grid gap-4 py-4">
                 <div className="flex flex-row items-center gap-2">
+                  <Select name="device" required>
+                    <SelectTrigger className="col-span-2">
+                      <SelectValue placeholder="Device" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PIMEGA_DEVICES.map((device) => (
+                        <SelectItem
+                          className="cursor-pointer"
+                          key={device}
+                          value={device}
+                        >
+                          {device}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <Label
                     className=" font-semibold text-muted-foreground"
                     htmlFor="device-hash"
@@ -230,110 +230,107 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                     required
                     type="number"
                   />
+                  <Select name="geometry" required>
+                    <SelectTrigger className="col-span-2">
+                      <SelectValue placeholder="Geometry" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PIMEGA_GEOMETRIES.map((geometry) => (
+                        <SelectItem
+                          className="cursor-pointer"
+                          key={geometry}
+                          value={geometry}
+                        >
+                          {geometry}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Label
+                    className="text-left text-xs font-semibold text-muted-foreground"
+                    htmlFor="distance"
+                  >
+                    Distance <span className="font-light">(mm)</span>
+                  </Label>
+                  <Input
+                    className="col-span-3"
+                    id="distance"
+                    min={0}
+                    name="distance"
+                    required
+                    type="number"
+                  />
                 </div>
-                <Select name="geometry" required>
-                  <SelectTrigger className="col-span-2">
-                    <SelectValue placeholder="Geometry" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PIMEGA_GEOMETRIES.map((geometry) => (
-                      <SelectItem
-                        className="cursor-pointer"
-                        key={geometry}
-                        value={geometry}
+              </div>
+              <div className="mb-2 flex flex-row items-center gap-2">
+                <div className="">
+                  <PreviewCanvas toggled={toggled} />
+                </div>
+                <ScrollArea className="h-[350px]">
+                  <div className="flex flex-col gap-2">
+                    {Object.entries(pairs || {}).map(([key, value], index) => (
+                      <div
+                        className={
+                          'flex flex-row items-center gap-2 rounded-md p-2'
+                        }
+                        key={key}
                       >
-                        {geometry}
-                      </SelectItem>
+                        <Button
+                          onClick={() => {
+                            viewport?.snap(value[0].x, value[0].y, {
+                              removeOnComplete: true,
+                            });
+                            viewport?.setZoom(2);
+                          }}
+                          style={{ backgroundColor: key }}
+                          type="button"
+                          variant={'default'}
+                        >
+                          {index}
+                        </Button>
+                        <Label
+                          className="text-left text-xs font-semibold text-muted-foreground"
+                          htmlFor={'pair-distance'}
+                        >
+                          Distance
+                        </Label>
+                        <Input
+                          className="w-full"
+                          id={'pair-distance'}
+                          min={-1}
+                          name={'pair-distance'}
+                          required
+                          type="number"
+                        />
+                        <Select
+                          defaultValue={typeFromColor(key)}
+                          name="pair-distance-type"
+                          required
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {ANNOTATION_DISTANCE_TYPES.map((type) => (
+                              <SelectItem
+                                className="cursor-pointer"
+                                key={type}
+                                value={type}
+                              >
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </div>
+                </ScrollArea>
               </div>
-              <div className="grid grid-cols-4 items-center gap-2">
-                <Label
-                  className="text-left text-xs font-semibold text-muted-foreground"
-                  htmlFor="distance"
-                >
-                  Distance <span className="font-light">(mm)</span>
-                </Label>
-                <Input
-                  className="col-span-3"
-                  id="distance"
-                  min={0}
-                  name="distance"
-                  required
-                  type="number"
-                />
-              </div>
-            </div>
-            <div className="mb-2 flex flex-row items-center gap-2">
-              <div className="border-2 border-red-800">
-                <PreviewCanvas toggled={toggled} />
-              </div>
-              <ScrollArea className="h-[200px] border-2 border-purple-800">
-                <div className="flex flex-col gap-2">
-                  {Object.entries(pairs || {}).map(([key, value], index) => (
-                    <div
-                      className={
-                        'flex flex-row items-center gap-2 rounded-md p-2'
-                      }
-                      key={key}
-                    >
-                      <Button
-                        onClick={() => {
-                          viewport?.snap(value[0].x, value[0].y, {
-                            removeOnComplete: true,
-                          });
-                          viewport?.setZoom(2);
-                        }}
-                        style={{ backgroundColor: key }}
-                        type="button"
-                        variant={'default'}
-                      >
-                        {index}
-                      </Button>
-                      <Label
-                        className="text-left text-xs font-semibold text-muted-foreground"
-                        htmlFor={'pair-distance'}
-                      >
-                        distance
-                      </Label>
-                      <Input
-                        className="w-full"
-                        id={'pair-distance'}
-                        min={-1}
-                        name={'pair-distance'}
-                        required
-                        type="number"
-                      />
-                      <Select
-                        defaultValue={typeFromColor(key)}
-                        name="pair-distance-type"
-                        required
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {ANNOTATION_DISTANCE_TYPES.map((type) => (
-                            <SelectItem
-                              className="cursor-pointer"
-                              key={type}
-                              value={type}
-                            >
-                              {type}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </div>
-            <DialogFooter>
-              <div className="flex flex-row gap-4">
+              <DialogFooter className="relative">
                 <Toggle
                   aria-label="toggle pairs"
+                  className="absolute left-0"
                   onPressedChange={toggle}
                   pressed={toggled}
                 >
@@ -343,31 +340,37 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                     <EyeOff className="h-4 w-4" />
                   )}
                 </Toggle>
-                {!isCopied ? (
+                <div className="flex flex-row gap-4">
+                  {!isCopied ? (
+                    <Button
+                      formAction={copyAction}
+                      type="submit"
+                      variant="outline"
+                    >
+                      <CopyIcon className="mr-2 h-4 w-4" />
+                      Copy to clipboard
+                    </Button>
+                  ) : (
+                    <Button variant="outline">
+                      <CheckIcon className="mr-2 h-4 w-4" />
+                      Copied!
+                    </Button>
+                  )}
                   <Button
-                    formAction={copyAction}
+                    formAction={saveAction}
                     type="submit"
-                    variant="outline"
+                    variant="default"
                   >
-                    <CopyIcon className="mr-2 h-4 w-4" />
-                    Copy to clipboard
+                    <BracesIcon className="mr-2 h-4 w-4" />
+                    Save JSON
                   </Button>
-                ) : (
-                  <Button variant="outline">
-                    <CheckIcon className="mr-2 h-4 w-4" />
-                    Copied!
-                  </Button>
-                )}
-                <Button formAction={saveAction} type="submit" variant="default">
-                  <BracesIcon className="mr-2 h-4 w-4" />
-                  Save JSON
-                </Button>
-              </div>
-            </DialogFooter>
-          </form>
-        </DialogContent>
+                </div>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       )}
-    </Dialog>
+    </>
   );
 };
 

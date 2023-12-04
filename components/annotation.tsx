@@ -7,11 +7,8 @@ import {
   useStoreLabel,
   useStoreViewport,
 } from '@/hooks/use-store';
-import {
-  angleBetween,
-  distanceBetween,
-} from '@/lib/utils';
-import { Sprite } from '@pixi/react';
+import { angleBetween, distanceBetween } from '@/lib/utils';
+import { Sprite, useApp } from '@pixi/react';
 import * as PIXI from 'pixi.js';
 import React, { useEffect, useMemo, useRef } from 'react';
 
@@ -70,6 +67,7 @@ const Annotation = (props: AnnotationProps) => {
   const currPosition = useRef<PIXI.Point | null>(null);
 
   const viewport = useStoreViewport();
+  const app = useApp();
 
   const [isPainting, setIsPainting] = React.useState(false);
 
@@ -147,15 +145,16 @@ const Annotation = (props: AnnotationProps) => {
       setIsPainting(false);
       setLabel(canvas.toDataURL());
     };
-    viewport?.on('pointerdown', onPointerDown);
-    viewport?.on('pointerup', onPointerUp);
-    viewport?.on('pointermove', onPointerMove);
+    app.stage.on('pointerdown', onPointerDown);
+    app.stage.on('pointerup', onPointerUp);
+    app.stage.on('pointermove', onPointerMove);
     return () => {
-      viewport?.off('pointerdown', onPointerDown);
-      viewport?.off('pointerup', onPointerUp);
-      viewport?.off('pointermove', onPointerMove);
+      app.stage.off('pointerdown', onPointerDown);
+      app.stage.off('pointerup', onPointerUp);
+      app.stage.off('pointermove', onPointerMove);
     };
   }, [
+    app.stage,
     brushMode,
     brushSize,
     canvas,

@@ -2,13 +2,10 @@ version: '3.8'
 services:
   app:
     platform: 'linux/amd64'
-    network_mode: 'host'
     build:
       context: .
       dockerfile: Dockerfile
     working_dir: /app
     ports:
       - '3000:3000'
-    environment:
-      - HOSTNAME=localhost
     image: pianno

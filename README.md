@@ -1,8 +1,11 @@
 # Pianno: The Pimega Annotator
 A simple tool to help you annotate pimega images.
 
-[![User guide and documentation](docs/src/assets/hero.svg#gh-light-mode-only)](https://matyson.github.io/pianno/)
-[![User guide and documentation](docs/src/assets/hero-dark.svg#gh-dark-mode-only)](https://matyson.github.io/pianno/)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/src/assets/hero-dark.svg">
+  <img alt="Shows the logo for the Pianno web app: A Pimega annotator.." 
+    src="docs/src/assets/hero.svg">
+</picture>
 
 
 ## User guide and documentation

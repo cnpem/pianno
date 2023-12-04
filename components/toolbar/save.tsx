@@ -46,7 +46,9 @@ import {
   BracesIcon,
   CheckIcon,
   CopyIcon,
+  MapPinIcon,
   SaveIcon,
+  SearchIcon,
 } from 'lucide-react';
 import { Eye, EyeOff } from 'lucide-react';
 import { FC, useEffect, useReducer, useState } from 'react';
@@ -86,7 +88,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
     }
   });
 
-  const handleSaveClick = (data: z.infer<typeof annotationSchema>) => {
+  const handleSaveClick = (data: Partial<z.infer<typeof annotationSchema>>) => {
     // Create a blob of the data
     const fileToSave = new Blob([JSON.stringify(data)], {
       type: 'application/json',
@@ -104,7 +106,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
       });
   };
 
-  const handleCopyClick = (data: z.infer<typeof annotationSchema>) => {
+  const handleCopyClick = (data: Partial<z.infer<typeof annotationSchema>>) => {
     // Save the file
     copy(JSON.stringify(data)).then(() => {
       setIsCopied(true);
@@ -268,25 +270,33 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                 </div>
                 <ScrollArea className="h-[350px]">
                   <div className="flex flex-col gap-2">
-                    {Object.entries(pairs || {}).map(([key, value], index) => (
+                    {Object.entries(pairs || {}).map(([color, value]) => (
                       <div
-                        className={
-                          'flex flex-row items-center gap-2 rounded-md p-2'
-                        }
-                        key={key}
+                        className={'flex flex-row items-center gap-2 p-2'}
+                        key={color}
                       >
                         <Button
+                          className="group rounded-full border px-3"
                           onClick={() => {
                             viewport?.snap(value[0].x, value[0].y, {
                               removeOnComplete: true,
                             });
                             viewport?.setZoom(2);
                           }}
-                          style={{ backgroundColor: key }}
+                          size="icon"
+                          style={{ borderColor: color }}
+                          title="go to pair"
                           type="button"
-                          variant={'default'}
+                          variant={'outline'}
                         >
-                          {index}
+                          <MapPinIcon
+                            className="hidden h-4 w-4 scale-125 group-focus:block group-focus:animate-in"
+                            stroke={color}
+                          />
+                          <SearchIcon
+                            className="h-4 w-4 scale-125 group-focus:hidden"
+                            stroke={color}
+                          />
                         </Button>
                         <Label
                           className="text-left text-xs font-semibold text-muted-foreground"
@@ -303,7 +313,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                           type="number"
                         />
                         <Select
-                          defaultValue={typeFromColor(key)}
+                          defaultValue={typeFromColor(color)}
                           name="pair-distance-type"
                           required
                         >

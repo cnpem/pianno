@@ -41,6 +41,12 @@ RUN npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
+
+# Set timezone
+RUN apk add --update --no-cache tzdata
+ENV TZ=America/Sao_Paulo
+
+# Install system dependencies required for node-canvas
 RUN apk add --no-cache cairo pango libjpeg giflib
 WORKDIR /app
 

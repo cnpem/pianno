@@ -27,7 +27,7 @@ export async function openImage(data: FormData) {
 export async function exportAnnotation(
   data: FormData,
   dataurl: string,
-): Promise<AnnotationData> {
+): Promise<Partial<AnnotationData>> {
   const device = data.get('device');
   const hash = data.get('device-hash');
 
@@ -111,9 +111,12 @@ export async function exportAnnotation(
         }, 0);
 
         const annotationData = {
-          ...parsed.data,
-          pairs: annotationGroup,
-        } as AnnotationData;
+          date:parsed.data.date,
+          distance: parsed.data.distance,
+          geometry: parsed.data.geometry,
+          pairs: annotationGroup,        
+          pimega_name: parsed.data.pimega_name,
+        } as Partial<AnnotationData>;
 
         console.log(annotationData);
         resolve(annotationData);

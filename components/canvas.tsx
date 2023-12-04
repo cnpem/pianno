@@ -23,6 +23,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import Annotation from './annotation';
 import Brush from './brush';
+import Help from './help';
 import Pairs from './pairs';
 import Sidebar from './sidebar';
 import Viewport from './viewport';
@@ -136,6 +137,7 @@ const Canvas = () => {
         </span>
       </div>
       <Sidebar />
+      <Help />
       <Stage
         height={height}
         options={{

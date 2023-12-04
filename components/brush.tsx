@@ -1,8 +1,7 @@
 'use client';
 
 import {
-  useStoreBrushMode,
-  useStoreBrushSize,
+  useStoreBrushParams,
   useStoreCurrentColor,
   useStoreViewport,
 } from '@/hooks/use-store';
@@ -13,7 +12,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 const Pen = () => {
   const color = useStoreCurrentColor();
-  const size = useStoreBrushSize();
+  const { size } = useStoreBrushParams();
   const [pos, setPos] = useState(new PIXI.Point(0, 0));
 
   const draw = useCallback(
@@ -57,7 +56,7 @@ const Pen = () => {
 const Eraser = () => {
   const color = '#808080';
 
-  const size = useStoreBrushSize();
+  const { size } = useStoreBrushParams();
   const [pos, setPos] = useState(new PIXI.Point(0, 0));
 
   const draw = useCallback(
@@ -99,7 +98,7 @@ const Eraser = () => {
 };
 
 const Brush = () => {
-  const brushMode = useStoreBrushMode();
+  const { mode: brushMode } = useStoreBrushParams();
 
   return (
     <>

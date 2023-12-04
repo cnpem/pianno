@@ -5,6 +5,13 @@ import { ANNOTATION_DISTANCE_TYPES } from './constants';
 
 export type BrushMode = 'eraser' | 'pen';
 
+export type Brush = {
+  eraserSize: number;
+  maxSize: number;
+  mode: 'eraser' | 'pen';
+  penSize: number;
+};
+
 export const openImageSchema = z.object({
   checked: z.nullable(z.string()),
   dtype: z.nullable(z.enum(['float32', 'float64', 'int32'])),

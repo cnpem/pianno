@@ -2,8 +2,7 @@
 
 import {
   useStoreActions,
-  useStoreBrushMode,
-  useStoreBrushSize,
+  useStoreBrushParams,
   useStoreCurrentColor,
   useStoreLabel,
   useStoreViewport,
@@ -46,7 +45,7 @@ const Annotation = (props: AnnotationProps) => {
 
   const color = useStoreCurrentColor();
   const label = useStoreLabel();
-  const brushMode = useStoreBrushMode();
+  const { mode: brushMode, size: brushSize } = useStoreBrushParams();
   const { setLabel } = useStoreActions();
 
   const canvas = canvasRef.current;
@@ -69,8 +68,6 @@ const Annotation = (props: AnnotationProps) => {
 
   const prevPosition = useRef<PIXI.Point | null>(null);
   const currPosition = useRef<PIXI.Point | null>(null);
-
-  const brushSize = useStoreBrushSize();
 
   const viewport = useStoreViewport();
 

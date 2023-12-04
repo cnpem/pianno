@@ -1,6 +1,6 @@
 'use client';
 
-import type { BrushMode } from '@/lib/types';
+import type { Brush } from '@/lib/types';
 
 import { annotationColorPallete } from '@/lib/constants';
 import { type Viewport } from 'pixi-viewport';
@@ -16,8 +16,7 @@ type Image = {
 };
 
 type State = {
-  brushMode: BrushMode;
-  brushSize: number;
+  brush: Brush;
   colors: typeof annotationColorPallete;
   currentColor: string;
   img: Image;
@@ -30,7 +29,7 @@ type Actions = {
   recenterViewport: (width: number, height: number) => void;
   reset: () => void;
   resetLabel: () => void;
-  setBrushMode: (mode: BrushMode) => void;
+  setBrushMode: (mode: Brush['mode']) => void;
   setBrushSize: (size: number) => void;
   setColor: (color: string) => void;
   setImage: (img: Image) => void;
@@ -48,8 +47,12 @@ type Store = State & {
 };
 
 const initialState: State = {
-  brushMode: 'pen',
-  brushSize: 1,
+  brush: {
+    eraserSize: 5,
+    maxSize: 10,
+    mode: 'pen',
+    penSize: 1,
+  },
   colors: annotationColorPallete,
   currentColor: annotationColorPallete.euclidean[0],
   img: {
@@ -80,10 +83,29 @@ const useStore = create<Store>()(
             window.location.reload();
           },
           resetLabel: () => set({ label: initialState.label }),
-          setBrushMode: (brushMode) => set({ brushMode }),
-          setBrushSize: (brushSize) => set({ brushSize }),
+          setBrushMode: (mode) => {
+            const brush = get().brush;
+            set({ brush: { ...brush, mode } });
+          },
+          setBrushSize: (brushSize) => {
+            const brush = get().brush;
+            if (brush.mode === 'eraser') {
+              set({ brush: { ...brush, eraserSize: brushSize } });
+            } else if (brush.mode === 'pen') {
+              set({ brush: { ...brush, penSize: brushSize } });
+            }
+          },
           setColor: (color) => set({ currentColor: color }),
-          setImage: (img) => set({ img }),
+          setImage: (img) => {
+            set({ img });
+            const { height, width } = img;
+            if (height && width) {
+              const maxSize = Math.floor(Math.max(height, width) * 0.04);
+              const eraserSize = Math.floor(maxSize / 2);
+              const brush = get().brush;
+              set({ brush: { ...brush, eraserSize, maxSize } });
+            }
+          },
           setLabel: (label) => set({ label }),
           setNewColor: (color, colorLabel) => {
             const colors = get().colors;
@@ -114,8 +136,7 @@ const useStore = create<Store>()(
     {
       name: 'store',
       partialize: (state) => ({
-        brushMode: state.brushMode,
-        brushSize: state.brushSize,
+        brush: state.brush,
         colors: state.colors,
         currentColor: state.currentColor,
         img: state.img,
@@ -130,12 +151,20 @@ export const useTemporalStore = <T,>(
 ) => useZustandStore(useStore.temporal, selector);
 
 export const useStoreViewport = () => useStore((state) => state.viewport);
-export const useStoreBrushMode = () => useStore((state) => state.brushMode);
 export const useStoreColors = () => useStore((state) => state.colors);
 export const useStoreCurrentColor = () =>
   useStore((state) => state.currentColor);
 export const useStoreImg = () => useStore((state) => state.img);
 export const useStoreToggled = () => useStore((state) => state.toggled);
-export const useStoreBrushSize = () => useStore((state) => state.brushSize);
+export const useStoreBrushParams = () =>
+  useStore((state) => {
+    const brush = state.brush;
+    if (brush.mode === 'eraser') {
+      return { ...brush, size: brush.eraserSize };
+    } else if (brush.mode === 'pen') {
+      return { ...brush, size: brush.penSize };
+    }
+    return { ...brush, size: 1 };
+  });
 export const useStoreLabel = () => useStore((state) => state.label);
 export const useStoreActions = () => useStore((state) => state.actions);

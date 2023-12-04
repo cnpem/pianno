@@ -1,4 +1,4 @@
-import { useStoreBrushMode } from '@/hooks/use-store';
+import { useStoreBrushParams } from '@/hooks/use-store';
 import { FC } from 'react';
 
 import BrushSlider from './brush-slider';
@@ -23,7 +23,7 @@ const EraserBar = () => {
 interface SidebarProps {}
 
 const Sidebar: FC<SidebarProps> = ({}) => {
-  const brushMode = useStoreBrushMode();
+  const { mode: brushMode } = useStoreBrushParams();
 
   return (
     <>

@@ -2,7 +2,7 @@ import type { BrushMode } from '@/lib/types';
 
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useStoreActions, useStoreBrushMode } from '@/hooks/use-store';
+import { useStoreActions, useStoreBrushParams } from '@/hooks/use-store';
 import { EraserIcon, PenIcon } from 'lucide-react';
 import { FC } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -44,24 +44,14 @@ const tools: Tool[] = [
 interface ToolsProps {}
 
 const Tools: FC<ToolsProps> = ({}) => {
-  const brushMode = useStoreBrushMode();
-  const { setBrushMode, setBrushSize } = useStoreActions();
-  useHotkeys(['1', 'p'], () => {
-    setBrushMode('pen');
-    setBrushSize(1);
-  });
+  const {mode: brushMode} = useStoreBrushParams();
+  const { setBrushMode } = useStoreActions();
+  useHotkeys(['1', 'p'], () => setBrushMode('pen'));
   useHotkeys(['2', 'e'], () => setBrushMode('eraser'));
   return (
     <RadioGroup
       className="flex flex-row gap-1"
-      onValueChange={(brush) => {
-        if (brush === 'pen') {
-          setBrushSize(1);
-        } else if (brush === 'eraser') {
-          setBrushSize(10);
-        }
-        setBrushMode(brush as BrushMode);
-      }}
+      onValueChange={(brush) => setBrushMode(brush as BrushMode)}
       value={brushMode}
     >
       {tools.map((tool) => (

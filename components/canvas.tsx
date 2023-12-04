@@ -156,10 +156,10 @@ export const PreviewCanvas = ({ toggled }: { toggled: boolean }) => {
 
   return (
     <Stage
-      height={200}
+      className='border border-input rounded-lg'
+      height={350}
       options={{
         backgroundAlpha: 0,
-        eventMode: 'static',
       }}
       width={350}
     >

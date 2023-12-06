@@ -1,6 +1,7 @@
 version: '3.8'
 services:
-  app:
+  pianno-app:
+    container_name: pianno-app
     platform: 'linux/amd64'
     build:
       context: .

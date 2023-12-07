@@ -127,6 +127,7 @@ const Canvas = () => {
   PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
   const [width, height] = useWindowSize();
+  const { src } = useStoreImg();
   const [pos, setPos] = useState<PIXI.Point>(new PIXI.Point(0, 0));
 
   return (
@@ -136,7 +137,7 @@ const Canvas = () => {
           {pos.x.toFixed(2)} | {pos.y.toFixed(2)}
         </span>
       </div>
-      <Sidebar />
+      {src !== '#' && <Sidebar />}
       <Help />
       <Stage
         height={height}
@@ -158,7 +159,7 @@ export const PreviewCanvas = ({ toggled }: { toggled: boolean }) => {
 
   return (
     <Stage
-      className='border border-input rounded-lg'
+      className="rounded-lg border border-input"
       height={350}
       options={{
         backgroundAlpha: 0,

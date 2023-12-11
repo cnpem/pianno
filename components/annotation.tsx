@@ -79,10 +79,11 @@ const Annotation = (props: AnnotationProps) => {
         // only draw on left click
         if (e.button !== 0) return;
       }
-      // disable drag on mobile touch
-      else if (e.pointerType === 'touch') {
-        viewport?.plugins.pause('drag');
+      // not paint on touch / pen
+      else {
+        return;
       }
+
       setIsPainting(true);
       const pos = viewport?.toWorld(e.global) ?? e.global;
       prevPosition.current = pos;
@@ -123,15 +124,6 @@ const Annotation = (props: AnnotationProps) => {
           );
           if (brushMode === 'eraser') {
             context.clearRect(x, y, brushSize, brushSize);
-            const annotationsToRemove = [];
-            for (let i = 0; i < brushSize; i++) {
-              for (let j = 0; j < brushSize; j++) {
-                annotationsToRemove.push({ x: x + i, y: y + j });
-              }
-            }
-          } else if (brushMode === 'pen') {
-            // context.fillRect(x, y, brushSize, brushSize);
-            console.log('nao pinto enquanto arrasto');
           }
         }
         sprite.texture.update();
@@ -141,10 +133,10 @@ const Annotation = (props: AnnotationProps) => {
 
     const onPointerUp = (e: PIXI.FederatedPointerEvent) => {
       if (!canvas) return;
-      viewport?.plugins.resume('drag');
       setIsPainting(false);
       setLabel(canvas.toDataURL());
     };
+
     app.stage.on('pointerdown', onPointerDown);
     app.stage.on('pointerup', onPointerUp);
     app.stage.on('pointermove', onPointerMove);

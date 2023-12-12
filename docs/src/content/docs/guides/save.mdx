@@ -1,0 +1,37 @@
+---
+title: Save annotations
+description: Save your annotations to JSON.
+sidebar:
+    order: 4
+---
+
+After you finish a set of annotations you can save them to further use 
+in the restoration processing. You can do this by clicking the `save` 
+button in the toolbar. 
+
+This will open a dialog that allows you to save the annotations to a
+JSON file or copy it to the clipboard after properly filling a form 
+with the image metadata and the annotations metadata.
+
+Suppose you have the following annotations:
+
+import SaveAlert from '@/components/SaveAlert.astro'
+import { Image } from 'astro:assets';
+import single from '../../../assets/save-annot/single-annot.png'
+import trio from '../../../assets/save-annot/trio-annot.png'
+
+<div className='flex flex-row gap-1 justify-center items-center'>
+    <Image className='w-44 rounded-md shadow-lg border border-accent' src={single} alt='Single annotation' />
+    <Image className='w-44 rounded-md shadow-lg border border-accent' src={trio} alt='Trio annotation'  />
+</div>
+
+You may try to save them by clicking the `save` button above.
+
+<SaveAlert/>
+
+:::caution[Invalid annotations!]
+You cannot save annotations if they do not form a valid set of *pairs*.
+This means that you must not have any *single* points or more than *two* 
+points of the same color, i.e., you must get rid of all the points 
+circled by a **ring** marker and all the **X** markers. 
+:::

@@ -5,6 +5,7 @@
 @layer base {
   /* Dark mode colors. */
   :root {
+    --sl-font: 'Victor Mono';
     --sl-color-accent-low: #360f41;
     --sl-color-accent: #a100c6;
     --sl-color-accent-high: #e2b5f2;

@@ -5,13 +5,13 @@ sidebar:
     order: 4
 ---
 
-After you finish a set of annotations you can save them to further use 
-in the restoration processing. You can do this by clicking the `save` 
-button in the toolbar. 
+Upon completion of a set of annotations, saving them for future use 
+in the restoration processing is possible. This can be achieved by 
+clicking the `save` button in the toolbar.
 
 This will open a dialog that allows you to save the annotations to a
 JSON file or copy it to the clipboard after properly filling a form 
-with the image metadata and the annotations metadata.
+with both the image metadata and the annotations metadata.
 
 Suppose you have the following annotations:
 
@@ -30,8 +30,10 @@ You may try to save them by clicking the `save` button above.
 <SaveAlert/>
 
 :::caution[Invalid annotations!]
-You cannot save annotations if they do not form a valid set of *pairs*.
-This means that you must not have any *single* points or more than *two* 
-points of the same color, i.e., you must get rid of all the points 
-circled by a **ring** marker and all the **X** markers. 
+Annotations cannot be saved unless they constitute a valid set of 
+pairs. This implies the absence of singular points or the presence 
+of more than two points of identical color. In other words, it is 
+necessary to eliminate all points encircled by a **ring** marker and all
+ **X** markers.
 :::
+

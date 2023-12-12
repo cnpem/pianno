@@ -144,7 +144,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
     <>
       {!!forbidden ? (
         <AlertDialog onOpenChange={setOpen} open={open}>
-          <AlertDialogTrigger>
+          <AlertDialogTrigger asChild>
             <Button
               className="group relative"
               disabled={disabled}
@@ -164,7 +164,8 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
               <AlertDialogTitle>{"Can't save!"}</AlertDialogTitle>
               <AlertDialogDescription>
                 The annotations should be in pairs. Please check annotations
-                with a <p className="inline font-bold text-violet-700">X</p>{' '}
+                with a{' '}
+                <span className="inline font-bold text-violet-700">X</span>{' '}
                 marker or single points surrounded by a circle and remove them
                 before saving.
               </AlertDialogDescription>

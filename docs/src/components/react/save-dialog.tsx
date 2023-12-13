@@ -178,9 +178,9 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
               />
             </div>
           </div>
-          <div className="mb-2 flex items-center gap-2 sm:flex-col md:flex-row">
-            <div className="h-[200px] w-[200px] animate-pulse rounded-md border border-input bg-accent"></div>
-            <div className="h-[200px] w-[300px]">
+          <div className="mb-2 flex items-center gap-2 flex-row">
+            <div className="h-[20vh] w-[20vw] animate-pulse rounded-md border border-input bg-accent"></div>
+            <div className="h-[200px]">
               <div className="flex flex-col gap-2">
                 {Object.entries(pairs || {}).map(([color, value]) => (
                   <div
@@ -216,7 +216,6 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
                       Distance
                     </Label>
                     <Input
-                      className="w-full"
                       id={'pair-distance'}
                       min={-1}
                       name={'pair-distance'}

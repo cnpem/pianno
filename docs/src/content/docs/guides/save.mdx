@@ -10,7 +10,7 @@ import { SaveIcon } from 'lucide-react';
 Upon completion of a set of annotations, saving them for future use
 in the restoration processing is possible. This can be achieved by
 clicking the `save` <span className='inline-flex items-baseline'>
-<SaveIcon className='self-center w-5 h-5'/></span> button in the toolbar.
+<SaveIcon className='self-center w-4 h-4'/></span> button in the toolbar.
 
 This will open a dialog that allows you to save the annotations to a
 JSON file or copy it to the clipboard after properly filling a form
@@ -19,7 +19,6 @@ with both the image metadata and the annotations metadata.
 Suppose you have the following annotations:
 
 import SaveAlert from '@/components/SaveAlert.astro'
-import Save from '@/components/Save.astro'
 import { Image } from 'astro:assets';
 import single from '../../../assets/save-annot/single-annot.png';
 import trio from '../../../assets/save-annot/trio-annot.png';
@@ -38,7 +37,7 @@ import trio from '../../../assets/save-annot/trio-annot.png';
 </div>
 
 You may try to save them by clicking the `save` <span className='inline-flex items-baseline'>
-<SaveIcon className='self-center w-5 h-5'/></span> button below.
+<SaveIcon className='self-center w-4 h-4'/></span> button below.
 
 <SaveAlert />
 

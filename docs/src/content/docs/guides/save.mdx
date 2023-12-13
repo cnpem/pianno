@@ -2,38 +2,48 @@
 title: Save annotations
 description: Save your annotations to JSON.
 sidebar:
-    order: 4
+  order: 4
 ---
 
-Upon completion of a set of annotations, saving them for future use 
-in the restoration processing is possible. This can be achieved by 
-clicking the `save` button in the toolbar.
+import { SaveIcon } from 'lucide-react';
+
+Upon completion of a set of annotations, saving them for future use
+in the restoration processing is possible. This can be achieved by
+clicking the `save` <span className='inline-flex items-baseline'>
+<SaveIcon className='self-center w-5 h-5'/></span> button in the toolbar.
 
 This will open a dialog that allows you to save the annotations to a
-JSON file or copy it to the clipboard after properly filling a form 
+JSON file or copy it to the clipboard after properly filling a form
 with both the image metadata and the annotations metadata.
 
 Suppose you have the following annotations:
 
-import SaveAlert from '@/components/SaveAlert.astro'
+import SaveAlert from '@/components/SaveAlert.astro';
 import { Image } from 'astro:assets';
-import single from '../../../assets/save-annot/single-annot.png'
-import trio from '../../../assets/save-annot/trio-annot.png'
+import single from '../../../assets/save-annot/single-annot.png';
+import trio from '../../../assets/save-annot/trio-annot.png';
 
-<div className='flex flex-row gap-1 justify-center items-center'>
-    <Image className='w-44 rounded-md shadow-lg border border-accent' src={single} alt='Single annotation' />
-    <Image className='w-44 rounded-md shadow-lg border border-accent' src={trio} alt='Trio annotation'  />
+<div className="flex flex-row items-center justify-center gap-1">
+  <Image
+    className="w-44 rounded-md border border-accent shadow-lg"
+    src={single}
+    alt="Single annotation"
+  />
+  <Image
+    className="w-44 rounded-md border border-accent shadow-lg"
+    src={trio}
+    alt="Trio annotation"
+  />
 </div>
 
 You may try to save them by clicking the `save` button below.
 
-<SaveAlert/>
+<SaveAlert />
 
 :::caution[Invalid annotations!]
-Annotations cannot be saved unless they constitute a valid set of 
-pairs. This implies the absence of singular points or the presence 
-of more than two points of identical color. In other words, it is 
+Annotations cannot be saved unless they constitute a valid set of
+pairs. This implies the absence of singular points or the presence
+of more than two points of identical color. In other words, it is
 necessary to eliminate all points encircled by a **ring** marker and all
- **X** markers.
+**X** markers.
 :::
-

@@ -5,8 +5,11 @@ sidebar:
     order: 2
 ---
 
+import { ImageIcon } from 'lucide-react';
+
 In order to start annotating your images, you need to load them into the app. 
-You can do this by clicking the `Load Image` button in the app toolbar, whose 
+You can do this by clicking the `Load Image` <span className='inline-flex items-baseline'>
+<ImageIcon className='self-center w-4 h-4'/></span> button in the app toolbar, whose 
 simplified representation is shown below. This will open a dialog that allows
 you to select a `.png` or `.raw/.b` file from your computer, provided that you have 
 *filled correctly* the metadata fields for the `raw` images. 

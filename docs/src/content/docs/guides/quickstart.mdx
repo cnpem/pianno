@@ -4,3 +4,53 @@ description: Quickstart guide for Pianno.
 sidebar:
     order: 1
 ---
+import { ImageIcon, SaveIcon, PenIcon, EraserIcon } from 'lucide-react';
+import LoadImage from '@/components/LoadImage.astro';
+import Save from '@/components/Save.astro';
+
+Pianno is the short form of **Pi**mega **Anno**tator, an 
+auxiliar tool for the process of alignment of modules and stripes 
+of the Pimega detectors' images. 
+
+With Pianno one can annotate points in the images and export them for
+latter use in the alignment process. It is necessary to select pairs 
+of points in such a way that, for a pair **p** and **q**, one of three possible 
+constraints is satisfied:
+
+- Horizontal alignment ( the x coordinate of **p** is the same as the
+ x coordinate of **q** )
+- Vertical alignment ( the y coordinate of **p** is the same as the
+ y coordinate of **q** )
+- Euclidean alignment ( the distance between **p** and **q** satisfies
+ a known value )
+
+ ## Accessing Pianno
+
+ The Pianno application is available in the following link:
+ [Pianno](https:/example.com/)
+
+ No installation or download is required, just access the link and
+    start using it.
+
+## Using Pianno
+
+The annotation process is divided in three main steps:
+
+1. Load the image to be annotated by clicking the `Load Image` <span className='inline-flex items-baseline'><ImageIcon className='self-center w-4 h-4'/></span>
+button. A simple demo is displayed below:
+
+<LoadImage/>
+
+2. Start annotating pairs of points on the loaded image using the `pen` <span className='inline-flex items-baseline'><PenIcon className='self-center w-4 h-4'/></span>
+ tool. The `eraser` <span className='inline-flex items-baseline'><EraserIcon className='self-center w-4 h-4'/></span> tool can be useful in case of missannotation. It is 
+ very intuitive to use, just select a color corresponding to the type
+ of alignment of the pair of points you intend to annotate and click on
+ the image to paint the pixel marked on the cursor.
+
+3. Export the annotations to a JSON file by clicking the `save` <span className='inline-flex items-baseline'>
+<SaveIcon className='self-center w-4 h-4'/></span> button. Then,
+ one must fill a quick form with both the image metadata and 
+ the annotations metadata. This file serves as input for the alignment
+ process. A simple demo is displayed below:
+
+ <Save/>

@@ -1,0 +1,41 @@
+---
+import SaveDialog from './react/save-dialog';
+import { Button } from './ui/button';
+---
+
+<div class="border rounded-sm flex flex-col items-center justify-center h-40">
+  <div
+    class="flex p-1 gap-1 flex-row h-fit opacity-90 items-center border shadow-lg rounded-md"
+  >
+    {
+      Array.from({ length: 2 }).map((_, i) => (
+        <Button
+          client:load
+          className="animate-pulse bg-muted"
+          key={i}
+          variant="outline"
+          size="icon"
+        />
+      ))
+    }
+    <span class="text-input">|</span>
+    <Button
+      className="animate-pulse bg-muted"
+      client:load
+      variant="outline"
+      size="icon"
+    />
+    <SaveDialog client:load />
+    {
+      Array.from({ length: 2 }).map((_, i) => (
+        <Button
+          className="animate-pulse bg-muted"
+          client:load
+          key={i}
+          variant="outline"
+          size="icon"
+        />
+      ))
+    }
+  </div>
+</div>

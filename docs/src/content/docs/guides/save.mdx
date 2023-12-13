@@ -19,6 +19,7 @@ with both the image metadata and the annotations metadata.
 Suppose you have the following annotations:
 
 import SaveAlert from '@/components/SaveAlert.astro'
+import Save from '@/components/Save.astro'
 import { Image } from 'astro:assets';
 import single from '../../../assets/save-annot/single-annot.png';
 import trio from '../../../assets/save-annot/trio-annot.png';
@@ -49,3 +50,78 @@ necessary to eliminate all points encircled by a **ring** marker and
 all **X** markers.
 :::
 
+## After Corrections
+
+After correcting the annotations, you may try to save them by clicking
+the `save` button below. Then, you will be asked to fill the form with
+the image metadata and the annotations metadata, which are:
+
+- Device name (e.g. `pi135D`)
+- Device id (identifier referring to the beamline, e.g. `#3`)
+- Geometry (e.g. `planar`)
+- Distance for the measured image (in mm), only used for nonplanar 
+devices. For planar devices, `0` can be used
+
+For each pair of annotations, you will be asked to provide / confirm:
+
+- a known euclidean distance (pixel unit) between the two points. For
+*horizontal* and *vertical* annotations, `-1` is preferred
+- the type of the pair of annotations (e.g. `horizontal`)
+
+Finally, you will be able to save the annotations to a JSON file or
+copy them to the clipboard by clicking the corresponding button.
+
+### Try it out!
+For the next example, we will assume the following pair of annotations:
+<ul>
+    <li className='text-[#e57373]'> {'vertical -> (0 0) - (10 10)'}</li>
+    <li className='text-[#42a5f5]'> {'horizontal -> (120 190) - (110 210)'}</li>
+    <li className='text-[#4caf50]'> {'euclidean -> (20 120) - (110 120)'}</li>    
+</ul>
+
+> Note that we used the following notation to denote the pairs:
+>    ```latex
+>    type -> (x1 y1) - (x2 y2)
+>    ```
+
+<Save/>
+
+:::note
+Since this is a *demo*, the annotations are not saved anywhere and the
+canvas preview is not added to the dialog. So, by clicking the `search`
+button of each pair, you will only get an alert with the corresponding
+points coordinates instead of actually snapping to the corresponding 
+points in the canvas.
+:::
+
+## JSON Format
+
+The JSON format of the annotations is the following:
+
+```json
+{   
+    "date": "YYYY-MM-DD HH:mm:ss",
+    "device": {
+        "name": "piXYZD",
+        "id": "#N",
+        "geometry": "geometry",
+        "distance": "number"
+    },
+    "annotations": [
+        {
+            "type": "type",
+            "distance": "number",
+            "points": [
+                {
+                    "x": "x1",
+                    "y": "y1"
+                },
+                {
+                    "x": "x2",
+                    "y": "y2"
+                }
+            ]
+        }
+    ]
+}
+```

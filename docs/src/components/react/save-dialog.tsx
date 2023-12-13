@@ -113,8 +113,8 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
           </DialogDescription>
         </DialogHeader>
         <form ref={ref}>
-          <div className="grid gap-4 py-4">
-            <div className="flex flex-row items-center gap-2">
+          <div className="flex flex-col gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-2 md:flex md:flex-row">
               <Select name="device" required>
                 <SelectTrigger className="col-span-2">
                   <SelectValue placeholder="Device" />
@@ -132,13 +132,12 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
                 </SelectContent>
               </Select>
               <Label
-                className=" font-semibold text-muted-foreground"
+                className="text-right font-semibold text-muted-foreground"
                 htmlFor="device-hash"
               >
                 #
               </Label>
               <Input
-                className="w-full"
                 id="device-hash"
                 max={5}
                 min={1}
@@ -163,13 +162,12 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
                 </SelectContent>
               </Select>
               <Label
-                className="text-left text-xs font-semibold text-muted-foreground"
+                className="text-right text-xs font-semibold text-muted-foreground"
                 htmlFor="distance"
               >
                 Distance <span className="font-light">(mm)</span>
               </Label>
               <Input
-                className="col-span-3"
                 id="distance"
                 min={0}
                 name="distance"
@@ -178,8 +176,8 @@ const SaveDialog: FC<SaveDialogProps> = ({}) => {
               />
             </div>
           </div>
-          <div className="mb-2 flex items-center gap-2 flex-row">
-            <div className="h-[20vh] w-[20vw] animate-pulse rounded-md border border-input bg-accent"></div>
+          <div className="mb-2 flex flex-col items-center gap-2 sm:flex-row">
+            <div className="h-[10vh] w-full animate-pulse rounded-md border border-input bg-accent md:h-[20vh] md:w-[20vw]"></div>
             <div className="h-[200px]">
               <div className="flex flex-col gap-2">
                 {Object.entries(pairs || {}).map(([color, value]) => (

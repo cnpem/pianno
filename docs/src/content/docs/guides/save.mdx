@@ -18,7 +18,8 @@ with both the image metadata and the annotations metadata.
 
 Suppose you have the following annotations:
 
-import SaveAlert from '@/components/SaveAlert.astro';
+import SaveAlert from '@/components/SaveAlert.astro'
+import Save from '@/components/Save.astro'
 import { Image } from 'astro:assets';
 import single from '../../../assets/save-annot/single-annot.png';
 import trio from '../../../assets/save-annot/trio-annot.png';
@@ -41,9 +42,10 @@ You may try to save them by clicking the `save` button below.
 <SaveAlert />
 
 :::caution[Invalid annotations!]
-Annotations cannot be saved unless they constitute a valid set of
-pairs. This implies the absence of singular points or the presence
-of more than two points of identical color. In other words, it is
-necessary to eliminate all points encircled by a **ring** marker and all
-**X** markers.
+Annotations cannot be saved unless they constitute a valid set of 
+pairs. This implies the absence of singular points or the presence 
+of more than two points of identical color. In other words, it is 
+necessary to eliminate all points encircled by a **ring** marker and 
+all **X** markers.
 :::
+

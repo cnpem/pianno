@@ -16,8 +16,8 @@ hero:
   tagline: |
     A simple tool to help you annotate pimega images.
   image:
-      light: ../../assets/hero.svg
-      dark: ../../assets/hero-dark.svg
+    light: ../../assets/hero.svg
+    dark: ../../assets/hero-dark.svg
   actions:
     - text: User Guide
       link: /pianno/guides/quickstart/
@@ -33,16 +33,24 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 ## Overview
 
 <CardGrid stagger>
-<Card title="Read the docs" icon="open-book">
-		Learn the basics in [user guide](/pianno/guides/quickstart).
-	</Card>
-	<Card title="Load image" icon="add-document">
-		Load a `pimega image` to start annotating.
-	</Card>
-	<Card title="First annotation" icon="pencil">
-    Start annotating pairs on the image.
-	</Card>
-	<Card title="Save your annotations" icon="document">
-		Hit `save` and export your annotations.
-	</Card>
+  <a href="/pianno/guides/quickstart" className="no-underline">
+    <Card title="Read the docs" icon="open-book">
+      Learn the basics in user guide.
+    </Card>
+  </a>
+  <a href="/pianno/guides/load-image" className="no-underline">
+    <Card title="Load image" icon="add-document">
+      Load a `pimega image` to start annotating.
+    </Card>
+  </a>
+  <a href="/pianno/guides/annotation/" className="no-underline">
+    <Card title="First annotation" icon="pencil">
+      Start annotating pairs on the image.
+    </Card>
+  </a>
+  <a href="/pianno/guides/save" className="no-underline">
+    <Card title="Save your annotations" icon="document">
+      Hit `save` and export your annotations.
+    </Card>
+  </a>
 </CardGrid>

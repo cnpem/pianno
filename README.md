@@ -1,12 +1,12 @@
-# Pianno: The Pimega Annotator
+# pianno: The Pimega Annotator
+
 A simple tool to help you annotate pimega images.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/src/assets/hero-dark.svg">
-  <img alt="Shows the logo for the Pianno web app: A Pimega annotator.." 
+  <img alt="Shows the logo for the pianno web app: A Pimega annotator.." 
     src="docs/src/assets/hero.svg">
 </picture>
-
 
 ## User guide and documentation
 
@@ -19,11 +19,13 @@ For a complete guide with examples and documentation, please visit [the docs](ht
 First, run the development server:
 
 #### bun
+
 ```bash
 bun dev
 ```
 
 #### npm
+
 ```bash
 npm run dev
 ```

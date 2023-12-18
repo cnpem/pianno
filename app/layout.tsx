@@ -6,7 +6,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   description: 'Pimega Annotator',
-  title: 'Pianno',
+  title: 'pianno',
 };
 
 export default function RootLayout({

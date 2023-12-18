@@ -39,7 +39,7 @@ import {
 } from '@/hooks/use-store';
 import { PIMEGA_DEVICES, PIMEGA_GEOMETRIES } from '@/lib/constants';
 import { ANNOTATION_DISTANCE_TYPES } from '@/lib/constants';
-import { AnnotationGroup, annotationSchema } from '@/lib/types';
+import { AnnotationGroup, Metadata } from '@/lib/types';
 import { fileSave } from 'browser-fs-access';
 import {
   BanIcon,
@@ -53,7 +53,6 @@ import {
 import { Eye, EyeOff } from 'lucide-react';
 import { FC, useEffect, useReducer, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { z } from 'zod';
 
 import { PreviewCanvas } from '../canvas';
 import { Toggle } from '../ui/toggle';
@@ -88,7 +87,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
     }
   });
 
-  const handleSaveClick = (data: Partial<z.infer<typeof annotationSchema>>) => {
+  const handleSaveClick = (data: Metadata) => {
     // Create a blob of the data
     const fileToSave = new Blob([JSON.stringify(data)], {
       type: 'application/json',
@@ -106,7 +105,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
       });
   };
 
-  const handleCopyClick = (data: Partial<z.infer<typeof annotationSchema>>) => {
+  const handleCopyClick = (data: Metadata) => {
     // Save the file
     copy(JSON.stringify(data)).then(() => {
       setIsCopied(true);
@@ -220,16 +219,16 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                   </Select>
                   <Label
                     className=" font-semibold text-muted-foreground"
-                    htmlFor="device-hash"
+                    htmlFor="device-id"
                   >
                     #
                   </Label>
                   <Input
                     className="w-full"
-                    id="device-hash"
+                    id="device-id"
                     max={5}
                     min={1}
-                    name="device-hash"
+                    name="device-id"
                     required
                     type="number"
                   />

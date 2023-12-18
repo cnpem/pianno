@@ -1,9 +1,9 @@
 'use server';
 
 import {
-  AnnotationData,
   AnnotationGroup,
   AnnotationObject,
+  Metadata,
   annotationSchema,
   openImageSchema,
 } from '@/lib/types';
@@ -27,19 +27,18 @@ export async function openImage(data: FormData) {
 export async function exportAnnotation(
   data: FormData,
   dataurl: string,
-): Promise<Partial<AnnotationData>> {
+): Promise<Metadata> {
   const device = data.get('device');
-  const hash = data.get('device-hash');
-
-  const pimega_name = `${device}#${hash}`;
+  const id = data.get('device-id');
 
   const parsed = annotationSchema.safeParse({
     date: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+    device_id: id,
+    device_name: device,
     distance: data.get('distance'),
     geometry: data.get('geometry'),
     pair_distance: data.getAll('pair-distance'),
     pair_distance_type: data.getAll('pair-distance-type'),
-    pimega_name,
   });
 
   if (!parsed.success) {
@@ -53,10 +52,7 @@ export async function exportAnnotation(
   const ctx = canvas.getContext('2d');
 
   if (dataurl === 'data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=') {
-    return {
-      ...parsed.data,
-      pairs: annotationGroup,
-    };
+    return {} as Metadata;
   }
 
   return new Promise((resolve, reject) => {
@@ -110,16 +106,34 @@ export async function exportAnnotation(
           });
         }, 0);
 
-        const annotationData = {
+        const metadata: Metadata = {
+          annotations: [],
           date: parsed.data.date,
-          distance: parsed.data.distance,
-          geometry: parsed.data.geometry,
-          pairs: annotationGroup,
-          pimega_name: parsed.data.pimega_name,
-        } as Partial<AnnotationData>;
+          device: {
+            distance: parsed.data.distance,
+            geometry: parsed.data.geometry,
+            id: parsed.data.device_id,
+            name: parsed.data.device_name,
+          },
+        };
 
-        console.log(annotationData);
-        resolve(annotationData);
+        Object.keys(annotationGroup).forEach((color) => {
+          const annotations = annotationGroup[color];
+          const points = annotations.map((annotation) => ({
+            x: annotation.x,
+            y: annotation.y,
+          }));
+          const distance = annotations[0].distance;
+          const type = annotations[0].type;
+          metadata.annotations.push({
+            distance,
+            points,
+            type,
+          });
+        });
+
+        console.log(metadata);
+        resolve(metadata);
       })
       .catch((err) => {
         reject(err);

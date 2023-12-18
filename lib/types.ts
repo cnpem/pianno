@@ -21,17 +21,13 @@ export const openImageSchema = z.object({
 
 export const annotationSchema = z.object({
   date: z.string().refine((s) => dayjs(s, 'YYYY-MM-DD HH:mm:ss').isValid()),
+  device_id: z.string(),
+  device_name: z.string().refine((s) => s.startsWith('pi')),
   distance: z.coerce.number(),
   geometry: z.string(),
   pair_distance: z.array(z.coerce.number()),
   pair_distance_type: z.array(z.string()),
-  pimega_name: z.string().refine((s) => s.startsWith('pi')),
 });
-
-type AnnotationSchema = z.infer<typeof annotationSchema>;
-export type AnnotationData = AnnotationSchema & {
-  pairs: AnnotationGroup;
-};
 
 export type DistanceTypes = (typeof ANNOTATION_DISTANCE_TYPES)[number];
 
@@ -49,4 +45,22 @@ export type AnnotationObject = {
 
 export type AnnotationGroup = {
   [key: string]: Annotation[];
+};
+
+export type Metadata = {
+  annotations: {
+    distance: number;
+    points: {
+      x: number;
+      y: number;
+    }[];
+    type: string;
+  }[];
+  date: string;
+  device: {
+    distance: number;
+    geometry: string;
+    id: string;
+    name: string;
+  };
 };

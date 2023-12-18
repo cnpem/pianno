@@ -2,5 +2,52 @@
 title: Annotation
 description: Start annotating your data with the Pianno annotation tool.
 sidebar:
-    order: 3
+  order: 3
 ---
+
+import { PenIcon, EraserIcon } from 'lucide-react';
+
+The annotation process consists of using the `pen` <span className='inline-flex items-baseline'><PenIcon className='self-center w-4 h-4'/></span> tool to mark pairs of points on the image that should be used to correct it's alignment.
+
+For a pair of points **p** and **q**, there are three types of annotations that can be made:
+
+- Horizontal alignment ( the x coordinate of **p** is the same as the
+  x coordinate of **q** )
+- Vertical alignment ( the y coordinate of **p** is the same as the
+  y coordinate of **q** )
+- Euclidean alignment ( the distance between **p** and **q** satisfies
+  a known value )
+
+To differentiate between these types of annotations, the user can select and create colors for
+each type of annotation in the `Color Picker` menu.
+
+[insert image of color picker]
+
+## Creating an annotation
+
+To create an annotation, the user must first select the `pen`<span className="inline-flex items-baseline"><PenIcon className="h-4 w-4 self-center" /></span>
+tool and a color for the type of annotation they want to create.
+
+With a color selected, the user can click on the image to create a point of that color. The user can click on
+the image again, a second point will be created with the same color.
+
+If the `Preview Mode` is enabled, the user will see a line connecting the two points and markers around
+the points indicating the type of annotation that will be created.
+
+If there are more than two points of the same color, the user will see a line connecting
+the last two points and other markers indicating the points that should be erased before saving.
+There are three types of markers that can be displayed in the `Preview Mode`:
+
+- Annotation points ( the points that will be used to create the annotation )
+- Single points ( when just one point of a color is created )
+- Extra points ( when there are more than two points of the same color )
+
+Single points are displayed as a circle around the point, Extra points are displayed as a X over the point,
+and Annotation points have a line connecting them and three markers around them indicating the type of annotation
+that will be created:
+
+- Horizontal alignment: a triangle pointing sideways in the direction of the other point of the annotation
+- Vertical alignment: a triangle pointing up or down in the direction of the other point of the annotation
+- Euclidean alignment: a circle around the point
+
+Before saving, the user needs to erase points manually by selecting the `eraser`<span className="inline-flex items-baseline"><EraserIcon className="h-4 w-4 self-center" /></span> tool.

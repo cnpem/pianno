@@ -45,7 +45,7 @@ const Filters = withFilters(Container, {
 const Bunny = () => {
   const theta = useIteration(0.04);
   const app = useApp();
-  const src = '/dino.png';
+  const src = '/pianno-floating-logo.png';
 
   return (
     <Sprite

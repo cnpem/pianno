@@ -10,7 +10,7 @@ A simple tool to help you annotate pimega images.
 
 ## User guide and documentation
 
-For a complete guide with examples and documentation, please visit [the docs](https://matyson.github.io/pianno/).
+For a complete guide with examples and documentation, please visit [the docs](https://cnpem.github.io/pianno/)).
 
 ## Developers
 

@@ -132,7 +132,6 @@ export async function exportAnnotation(
           });
         });
 
-        console.log(metadata);
         resolve(metadata);
       })
       .catch((err) => {
@@ -187,7 +186,6 @@ export async function getAnnotationGroup(
       })
       .catch((err) => {
         reject(err);
-        // console.log(err);
       });
   });
 }

@@ -109,10 +109,10 @@ const Toolbar = () => {
       {
         // show message if no image is loaded
         img.src === '#' && (
-          <div className="fixed inset-x-0 top-20 z-10 text-center text-input">
+          <div className="fixed inset-x-0 top-20 z-10 text-center text-violet-300">
             <span className="items-center justify-center font-mono font-semibold">
               Please load an image to start{' '}
-              <ImageIcon className="inline h-4 w-4 stroke-purple-800" />{' '}
+              <ImageIcon className="inline-block h-4 w-4 animate-pulse stroke-violet-800" />{' '}
             </span>
           </div>
         )

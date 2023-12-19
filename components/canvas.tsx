@@ -43,7 +43,7 @@ const Filters = withFilters(Container, {
 });
 
 const Bunny = () => {
-  const theta = useIteration(0.04);
+  const theta = useIteration(0.03);
   const app = useApp();
   const src = '/pianno-floating-logo.png';
 
@@ -53,7 +53,7 @@ const Bunny = () => {
       image={src}
       scale={0.4}
       x={app.screen.width / 2}
-      y={app.screen.height / 2 + Math.sin(theta) * 100}
+      y={app.screen.height / 2 + Math.sin(theta) * 15}
       // rotation={Math.cos(theta) * 0.98}
     />
   );

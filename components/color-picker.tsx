@@ -6,14 +6,13 @@ import {
   useStoreCurrentColor,
 } from '@/hooks/use-store';
 import { cn } from '@/lib/utils';
-import { PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
 import { MoveDiagonal, MoveHorizontal, MoveVertical } from 'lucide-react';
 import { FC } from 'react';
 import { HexColorPicker } from 'react-colorful';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { Button } from './ui/button';
-import { Popover } from './ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 interface ColorPickerProps {}
 

@@ -1,5 +1,6 @@
+import { useStoreImg } from '@/hooks/use-store';
 import { cn } from '@/lib/utils';
-import { ExternalLink } from 'lucide-react';
+import { CornerRightDown, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { FC } from 'react';
 import { useReducer } from 'react';
@@ -18,9 +19,18 @@ interface HelpProps {}
 
 const Help: FC<HelpProps> = ({}) => {
   const [open, toggleOpen] = useReducer((s) => !s, false);
+  const { src } = useStoreImg();
   useHotkeys('h', () => toggleOpen());
   return (
     <Dialog onOpenChange={toggleOpen} open={open}>
+      {src === '#' && (
+        <div className="fixed bottom-12 right-4 z-10 text-center text-violet-300">
+          <span className="items-center justify-center font-mono font-semibold">
+            if you need help{' '}
+            <CornerRightDown className="inline-block h-4 w-4 animate-pulse stroke-violet-800" />{' '}
+          </span>
+        </div>
+      )}
       <DialogTrigger asChild>
         <Button
           className="fixed bottom-1 right-1 z-10 opacity-90 shadow-lg"

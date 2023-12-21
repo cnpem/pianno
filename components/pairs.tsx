@@ -1,5 +1,9 @@
 import { getAnnotationGroup } from '@/app/actions';
-import { useStoreColors, useStoreImg, useStoreLabel } from '@/hooks/use-store';
+import {
+  useStoreColors,
+  useStoreLabel,
+  useStoreViewport,
+} from '@/hooks/use-store';
 import { AnnotationGroup } from '@/lib/types';
 import { Graphics } from '@pixi/react';
 import * as PIXI from 'pixi.js';
@@ -103,13 +107,14 @@ const Pairs: FC<PairsProps> = ({}) => {
   const label = useStoreLabel();
   const [annotationPoints, setAnnotationPoints] =
     useState<AnnotationGroup | null>(null);
-  const img = useStoreImg();
+  const [markerRadius, setMarkerRadius] = useState<number>(0);
   const colors = useStoreColors();
-  const { height, width } = img;
-  const markerRadius =
-    Math.floor(Math.max(height, width) * 0.01) < 5
-      ? 5
-      : Math.floor(Math.max(height, width) * 0.01);
+  const viewport = useStoreViewport();
+
+  useEffect(() => {
+    // reset markerRadius when viewport changes
+    setMarkerRadius((viewport?.screenHeightInWorldPixels || 5) / 100);
+  }, [viewport?.screenHeightInWorldPixels]);
 
   useEffect(() => {
     getAnnotationGroup(label).then((data) => {
@@ -219,7 +224,7 @@ const Pairs: FC<PairsProps> = ({}) => {
         });
       }
     },
-    [colors, annotationPoints, img],
+    [colors, annotationPoints, markerRadius],
   );
 
   return <Graphics blendMode={PIXI.BLEND_MODES.OVERLAY} draw={draw} />;

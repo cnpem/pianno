@@ -29,11 +29,11 @@ const annotationMarker = (props: annotationMarkerProps) => {
       graphics.lineStyle(radius / 4, color, 1);
       graphics.beginFill(color);
       graphics.drawPolygon([
-        x,
+        x + radius,
         y,
-        x - radius / 2 - radius,
+        x - radius / 2,
         y - (radius * 1.73) / 2,
-        x - radius / 2 - radius,
+        x - radius / 2,
         y + (radius * 1.73) / 2,
       ]);
       graphics.endFill();
@@ -42,11 +42,11 @@ const annotationMarker = (props: annotationMarkerProps) => {
       graphics.lineStyle(radius / 4, color, 1);
       graphics.beginFill(color);
       graphics.drawPolygon([
-        x,
+        x - radius,
         y,
-        x + radius / 2 + radius,
+        x + radius / 2,
         y - (radius * 1.73) / 2,
-        x + radius / 2 + radius,
+        x + radius / 2,
         y + (radius * 1.73) / 2,
       ]);
       graphics.endFill();
@@ -56,11 +56,11 @@ const annotationMarker = (props: annotationMarkerProps) => {
       graphics.beginFill(color);
       graphics.drawPolygon([
         x,
-        y,
+        y + radius,
         x - (radius * 1.73) / 2,
-        y - radius / 2 - radius,
+        y - radius / 2,
         x + (radius * 1.73) / 2,
-        y - radius / 2 - radius,
+        y - radius / 2,
       ]);
       graphics.endFill();
       break;
@@ -69,11 +69,11 @@ const annotationMarker = (props: annotationMarkerProps) => {
       graphics.beginFill(color);
       graphics.drawPolygon([
         x,
-        y,
+        y - radius,
         x - (radius * 1.73) / 2,
-        y + radius / 2 + radius,
+        y + radius / 2,
         x + (radius * 1.73) / 2,
-        y + radius / 2 + radius,
+        y + radius / 2,
       ]);
       graphics.endFill();
       break;
@@ -105,6 +105,11 @@ const Pairs: FC<PairsProps> = ({}) => {
     useState<AnnotationGroup | null>(null);
   const img = useStoreImg();
   const colors = useStoreColors();
+  const { height, width } = img;
+  const markerRadius =
+    Math.floor(Math.max(height, width) * 0.01) < 5
+      ? 5
+      : Math.floor(Math.max(height, width) * 0.01);
 
   useEffect(() => {
     getAnnotationGroup(label).then((data) => {
@@ -117,12 +122,10 @@ const Pairs: FC<PairsProps> = ({}) => {
     (g: PIXI.Graphics) => {
       g.clear();
       if (annotationPoints) {
-        const { height, width } = img;
         Object.values(annotationPoints).forEach((labelPoints, _) => {
           if (!labelPoints) return;
           const [a, b, ...outliers] = labelPoints;
           const color = a.color;
-          const markerRadius = Math.max(height, width) * 0.01;
           if (!b) {
             // marking single point
             annotationMarker({

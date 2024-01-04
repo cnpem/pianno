@@ -71,9 +71,10 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
   const label = useStoreLabel();
   const viewport = useStoreViewport();
 
-  const [pairs, setPairs] = useState<AnnotationGroup | null>(null);
-  const forbidden =
-    pairs && Object.values(pairs).some((pair) => pair.length !== 2);
+  const [pairs, setPairs] = useState<AnnotationGroup>({});
+  const canSave =
+    Object.values(pairs).length > 0 &&
+    !Object.values(pairs).some((pair) => pair.length !== 2);
 
   useEffect(() => {
     getAnnotationGroup(label).then((res) => {
@@ -141,7 +142,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
 
   return (
     <>
-      {!!forbidden ? (
+      {!canSave ? (
         <AlertDialog onOpenChange={setOpen} open={open}>
           <AlertDialogTrigger asChild>
             <Button
@@ -162,11 +163,20 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
             <AlertDialogHeader>
               <AlertDialogTitle>{"Can't save!"}</AlertDialogTitle>
               <AlertDialogDescription>
-                The annotations should be in pairs. Please check annotations
-                with a{' '}
-                <span className="inline font-bold text-violet-700">X</span>{' '}
-                marker or single points surrounded by a circle and remove them
-                before saving.
+                {Object.values(pairs).length === 0 ? (
+                  <>
+                    You need to annotate at least one pair of points before
+                    saving.
+                  </>
+                ) : (
+                  <>
+                    The annotations should be in pairs. Please check annotations
+                    with a{' '}
+                    <span className="inline font-bold text-violet-700">X</span>{' '}
+                    marker or single points surrounded by a circle and remove
+                    them before saving.
+                  </>
+                )}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -175,7 +185,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
           </AlertDialogContent>
         </AlertDialog>
       ) : (
-        <Dialog onOpenChange={handleOpenChange} open={open}>
+        <Dialog modal={false} onOpenChange={handleOpenChange} open={open}>
           <DialogTrigger asChild>
             <Button
               className="group relative"

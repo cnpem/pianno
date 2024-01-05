@@ -373,6 +373,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                 <div className="flex flex-row gap-4">
                   {!isCopied ? (
                     <Button
+                      className="text-xs"
                       formAction={copyAction}
                       type="submit"
                       variant="outline"
@@ -387,6 +388,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                     </Button>
                   )}
                   <Button
+                    className="text-xs"
                     formAction={saveAction}
                     type="submit"
                     variant="default"

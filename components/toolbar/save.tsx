@@ -50,12 +50,8 @@ import {
   SaveIcon,
   SearchIcon,
 } from 'lucide-react';
-import { Eye, EyeOff } from 'lucide-react';
-import { FC, useEffect, useReducer, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-
-import { PreviewCanvas } from '../canvas';
-import { Toggle } from '../ui/toggle';
 
 interface SaveDialogProps {
   disabled?: boolean;
@@ -65,7 +61,6 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
   const [_, copy] = useCopyToClipboard();
   const [isCopied, setIsCopied] = useState(false);
   const [open, setOpen] = useState(false);
-  const [toggled, toggle] = useReducer((state) => !state, true);
 
   const colors = useStoreColors();
   const label = useStoreLabel();
@@ -83,7 +78,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
 
   useHotkeys(['4'], () => {
     if (!disabled) {
-      handleOpenChange(true);
+      setOpen(true);
     }
   });
 
@@ -98,7 +93,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
       fileName: 'annot.json',
     })
       .then(() => {
-        handleOpenChange(false);
+        setOpen(false);
       })
       .catch((err) => {
         console.log(err);
@@ -123,13 +118,6 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
   async function copyAction(data: FormData) {
     const res = await exportAnnotation(data, label);
     handleCopyClick(res);
-  }
-
-  function handleOpenChange(open: boolean) {
-    setOpen(open);
-    if (!open) {
-      window.location.reload();
-    }
   }
 
   const typeFromColor = (color: string) => {
@@ -175,7 +163,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
           </AlertDialogContent>
         </AlertDialog>
       ) : (
-        <Dialog onOpenChange={handleOpenChange} open={open}>
+        <Dialog modal={false} onOpenChange={setOpen} open={open}>
           <DialogTrigger asChild>
             <Button
               className="group relative"
@@ -190,7 +178,10 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
               <SaveIcon className="h-4 w-4" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[725px]">
+          <DialogContent
+            className="left-auto right-1 translate-x-0 opacity-95 sm:max-w-[350px]"
+            onPointerDownOutside={(e) => e.preventDefault()}
+          >
             <DialogHeader>
               <DialogTitle>Save your Annotations</DialogTitle>
               <DialogDescription>
@@ -198,12 +189,18 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                 save or copy to clipboard when you are done.
               </DialogDescription>
             </DialogHeader>
-            <form>
-              <div className="grid gap-4 py-4">
-                <div className="flex flex-row items-center gap-2">
+            <form className="flex flex-col gap-2">
+              <div className="grid grid-cols-2 items-center gap-2">
+                <div className="relative">
+                  <Label
+                    className="absolute left-2 top-1 z-10 -translate-y-2 scale-75 text-sm font-semibold text-muted-foreground"
+                    htmlFor="device"
+                  >
+                    Device
+                  </Label>
                   <Select name="device" required>
-                    <SelectTrigger className="col-span-2">
-                      <SelectValue placeholder="Device" />
+                    <SelectTrigger id="device">
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {PIMEGA_DEVICES.map((device) => (
@@ -217,14 +214,16 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+                <div className="relative">
                   <Label
-                    className=" font-semibold text-muted-foreground"
+                    className="absolute left-2 top-1 z-10 -translate-y-2 scale-75 text-sm font-semibold text-muted-foreground"
                     htmlFor="device-id"
                   >
                     #
                   </Label>
                   <Input
-                    className="w-full"
+                    className="peer"
                     id="device-id"
                     max={5}
                     min={1}
@@ -232,9 +231,17 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                     required
                     type="number"
                   />
+                </div>
+                <div className="relative">
+                  <Label
+                    className="absolute left-2 top-1 z-10 -translate-y-2 scale-75 text-sm font-semibold text-muted-foreground"
+                    htmlFor="geometry"
+                  >
+                    Geometry
+                  </Label>
                   <Select name="geometry" required>
-                    <SelectTrigger className="col-span-2">
-                      <SelectValue placeholder="Geometry" />
+                    <SelectTrigger id="geometry">
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {PIMEGA_GEOMETRIES.map((geometry) => (
@@ -248,14 +255,16 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+                <div className="relative">
                   <Label
-                    className="text-left text-xs font-semibold text-muted-foreground"
+                    className="absolute top-1 z-10 -translate-y-2 scale-75 text-sm text-muted-foreground"
                     htmlFor="distance"
                   >
                     Distance <span className="font-light">(mm)</span>
                   </Label>
                   <Input
-                    className="col-span-3"
+                    className="peer"
                     id="distance"
                     min={0}
                     name="distance"
@@ -264,10 +273,9 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                   />
                 </div>
               </div>
-              <div className="mb-2 flex flex-row items-center gap-2">
-                <div className="">
-                  <PreviewCanvas toggled={toggled} />
-                </div>
+              <div className="flex flex-row items-center gap-2"></div>
+
+              <div className="">
                 <ScrollArea className="h-[350px]">
                   <div className="flex flex-col gap-2">
                     {Object.entries(pairs || {}).map(([color, value]) => (
@@ -281,7 +289,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                             viewport?.snap(value[0].x, value[0].y, {
                               removeOnComplete: true,
                             });
-                            viewport?.setZoom(2);
+                            viewport?.setZoom(5);
                           }}
                           size="icon"
                           style={{ borderColor: color }}
@@ -298,58 +306,60 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                             stroke={color}
                           />
                         </Button>
-                        <Label
-                          className="text-left text-xs font-semibold text-muted-foreground"
-                          htmlFor={'pair-distance'}
-                        >
-                          Distance
-                        </Label>
-                        <Input
-                          className="w-full"
-                          id={'pair-distance'}
-                          min={-1}
-                          name={'pair-distance'}
-                          required
-                          type="number"
-                        />
-                        <Select
-                          defaultValue={typeFromColor(color)}
-                          name="pair-distance-type"
-                          required
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {ANNOTATION_DISTANCE_TYPES.map((type) => (
-                              <SelectItem
-                                className="cursor-pointer"
-                                key={type}
-                                value={type}
-                              >
-                                {type}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <div className="relative">
+                          <Label
+                            className="absolute left-2 top-1 z-10 -translate-y-2 scale-75 text-sm font-semibold text-muted-foreground"
+                            htmlFor={color}
+                          >
+                            Distance{' '}
+                            <span className="font-light">(pixels)</span>
+                          </Label>
+                          <Input
+                            className="w-full"
+                            id={color}
+                            min={-1}
+                            name={'pair-distance'}
+                            required
+                            type="number"
+                          />
+                        </div>
+                        <div className="relative">
+                          <Label
+                            className="absolute left-2 top-1 z-10 -translate-y-2 scale-75 text-sm font-semibold text-muted-foreground"
+                            htmlFor={(value[0].x + value[0].y).toString()}
+                          >
+                            Type
+                          </Label>
+                          <Select
+                            defaultValue={typeFromColor(color)}
+                            name="pair-distance-type"
+                            required
+                          >
+                            <SelectTrigger
+                              className="w-24"
+                              id={(value[0].x + value[0].y).toString()}
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {ANNOTATION_DISTANCE_TYPES.map((type) => (
+                                <SelectItem
+                                  className="cursor-pointer"
+                                  key={type}
+                                  value={type}
+                                >
+                                  {type}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </ScrollArea>
               </div>
               <DialogFooter className="relative">
-                <Toggle
-                  aria-label="toggle pairs"
-                  className="absolute left-0"
-                  onPressedChange={toggle}
-                  pressed={toggled}
-                >
-                  {toggled ? (
-                    <Eye className="h-4 w-4" />
-                  ) : (
-                    <EyeOff className="h-4 w-4" />
-                  )}
-                </Toggle>
                 <div className="flex flex-row gap-4">
                   {!isCopied ? (
                     <Button

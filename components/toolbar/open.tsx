@@ -14,7 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { useTemporalStore } from '@/hooks/use-store';
+import { useStoreImageMetadata, useTemporalStore } from '@/hooks/use-store';
 import { useStoreActions } from '@/hooks/use-store';
 import { RAW_DATA_TYPES } from '@/lib/constants';
 import { openImageSchema } from '@/lib/types';
@@ -39,8 +39,9 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
   const [checked, setChecked] = useState(false);
   const { clear } = useTemporalStore((state) => state);
   const formRef = useRef<HTMLFormElement>(null);
+  const imgMetadata = useStoreImageMetadata();
 
-  const { resetLabel, setImage } = useStoreActions();
+  const { setImage, setImageMetadata, softReset } = useStoreActions();
 
   useHotkeys(['3'], () => {
     setOpen(true);
@@ -90,6 +91,18 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
     return dataURL;
   };
 
+  const reset = (metadata: typeof imgMetadata) => {
+    //compare metadata w current metadata and reset if different or if current is empty
+    if (
+      metadata.name !== imgMetadata.name ||
+      metadata.size !== imgMetadata.size ||
+      metadata.type !== imgMetadata.type ||
+      !imgMetadata.name
+    ) {
+      softReset();
+    }
+  };
+
   const handleLoadImage = (data: z.infer<typeof openImageSchema>) => {
     if (data.checked) {
       fileOpen({
@@ -122,13 +135,19 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
               data.width!,
               data.height!,
             );
+
+            const metadata = {
+              name: file.name,
+              size: file.size,
+              type: file.type,
+            };
+            reset(metadata);
+            setImageMetadata(metadata);
             setImage({
               height: data.height!,
               src: url!,
               width: data.width!,
             });
-            resetLabel();
-            clear();
           };
           reader.readAsArrayBuffer(file);
         })
@@ -145,14 +164,18 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
           reader.onload = (e) => {
             const img = new Image();
             img.onload = () => {
+              const metadata = {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+              };
+              reset(metadata);
+              setImageMetadata(metadata);
               setImage({
                 height: img.height,
-                src: e.target?.result as string,
+                src: URL.createObjectURL(file),
                 width: img.width,
               });
-              // soft reset on image load
-              resetLabel();
-              clear();
             };
             img.src = e.target?.result as string;
           };

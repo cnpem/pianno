@@ -15,11 +15,18 @@ type Image = {
   width: number;
 };
 
+type ImageMetadata = {
+  name: string;
+  size: number;
+  type: string;
+};
+
 type State = {
   brush: Brush;
   colors: typeof annotationColorPallete;
   currentColor: string;
   img: Image;
+  imgMetadata: ImageMetadata;
   label: string; // dataUrl
   toggled: boolean;
   viewport: Viewport | null;
@@ -28,17 +35,18 @@ type State = {
 type Actions = {
   recenterViewport: (width: number, height: number) => void;
   reset: () => void;
-  resetLabel: () => void;
   setBrushMode: (mode: Brush['mode']) => void;
   setBrushSize: (size: number) => void;
   setColor: (color: string) => void;
   setImage: (img: Image) => void;
+  setImageMetadata: (metadata: ImageMetadata) => void;
   setLabel: (label: string) => void;
   setNewColor: (
     color: string,
     colorLabel: keyof typeof annotationColorPallete,
   ) => void;
   setViewport: (viewport: Viewport) => void;
+  softReset: () => void;
   toggle: () => void;
 };
 
@@ -60,6 +68,11 @@ const initialState: State = {
     src: '#',
     width: 0,
   },
+  imgMetadata: {
+    name: '',
+    size: 0,
+    type: '',
+  },
   label: 'data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=', // 1x1 transparent png
   toggled: true,
   viewport: null,
@@ -76,13 +89,11 @@ const useStore = create<Store>()(
             viewport?.moveCenter(width / 2, height / 2);
             viewport?.fit(true, width, height);
           },
-
           reset: () => {
             set(initialState);
             // force reload to reset viewport
             window.location.reload();
           },
-          resetLabel: () => set({ label: initialState.label }),
           setBrushMode: (mode) => {
             const brush = get().brush;
             set({ brush: { ...brush, mode } });
@@ -106,6 +117,7 @@ const useStore = create<Store>()(
               set({ brush: { ...brush, eraserSize, maxSize } });
             }
           },
+          setImageMetadata: (metadata) => set({ imgMetadata: metadata }),
           setLabel: (label) => set({ label }),
           setNewColor: (color, colorLabel) => {
             const colors = get().colors;
@@ -123,6 +135,10 @@ const useStore = create<Store>()(
             set({ currentColor: color });
           },
           setViewport: (viewport) => set({ viewport }),
+          softReset: () => {
+            // reset label and colors
+            set({ colors: initialState.colors, label: initialState.label });
+          },
           toggle: () => set((state) => ({ toggled: !state.toggled })),
         },
       }),
@@ -139,7 +155,8 @@ const useStore = create<Store>()(
         brush: state.brush,
         colors: state.colors,
         currentColor: state.currentColor,
-        img: state.img,
+        imgMetadata: state.imgMetadata,
+        // img: state.img,
         label: state.label,
       }),
     },
@@ -168,3 +185,5 @@ export const useStoreBrushParams = () =>
   });
 export const useStoreLabel = () => useStore((state) => state.label);
 export const useStoreActions = () => useStore((state) => state.actions);
+export const useStoreImageMetadata = () =>
+  useStore((state) => state.imgMetadata);

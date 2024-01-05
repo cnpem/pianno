@@ -22,6 +22,7 @@ import { fileOpen } from 'browser-fs-access';
 import { ImageIcon } from 'lucide-react';
 import { FC, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import {
@@ -148,11 +149,12 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
               src: url!,
               width: data.width!,
             });
+            toast.success('Image loaded.');
           };
           reader.readAsArrayBuffer(file);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          toast.error('Error loading image.');
         });
     } else {
       fileOpen({
@@ -176,13 +178,14 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
                 src: URL.createObjectURL(file),
                 width: img.width,
               });
+              toast.success('Image loaded.');
             };
             img.src = e.target?.result as string;
           };
           reader.readAsDataURL(file);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          toast.error('Error loading image.');
         });
     }
   };

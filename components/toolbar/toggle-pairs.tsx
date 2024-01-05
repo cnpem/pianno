@@ -24,7 +24,7 @@ const TogglePairs: FC<TogglePairsProps> = ({ disabled }) => {
       disabled={disabled}
       onPressedChange={toggle}
       pressed={toggled}
-      title='toggle pairs -- 5'
+      title="toggle pairs -- 5"
     >
       <p className="absolute right-1 top-0 text-xs text-input group-hover:text-accent-foreground">
         5

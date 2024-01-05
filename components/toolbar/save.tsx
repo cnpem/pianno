@@ -52,6 +52,7 @@ import {
 } from 'lucide-react';
 import { FC, useEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { toast } from 'sonner';
 
 interface SaveDialogProps {
   disabled?: boolean;
@@ -95,20 +96,26 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
     })
       .then(() => {
         setOpen(false);
+        toast.success('Annotations saved successfully!');
       })
       .catch((err) => {
-        console.log(err);
+        toast.error('Annotations could not be saved!');
       });
   };
 
   const handleCopyClick = (data: Metadata) => {
     // Save the file
-    copy(JSON.stringify(data)).then(() => {
-      setIsCopied(true);
-      setTimeout(() => {
-        setIsCopied(false);
-      }, 1000);
-    });
+    copy(JSON.stringify(data))
+      .then(() => {
+        setIsCopied(true);
+        toast.success('Annotations copied to clipboard!');
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 1000);
+      })
+      .catch((err) => {
+        toast.error('Annotations could not be copied!');
+      });
   };
 
   async function saveAction(data: FormData) {
@@ -382,7 +389,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                       Copy to clipboard
                     </Button>
                   ) : (
-                    <Button variant="outline">
+                    <Button className="text-xs" variant="outline">
                       <CheckIcon className="mr-2 h-4 w-4" />
                       Copied!
                     </Button>

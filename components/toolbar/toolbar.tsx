@@ -1,6 +1,10 @@
 'use client';
 
-import { useStoreActions, useStoreImg } from '@/hooks/use-store';
+import {
+  useStoreActions,
+  useStoreImageMetadata,
+  useStoreImg,
+} from '@/hooks/use-store';
 import { useTemporalStore } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
 import { type VariantProps } from 'class-variance-authority';
@@ -13,6 +17,23 @@ import Reset from './reset';
 import SaveDialog from './save';
 import TogglePairs from './toggle-pairs';
 import Tools from './tools';
+
+const ToolbarMessenger = ({ showMessage }: { showMessage: boolean }) => {
+  const { name } = useStoreImageMetadata();
+  if (!showMessage) return null;
+  const message = name
+    ? 'There is stored metadata associated with the image' + name
+    : 'Please load an image to start';
+  return (
+    <div className="fixed inset-x-0 top-20 z-10 text-center text-violet-300">
+      <span className="flex-row items-center justify-center font-mono font-semibold">
+        {message}{' '}
+        <ImageIcon className="inline-block h-4 w-4 animate-pulse stroke-violet-800" />{' '}
+      </span>
+    </div>
+  );
+};
+
 interface IToolbar {
   children: React.ReactNode;
   disabled?: boolean;
@@ -106,17 +127,7 @@ const Toolbar = () => {
           <Reset />
         </div>
       </div>
-      {
-        // show message if no image is loaded
-        img.src === '#' && (
-          <div className="fixed inset-x-0 top-20 z-10 text-center text-violet-300">
-            <span className="items-center justify-center font-mono font-semibold">
-              Please load an image to start{' '}
-              <ImageIcon className="inline-block h-4 w-4 animate-pulse stroke-violet-800" />{' '}
-            </span>
-          </div>
-        )
-      }
+      <ToolbarMessenger showMessage={img.src === '#'} />
     </>
   );
 };

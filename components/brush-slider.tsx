@@ -9,10 +9,14 @@ interface BrushSliderProps {}
 const BrushSlider: FC<BrushSliderProps> = ({}) => {
   const { maxSize, mode, size } = useStoreBrushParams();
   const { setBrushSize } = useStoreActions();
-  useHotkeys(['up'], () =>
-    setBrushSize(size + 1 > maxSize ? maxSize : size + 1),
+  useHotkeys(
+    ['up'],
+    () => setBrushSize(size + 1 > maxSize ? maxSize : size + 1),
+    { enabled: mode !== 'eraser' },
   );
-  useHotkeys(['down'], () => setBrushSize(size - 1 > 0 ? size - 1 : 1));
+  useHotkeys(['down'], () => setBrushSize(size - 1 > 0 ? size - 1 : 1), {
+    enabled: mode !== 'eraser',
+  });
   return (
     <div className="mt-4 flex w-full flex-col gap-2 px-2">
       <Slider

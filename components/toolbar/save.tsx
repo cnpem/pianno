@@ -36,6 +36,7 @@ import {
   useStoreActions,
   useStoreColors,
   useStoreLabel,
+  useStoreToggled,
   useStoreViewport,
 } from '@/hooks/use-store';
 import { PIMEGA_DEVICES, PIMEGA_GEOMETRIES } from '@/lib/constants';
@@ -68,6 +69,8 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
   const label = useStoreLabel();
   const viewport = useStoreViewport();
   const { setBrushMode } = useStoreActions();
+  const toggled = useStoreToggled();
+  const { toggle: togglePairs } = useStoreActions();
 
   const [pairs, setPairs] = useState<AnnotationGroup>({});
   const canSave =
@@ -80,18 +83,26 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
     });
   }, [label]);
 
-  useHotkeys(['4'], () => {
-    if (!disabled) {
+  useHotkeys(
+    ['4'],
+    () => {
+      if (!toggled) {
+        togglePairs();
+      }
       setBrushMode(undefined);
       setOpen(true);
-    }
-  });
+    },
+    { enabled: !disabled },
+  );
 
   const handleOpenChange = () => {
     if (!open) {
       setBrushMode(undefined);
     } else {
       setBrushMode('pen');
+    }
+    if (!toggled) {
+      togglePairs();
     }
     setOpen(!open);
   };

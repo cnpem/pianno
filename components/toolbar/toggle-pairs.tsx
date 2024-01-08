@@ -12,9 +12,13 @@ interface TogglePairsProps {
 }
 
 const TogglePairs: FC<TogglePairsProps> = ({ disabled }) => {
-  useHotkeys('5', () => {
-    if (!disabled) toggle();
-  });
+  useHotkeys(
+    '5',
+    () => {
+      toggle();
+    },
+    { enabled: !disabled },
+  );
   const toggled = useStoreToggled();
   const { toggle } = useStoreActions();
   return (

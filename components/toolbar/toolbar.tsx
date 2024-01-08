@@ -2,6 +2,7 @@
 
 import {
   useStoreActions,
+  useStoreBrushParams,
   useStoreImageMetadata,
   useStoreImg,
 } from '@/hooks/use-store';
@@ -77,12 +78,20 @@ const Toolbar = () => {
   const img = useStoreImg();
   const canClick = img.src !== '#';
 
-  useHotkeys(['6', 'ctrl+z'], () => {
-    if (canUndo) undo();
-  });
-  useHotkeys(['7', 'ctrl+y'], () => {
-    if (canRedo) redo();
-  });
+  useHotkeys(
+    ['6', 'ctrl+z'],
+    () => {
+      undo();
+    },
+    { enabled: canUndo },
+  );
+  useHotkeys(
+    ['7', 'ctrl+y'],
+    () => {
+      redo();
+    },
+    { enabled: canRedo },
+  );
   useHotkeys(['8'], () => {
     recenterViewport(
       img.width ? img.width : width,

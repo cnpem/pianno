@@ -44,10 +44,14 @@ const tools: Tool[] = [
 interface ToolsProps {}
 
 const Tools: FC<ToolsProps> = ({}) => {
-  const {mode: brushMode} = useStoreBrushParams();
+  const { mode: brushMode } = useStoreBrushParams();
   const { setBrushMode } = useStoreActions();
-  useHotkeys(['1', 'p'], () => setBrushMode('pen'));
-  useHotkeys(['2', 'e'], () => setBrushMode('eraser'));
+  useHotkeys(['1', 'p'], () => setBrushMode('pen'), {
+    enabled: brushMode !== undefined,
+  });
+  useHotkeys(['2', 'e'], () => setBrushMode('eraser'), {
+    enabled: brushMode !== undefined,
+  });
   return (
     <RadioGroup
       className="flex flex-row gap-1"

@@ -8,7 +8,13 @@ import {
 import { useTemporalStore } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
 import { type VariantProps } from 'class-variance-authority';
-import { ImageIcon, MaximizeIcon, RedoIcon, UndoIcon } from 'lucide-react';
+import {
+  AlertTriangleIcon,
+  ImageIcon,
+  MaximizeIcon,
+  RedoIcon,
+  UndoIcon,
+} from 'lucide-react';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 import { Button, buttonVariants } from '../ui/button';
@@ -20,14 +26,31 @@ import Tools from './tools';
 
 const ToolbarMessenger = () => {
   const { name } = useStoreImageMetadata();
-  const message = !name
-    ? 'Please load an image to start'
-    : `There is stored metadata associated with the image ${name}`;
+
+  if (!name)
+    return (
+      <div className="fixed inset-x-0 top-20 z-10 text-center text-violet-300">
+        <span className="flex-row items-center justify-center font-mono font-semibold">
+          {'Please load an image to start '}
+          <ImageIcon className="inline-block h-4 w-4 animate-pulse stroke-violet-800" />{' '}
+        </span>
+      </div>
+    );
+
   return (
     <div className="fixed inset-x-0 top-20 z-10 text-center text-violet-300">
       <span className="flex-row items-center justify-center font-mono font-semibold">
-        {message + ' '}
-        <ImageIcon className="inline-block h-4 w-4 animate-pulse stroke-violet-800" />{' '}
+        <AlertTriangleIcon className="inline-block h-4 w-4 animate-pulse stroke-yellow-700" />{' '}
+        {'It looks like you were previously working with an image: '}
+        <span className="font-bold text-blue-600 underline opacity-60">
+          {name}
+        </span>
+        {'.'}
+        <br />
+        {
+          'If you want to continue working on this image, please load it again.'
+        }{' '}
+        <AlertTriangleIcon className="inline-block h-4 w-4 animate-pulse stroke-yellow-700" />
       </span>
     </div>
   );

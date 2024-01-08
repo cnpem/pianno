@@ -153,32 +153,4 @@ const Canvas = () => {
   );
 };
 
-export const PreviewCanvas = ({ toggled }: { toggled: boolean }) => {
-  const img = useStoreImg();
-  const label = useStoreLabel();
-
-  return (
-    <Stage
-      className="rounded-lg border border-input"
-      height={350}
-      options={{
-        backgroundAlpha: 0,
-      }}
-      width={350}
-    >
-      <Viewport>
-        {img.src !== '#' ? (
-          <>
-            <Data />
-            <Sprite image={label} />
-            {toggled && <Pairs />}
-          </>
-        ) : (
-          <Bunny />
-        )}
-      </Viewport>
-    </Stage>
-  );
-};
-
 export default Canvas;

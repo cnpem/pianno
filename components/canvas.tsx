@@ -104,18 +104,20 @@ const CanvasWrapper = ({ setPos }: CanvasWrapperProps) => {
     };
   }, [handlePointerMove, app.stage]);
 
+  if (img.src === '#' || !img.src) {
+    return (
+      <Viewport>
+        <Bunny />
+      </Viewport>
+    );
+  }
+
   return (
     <Viewport>
-      {img.src !== '#' ? (
-        <>
-          <Data />
-          <Annotation height={img.height} width={img.width} />
-          {toggled && <Pairs />}
-          <Brush />
-        </>
-      ) : (
-        <Bunny />
-      )}
+      <Data />
+      <Annotation height={img.height} width={img.width} />
+      {toggled && <Pairs />}
+      <Brush />
     </Viewport>
   );
 };

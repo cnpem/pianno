@@ -8,7 +8,7 @@ export type BrushMode = 'eraser' | 'pen';
 export type Brush = {
   eraserSize: number;
   maxSize: number;
-  mode: 'eraser' | 'pen';
+  mode: 'eraser' | 'pen' | undefined;
   penSize: number;
 };
 

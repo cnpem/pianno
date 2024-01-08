@@ -100,6 +100,8 @@ const Eraser = () => {
 const Brush = () => {
   const { mode: brushMode } = useStoreBrushParams();
 
+  if (!brushMode) return null;
+
   return (
     <>
       {brushMode === 'pen' && <Pen />}

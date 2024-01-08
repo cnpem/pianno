@@ -33,6 +33,7 @@ import {
 } from '@/components/ui/select';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import {
+  useStoreActions,
   useStoreColors,
   useStoreLabel,
   useStoreViewport,
@@ -66,6 +67,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
   const colors = useStoreColors();
   const label = useStoreLabel();
   const viewport = useStoreViewport();
+  const { setBrushMode } = useStoreActions();
 
   const [pairs, setPairs] = useState<AnnotationGroup>({});
   const canSave =
@@ -80,9 +82,19 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
 
   useHotkeys(['4'], () => {
     if (!disabled) {
+      setBrushMode(undefined);
       setOpen(true);
     }
   });
+
+  const handleOpenChange = () => {
+    if (!open) {
+      setBrushMode(undefined);
+    } else {
+      setBrushMode('pen');
+    }
+    setOpen(!open);
+  };
 
   const handleSaveClick = (data: Metadata) => {
     // Create a blob of the data
@@ -138,7 +150,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
   return (
     <>
       {!canSave ? (
-        <AlertDialog onOpenChange={setOpen} open={open}>
+        <AlertDialog onOpenChange={handleOpenChange} open={open}>
           <AlertDialogTrigger asChild>
             <Button
               className="group relative"
@@ -180,7 +192,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
           </AlertDialogContent>
         </AlertDialog>
       ) : (
-        <Dialog modal={false} onOpenChange={setOpen} open={open}>
+        <Dialog modal={false} onOpenChange={handleOpenChange} open={open}>
           <DialogTrigger asChild>
             <Button
               className="group relative"

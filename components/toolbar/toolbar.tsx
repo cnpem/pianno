@@ -18,16 +18,15 @@ import SaveDialog from './save';
 import TogglePairs from './toggle-pairs';
 import Tools from './tools';
 
-const ToolbarMessenger = ({ showMessage }: { showMessage: boolean }) => {
+const ToolbarMessenger = () => {
   const { name } = useStoreImageMetadata();
-  if (!showMessage) return null;
-  const message = name
-    ? 'There is stored metadata associated with the image' + name
-    : 'Please load an image to start';
+  const message = !name
+    ? 'Please load an image to start'
+    : `There is stored metadata associated with the image ${name}`;
   return (
     <div className="fixed inset-x-0 top-20 z-10 text-center text-violet-300">
       <span className="flex-row items-center justify-center font-mono font-semibold">
-        {message}{' '}
+        {message + ' '}
         <ImageIcon className="inline-block h-4 w-4 animate-pulse stroke-violet-800" />{' '}
       </span>
     </div>
@@ -127,7 +126,7 @@ const Toolbar = () => {
           <Reset />
         </div>
       </div>
-      <ToolbarMessenger showMessage={img.src === '#'} />
+      {img.src === '#' && <ToolbarMessenger />}
     </>
   );
 };

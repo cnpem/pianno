@@ -248,22 +248,8 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
               <Label htmlFor="width">Width</Label>
               <Label htmlFor="height">Height</Label>
               <Label htmlFor="dtype">Data type</Label>
-              <Input
-                id="width"
-                max={4096}
-                min={1}
-                name="width"
-                required
-                type="number"
-              />
-              <Input
-                id="height"
-                max={4096}
-                min={1}
-                name="height"
-                required
-                type="number"
-              />
+              <Input id="width" min={1} name="width" required type="number" />
+              <Input id="height" min={1} name="height" required type="number" />
               <Select name="dtype" required>
                 <SelectTrigger id="dtype">
                   <SelectValue />

@@ -1,0 +1,1 @@
+"use strict";exports.id=591,exports.ids=[591],exports.modules={1591:(e,t,s)=>{s.r(t),s.d(t,{$$typeof:()=>p,__esModule:()=>a,default:()=>r});let o=(0,s(970).createProxy)(String.raw`/home/matheus/dev/pianno/apps/pianno/components/canvas.tsx`),{__esModule:a,$$typeof:p}=o,r=o.default}};

@@ -7,4 +7,12 @@ services:
       dockerfile: ./apps/pianno/Dockerfile
     ports:
       - '3000:3000'
-    image: pianno:turbo
+    image: pianno:local
+  docs:
+    container_name: pianno-docs
+    build:
+      context: .
+      dockerfile: ./apps/docs/Dockerfile
+    ports:
+      - '4321:3000'
+    image: pianno-docs:local

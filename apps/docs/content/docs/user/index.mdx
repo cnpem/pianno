@@ -1,0 +1,29 @@
+---
+title: User Guide
+---
+import { ImageIcon, SaveIcon, PenIcon, EraserIcon, PlayIcon } from "lucide-react";
+
+<span className="font-mono text-violet-600 dark:text-violet-400">pianno</span>
+is the short form of **Pi**mega **Anno**tator, an auxiliar tool for the process of
+alignment of modules and stripes of the Pimega detectors' images.
+
+With <span className="font-mono text-violet-600 dark:text-violet-400">pianno</span> one can annotate points in the images and export them for
+latter use in the alignment process. It is necessary to select pairs
+of points in such a way that, for a pair **p** and **q**, one of three possible
+constraints is satisfied:
+
+- Horizontal alignment ( the x coordinate of **p** is the same as the
+  x coordinate of **q** )
+- Vertical alignment ( the y coordinate of **p** is the same as the
+  y coordinate of **q** )
+- Euclidean alignment ( the distance between **p** and **q** satisfies
+  a known value )
+
+The user guide is divided in the following sections:
+
+<Cards>
+  <Card title="Quickstart" href="/docs/user/quickstart" icon={<PlayIcon />} description="press play" />
+  <Card title="Images" href="/docs/user/load-image" icon={<ImageIcon />} description="on loading images" />
+  <Card title="Annotations" href="/docs/user/annotation" icon={<PenIcon />} description="on making annotations" />
+  <Card title="Save" href="/docs/user/save" icon={<SaveIcon />} description="on saving annotations"/>
+</Cards>

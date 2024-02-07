@@ -1,0 +1,45 @@
+---
+title: Quickstart
+---
+
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import Load from "@/components/load";
+import { SaveTool, SaveForm } from "@/components/save";
+import { ImageIcon, SaveIcon, PenIcon, EraserIcon, PlayIcon } from "lucide-react";
+
+## Accessing <span className="font-mono text-violet-600 dark:text-violet-400">pianno</span>
+
+The <span className="font-mono text-violet-600 dark:text-violet-400">pianno</span> application is available for internal use in the LNLS network at
+[https://pianno.lnls.br](https://pianno.lnls.br)
+
+No installation or download is required, just access the link and
+start using it.
+
+## Using <span className="font-mono text-violet-600 dark:text-violet-400">pianno</span>
+
+The annotation process is divided in three main steps:
+
+<Steps>
+<Step>
+Load the image to be annotated by clicking the <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">Load image<ImageIcon className='w-4 h-4'/></span>
+   button.
+    <Load />
+</Step>
+
+<Step>
+  Start annotating pairs of points on the loaded image using the <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">pen <PenIcon className="w-4 h-4" /></span> tool. 
+  The <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">eraser<EraserIcon className="w-4 h-4" /></span>
+  tool can be useful in case of missannotation. It is very intuitive to use, just
+  select a color corresponding to the type of alignment of the pair of points you
+  intend to annotate and click on the image to paint the pixel marked on the cursor.
+</Step>
+<Step>
+  Export the annotations to a JSON file by clicking the <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">save <SaveIcon className="w-4 h-4" /></span>
+  button. 
+  <SaveTool />
+  Then, one must fill a quick form with both the image metadata and the annotations
+  metadata. This file serves as input for the alignment process.
+  <SaveForm />
+</Step>
+
+</Steps>

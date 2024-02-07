@@ -1,0 +1,80 @@
+---
+title: Save annotations
+description: Save your annotations to JSON.
+---
+
+import { SaveIcon } from 'lucide-react';
+import { Callout } from 'fumadocs-ui/components/callout';
+import { SaveTool, SaveForm } from "@/components/save";
+
+Upon completion of a set of annotations, saving them for future use
+in the restoration processing is possible. This can be achieved by
+clicking the <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">save <SaveIcon className="w-4 h-4" /></span> button in the toolbar.
+
+<SaveTool />
+
+This will open a dialog that allows you to save the annotations to a
+JSON file or copy it to the clipboard after properly filling a form
+with both the image metadata and the annotations metadata.
+
+<SaveForm />
+
+<Callout title="Invalid annotations!" type="warn">
+Annotations cannot be saved unless they constitute a valid set of 
+pairs. This implies the absence of singular points or the presence 
+of more than two points of identical color. In other words, it is 
+necessary to eliminate all points encircled by a **ring** marker and 
+all **X** markers.
+</Callout>
+
+## The form
+
+After correcting the annotations you will be asked to fill a form with
+the image metadata and the annotations metadata, which are:
+
+- Device name (e.g. `pi135D`)
+- Device id (identifier referring to the beamline, e.g. `#3`)
+- Geometry (e.g. `planar`)
+- Distance for the measured image (in mm), only used for nonplanar 
+devices. For planar devices, `0` can be used
+
+For each pair of annotations, you will be asked to provide / confirm:
+
+- a known euclidean distance (pixel unit) between the two points. For
+*horizontal* and *vertical* annotations, `-1` is preferred
+- the type of the pair of annotations (e.g. `horizontal`)
+
+Finally, you will be able to save the annotations to a JSON file or
+copy them to the clipboard by clicking the corresponding button.
+
+## JSON Format
+
+The JSON format of the annotations is the following:
+
+```json
+{   
+    "date": "YYYY-MM-DD HH:mm:ss",
+    "device": {
+        "name": "piXYZD",
+        "id": "#N",
+        "geometry": "geometry",
+        "distance": "number"
+    },
+    "annotations": [
+        {
+            "type": "type",
+            "distance": "number",
+            "points": [
+                {
+                    "x": "x1",
+                    "y": "y1"
+                },
+                {
+                    "x": "x2",
+                    "y": "y2"
+                }
+            ]
+        }
+    ]
+}
+```

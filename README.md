@@ -19,11 +19,20 @@ You build the app yourself and run it locally by running the docker container wi
 ```bash
 docker compose up --build
 ```
+Then, open [http://localhost:3000](http://localhost:3000) with your browser to see the result. This will also start the docs page at [http://localhost:4321](http://localhost:4321).
 
 or simply pull it from the registry:
 
 ```bash
 docker pull ghcr.io/cnpem/cnpem/pianno:main
+docker run -p 3000:3000 ghcr.io/cnpem/cnpem/pianno:main
+```
+
+The docs page is also available in the registry:
+
+```bash
+docker pull ghcr.io/cnpem/cnpem/pianno-docs:main
+docker run -p 4321:3000 ghcr.io/cnpem/cnpem/pianno-docs:main
 ```
 
 ## Developers

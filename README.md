@@ -3,9 +3,9 @@
 A simple tool to help you annotate pimega images.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="apps/docs/src/assets/hero-dark.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="apps/docs/public/hero-dark.svg">
   <img alt="Shows the logo for the pianno web app: A Pimega annotator.." 
-    src="apps/docs/src/assets/hero.svg">
+    src="apps/docs/public/hero.svg">
 </picture>
 
 ## User guide and documentation

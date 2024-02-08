@@ -5,7 +5,8 @@ title: Quickstart
 import { Step, Steps } from "fumadocs-ui/components/steps";
 import Load from "@/components/load";
 import { SaveTool, SaveForm } from "@/components/save";
-import { ImageIcon, SaveIcon, PenIcon, EraserIcon, PlayIcon } from "lucide-react";
+import { ImageIcon, SaveIcon, PenIcon, EraserIcon } from "lucide-react";
+import { Callout } from "fumadocs-ui/components/callout";
 
 ## Accessing <span className="font-mono text-violet-600 dark:text-violet-400">pianno</span>
 
@@ -14,6 +15,45 @@ The <span className="font-mono text-violet-600 dark:text-violet-400">pianno</spa
 
 No installation or download is required, just access the link and
 start using it.
+
+## Running <span className="font-mono text-violet-600 dark:text-violet-400">pianno</span> locally
+
+To run <span className="font-mono text-violet-600 dark:text-violet-400">pianno</span> locally, one must have the latest [Node.js](https://nodejs.org/en/) installed. Then, clone the repository and run the following commands:
+
+```bash
+pnpm install
+pnpm dev
+```
+
+This will start a development server at [http://localhost:3000](http://localhost:3000) and a docs server at [http://localhost:4321/uwu](http://localhost:4321/uwu).
+
+There is also docker images available for the application and the docs, which can be run with the following commands:
+
+```bash
+docker compose up --build
+```
+
+This will start the application at [http://localhost:3000](http://localhost:3000) and the docs at [http://localhost:4321/uwu](http://localhost:4321/uwu).
+
+Or you can use the pre-built images available at the repository's registry:
+
+```bash
+docker pull ghcr.io/cnpem/cnpem/pianno:main
+docker pull ghcr.io/cnpem/cnpem/pianno-docs:main
+```
+
+And then run the images with:
+
+```bash
+docker run -p 3000:3000 ghcr.io/cnpem/cnpem/pianno:main
+docker run -p 4321:3000 ghcr.io/cnpem/cnpem/pianno-docs:main
+```
+
+This will start the application at [http://localhost:3000](http://localhost:3000) and the docs at [http://localhost:4321/uwu](http://localhost:4321/uwu).
+
+<Callout title='Careful with the base paths!' type="warn">
+  Notice that the docs are served under the `/uwu` base path, so the `/` path will not lead to any content.
+</Callout>
 
 ## Using <span className="font-mono text-violet-600 dark:text-violet-400">pianno</span>
 

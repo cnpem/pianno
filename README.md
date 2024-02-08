@@ -10,7 +10,9 @@ A simple tool to help you annotate pimega images.
 
 ## User guide and documentation
 
-For a complete guide with examples and documentation, please visit [the docs](https://cnpem.github.io/pianno/)).
+For a complete guide with examples and documentation, please visit [the docs](https://pianno.lnls.br/uwu).
+
+> Note: the docs page is currently hosted at [https://pianno.lnls.br/uwu](https://pianno.lnls.br/uwu), which is an internal server at CNPEM. If you are not at CNPEM, you can run the docs page locally by following the instructions below.
 
 ### Run locally
 

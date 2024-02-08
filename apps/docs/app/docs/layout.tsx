@@ -15,14 +15,14 @@ export default function RootDocsLayout({ children }: { children: ReactNode }) {
                 className="dark:hidden mr-2"
                 width={96}
                 height={96}
-                src="/hero.svg"
+                src="/uwu/hero.svg"
                 alt="logo"
               />
               <Image
                 className="dark:block hidden mr-2"
                 width={96}
                 height={96}
-                src="/hero-dark.svg"
+                src="/uwu/hero-dark.svg"
                 alt="logo-dark"
               />
               <span className="font-mono text-violet-600 dark:text-violet-400">

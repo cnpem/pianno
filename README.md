@@ -19,7 +19,7 @@ You build the app yourself and run it locally by running the docker container wi
 ```bash
 docker compose up --build
 ```
-Then, open [http://localhost:3000](http://localhost:3000) with your browser to see the result. This will also start the docs page at [http://localhost:4321](http://localhost:4321).
+Then, open [http://localhost:3000](http://localhost:3000) with your browser to see the result. This will also start the docs page at [http://localhost:4321/uwu](http://localhost:4321/uwu).
 
 or simply pull it from the registry:
 
@@ -35,6 +35,8 @@ docker pull ghcr.io/cnpem/cnpem/pianno-docs:main
 docker run -p 4321:3000 ghcr.io/cnpem/cnpem/pianno-docs:main
 ```
 
+> Note: The docs page is available at the basePath `/uwu` in the container. Why? Thought it was a funny pun on www.
+
 ## Developers
 
 ### Getting Started
@@ -46,7 +48,7 @@ pnpm install
 pnpm dev
 ```
 
-Then, open [http://localhost:3000](http://localhost:3000) with your browser to see the result. This will also start the docs page at [http://localhost:4321](http://localhost:4321).
+Then, open [http://localhost:3000](http://localhost:3000) with your browser to see the result. This will also start the docs page at [http://localhost:4321/uwu](http://localhost:4321/uwu).
 
 ## License
 

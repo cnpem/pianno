@@ -2,16 +2,25 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { GithubIcon, LibraryIcon } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 function HeroSection() {
   return (
     <section className="container relative flex flex-col justify-center gap-8 xl:h-[calc(100vh-4rem)] xl:flex-row items-center">
       <aside className="relative my-4 xl:my-16 xl:flex-1">
-        <img className="dark:hidden" src="./hero.svg" alt="pianno" />
-        <img
+        <Image
+          className="dark:hidden"
+          src="/uwu/hero.svg"
+          alt="pianno"
+          width={500}
+          height={500}
+        />
+        <Image
           className="dark:block hidden"
-          src="./hero-dark.svg"
+          src="/uwu/hero-dark.svg"
           alt="pianno-dark"
+          width={500}
+          height={500}
         />
       </aside>
       <aside className="my-16 flex flex-col items-center self-center xl:my-24 xl:-mr-10 xl:ml-10 xl:flex-1 xl:items-start">

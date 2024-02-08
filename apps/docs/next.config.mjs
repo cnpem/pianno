@@ -6,6 +6,7 @@ const withMDX = createMDX();
 const config = {
   output: 'standalone',
   reactStrictMode: true,
+  basePath: '/uwu'
 };
 
 export default withMDX(config);

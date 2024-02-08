@@ -49,7 +49,7 @@ const Help: FC<HelpProps> = ({}) => {
           <div className="flex flex-row items-start justify-between gap-1">
             <Link
               className={cn(buttonVariants({ variant: 'outline' }), '')}
-              href="https://cnpem.github.io/pianno/"
+              href="https://pianno.lnls.br/uwu"
               rel="noopener noreferrer"
               target="_blank"
               title="help"

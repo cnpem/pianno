@@ -2,7 +2,6 @@
 
 import {
   useStoreActions,
-  useStoreBrushParams,
   useStoreImageMetadata,
   useStoreImg,
 } from '@/hooks/use-store';
@@ -79,20 +78,20 @@ const Toolbar = () => {
   const canClick = img.src !== '#';
 
   useHotkeys(
-    ['6', 'ctrl+z'],
+    ['7', 'ctrl+z'],
     () => {
       undo();
     },
     { enabled: canUndo },
   );
   useHotkeys(
-    ['7', 'ctrl+y'],
+    ['8', 'ctrl+y'],
     () => {
       redo();
     },
     { enabled: canRedo },
   );
-  useHotkeys(['8'], () => {
+  useHotkeys(['9'], () => {
     recenterViewport(
       img.width ? img.width : width,
       img.height ? img.height : height,
@@ -103,30 +102,30 @@ const Toolbar = () => {
     {
       children: <UndoIcon className="h-4 w-4" />,
       disabled: !canUndo,
-      hotkey: '6',
+      hotkey: '7',
       onClick: () => {
         undo();
       },
-      title: 'undo -- 6 or ctrl+z',
+      title: 'undo -- 7 or ctrl+z',
     },
     {
       children: <RedoIcon className="h-4 w-4" />,
       disabled: !canRedo,
-      hotkey: '7',
+      hotkey: '8',
       onClick: () => {
         redo();
       },
-      title: 'redo -- 7 or ctrl+y',
+      title: 'redo -- 8 or ctrl+y',
     },
     {
       children: <MaximizeIcon className="h-4 w-4" />,
-      hotkey: '8',
+      hotkey: '9',
       onClick: () =>
         recenterViewport(
           img.width ? img.width : width,
           img.height ? img.height : height,
         ),
-      title: 'fit-view -- 8',
+      title: 'fit-view -- 9',
     },
   ];
 

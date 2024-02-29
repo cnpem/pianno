@@ -73,6 +73,8 @@ const Annotation = (props: AnnotationProps) => {
 
   useEffect(() => {
     const onPointerDown = (e: PIXI.FederatedPointerEvent) => {
+      if(brushMode === 'drag') return;
+
       if (!context) return;
       context.fillStyle = color;
       if (e.pointerType === 'mouse') {
@@ -85,6 +87,7 @@ const Annotation = (props: AnnotationProps) => {
       }
 
       setIsPainting(true);
+      viewport?.plugins.pause('drag');
       const pos = viewport?.toWorld(e.global) ?? e.global;
       prevPosition.current = pos;
 
@@ -134,6 +137,7 @@ const Annotation = (props: AnnotationProps) => {
     const onPointerUp = (e: PIXI.FederatedPointerEvent) => {
       if (!canvas) return;
       setIsPainting(false);
+      viewport?.plugins.resume('drag');
       setLabel(canvas.toDataURL());
     };
 

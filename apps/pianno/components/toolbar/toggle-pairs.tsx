@@ -13,7 +13,7 @@ interface TogglePairsProps {
 
 const TogglePairs: FC<TogglePairsProps> = ({ disabled }) => {
   useHotkeys(
-    '5',
+    '6',
     () => {
       toggle();
     },
@@ -23,7 +23,7 @@ const TogglePairs: FC<TogglePairsProps> = ({ disabled }) => {
   const { toggle } = useStoreActions();
   return (
     <Toggle
-      aria-label="toggle pairs -- 5"
+      aria-label="toggle pairs -- 6"
       className="group relative"
       disabled={disabled}
       onPressedChange={toggle}
@@ -31,7 +31,7 @@ const TogglePairs: FC<TogglePairsProps> = ({ disabled }) => {
       title="toggle pairs -- 5"
     >
       <p className="absolute right-1 top-0 text-xs text-input group-hover:text-accent-foreground">
-        5
+        6
       </p>
       {toggled ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
     </Toggle>

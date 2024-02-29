@@ -44,7 +44,7 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
 
   const { setImage, setImageMetadata, softReset } = useStoreActions();
 
-  useHotkeys(['3'], () => {
+  useHotkeys(['4'], () => {
     setOpen(true);
   });
 
@@ -215,11 +215,11 @@ const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
         <Button
           className="group relative"
           size={'icon'}
-          title={'load image -- 3'}
+          title={'load image -- 4'}
           variant={'outline'}
         >
           <p className="absolute right-1 top-0 text-xs text-input group-hover:text-accent-foreground">
-            3
+            4
           </p>
           <ImageIcon className="h-4 w-4" />
         </Button>

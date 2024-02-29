@@ -3,12 +3,12 @@ import { z } from 'zod';
 
 import { ANNOTATION_DISTANCE_TYPES } from './constants';
 
-export type BrushMode = 'eraser' | 'pen';
+export type BrushMode = 'drag' | 'eraser' | 'pen';
 
 export type Brush = {
   eraserSize: number;
   maxSize: number;
-  mode: 'eraser' | 'pen' | undefined;
+  mode: BrushMode | undefined;
   penSize: number;
 };
 

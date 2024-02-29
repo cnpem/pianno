@@ -84,7 +84,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
   }, [label]);
 
   useHotkeys(
-    ['4'],
+    ['5'],
     () => {
       if (!toggled) {
         togglePairs();
@@ -167,11 +167,11 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
               className="group relative"
               disabled={disabled}
               size={'icon'}
-              title={'save json -- 4'}
+              title={'save json -- 5'}
               variant={'outline'}
             >
               <p className="absolute right-1 top-0 text-xs text-input group-hover:text-accent-foreground">
-                4
+                5
               </p>
               <SaveIcon className="h-4 w-4 group-hover:hidden group-hover:animate-out" />
               <BanIcon className="hidden h-4 w-4 scale-125 stroke-red-600 group-hover:block group-hover:animate-in" />
@@ -209,11 +209,11 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
               className="group relative"
               disabled={disabled}
               size={'icon'}
-              title={'save json -- 4'}
+              title={'save json -- 5'}
               variant={'outline'}
             >
               <p className="absolute right-1 top-0 text-xs text-input group-hover:text-accent-foreground">
-                4
+                5
               </p>
               <SaveIcon className="h-4 w-4" />
             </Button>

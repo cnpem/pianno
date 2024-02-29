@@ -32,7 +32,7 @@ export const PixiComponentViewport = PixiComponent('Viewport', {
       ticker: props.app.ticker,
     });
     viewport
-      .drag({mouseButtons: 'middle-right'})
+      .drag({mouseButtons: 'middle-left'})
       .pinch()
       .wheel()
       .decelerate()

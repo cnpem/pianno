@@ -3,7 +3,7 @@ import type { BrushMode } from '@/lib/types';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useStoreActions, useStoreBrushParams } from '@/hooks/use-store';
-import { EraserIcon, PenIcon } from 'lucide-react';
+import { EraserIcon, HandIcon, PenIcon } from 'lucide-react';
 import { FC } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 
@@ -39,6 +39,11 @@ const tools: Tool[] = [
     icon: <EraserIcon className="h-4 w-4" />,
     title: 'eraser -- 2 or e',
   },
+  {
+    hotkey: '3',
+    icon: <HandIcon className="h-4 w-4" />,
+    title: 'drag -- 3 or d',
+  },
 ];
 
 interface ToolsProps {}
@@ -50,6 +55,9 @@ const Tools: FC<ToolsProps> = ({}) => {
     enabled: brushMode !== undefined,
   });
   useHotkeys(['2', 'e'], () => setBrushMode('eraser'), {
+    enabled: brushMode !== undefined,
+  });
+  useHotkeys(['3', 'd'], () => setBrushMode('drag'), {
     enabled: brushMode !== undefined,
   });
   return (

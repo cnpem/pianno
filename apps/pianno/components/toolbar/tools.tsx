@@ -62,7 +62,7 @@ const Tools: FC<ToolsProps> = ({}) => {
   });
   return (
     <RadioGroup
-      className="flex flex-row gap-1"
+      className="flex flex-col gap-1 md:flex-row lg:flex-row "
       onValueChange={(brush) => setBrushMode(brush as BrushMode)}
       value={brushMode}
     >

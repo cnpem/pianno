@@ -131,31 +131,36 @@ const Toolbar = () => {
 
   return (
     <>
-      <div className="fixed inset-x-0 top-4 z-10 mx-auto flex w-fit flex-row items-center justify-center gap-2 rounded-lg bg-background p-1 opacity-95 shadow-lg">
+      <div className="fixed inset-y-0 right-4 my-auto flex h-fit rounded-lg bg-background p-1 opacity-95 shadow-lg md:hidden lg:hidden">
         <Tools />
-        <span className="flex text-center text-input">|</span>
-        <div className="flex flex-row gap-1">
-          <OpenImageDialog />
-          <SaveDialog disabled={!canClick} />
-          <TogglePairs disabled={!canClick} />
-          {actions.map((action) => (
-            <Button
-              className="group relative"
-              disabled={action.disabled}
-              key={action.title}
-              onClick={action?.onClick}
-              size={'icon'}
-              title={action.title}
-              variant={action.variant ?? 'outline'}
-            >
-              <p className="absolute right-1 top-0 text-xs text-input group-hover:text-accent-foreground">
-                {action.hotkey}
-              </p>
-              {action.children}
-            </Button>
-          ))}
-          <Reset />
+      </div>
+      <div className="fixed inset-x-0 top-4 mx-auto flex w-fit items-center gap-1 rounded-lg bg-background p-1 opacity-95 shadow-lg ">
+        <div className="hidden md:block lg:block">
+          <Tools />
         </div>
+        <span className="hidden text-center text-input md:block lg:block">
+          |
+        </span>
+        <OpenImageDialog />
+        <SaveDialog disabled={!canClick} />
+        <TogglePairs disabled={!canClick} />
+        {actions.map((action) => (
+          <Button
+            className="group relative"
+            disabled={action.disabled}
+            key={action.title}
+            onClick={action?.onClick}
+            size={'icon'}
+            title={action.title}
+            variant={action.variant ?? 'outline'}
+          >
+            <p className="absolute right-1 top-0 text-xs text-input group-hover:text-accent-foreground">
+              {action.hotkey}
+            </p>
+            {action.children}
+          </Button>
+        ))}
+        <Reset />
       </div>
       {img.src === '#' && <ToolbarMessenger />}
     </>

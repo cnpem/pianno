@@ -72,24 +72,14 @@ const Help: FC<HelpProps> = ({}) => {
           <p className="text-sm font-semibold">Keyboard shortcuts</p>
           <div className="flex flex-col gap-2 rounded-md border border-input p-2">
             <div className="flex flex-row items-center justify-between gap-1">
-              <p className="text-sm">Drag</p>
-              <div className="flex flex-row items-center gap-1">
-                <p className="text-xs">hold</p>
-                <kbd className="rounded-sm bg-violet-200 px-2 py-1 text-xs">
-                  Middle
-                </kbd>
-                <p className="text-xs">or</p>
-                <kbd className="rounded-sm bg-violet-200 px-2 py-1 text-xs">
-                  Right
-                </kbd>
-                <p className="text-xs">mouse button</p>
-              </div>
-            </div>
-            <div className="flex flex-row items-center justify-between gap-1">
               <p className="text-sm">Zoom</p>
               <div className="flex flex-row items-center gap-1">
                 <kbd className="rounded-sm bg-violet-200 px-2 py-1 text-xs">
                   Scroll
+                </kbd>
+                <p className="text-xs">or</p>
+                <kbd className="rounded-sm bg-violet-200 px-2 py-1 text-xs">
+                  Pinch
                 </kbd>
               </div>
             </div>
@@ -118,15 +108,19 @@ const Help: FC<HelpProps> = ({}) => {
               </div>
             </div>
             <div className="flex flex-row items-center justify-between gap-1">
-              <p className="text-sm">Load Image</p>
+              <p className="text-sm">Drag</p>
               <div className="flex flex-row items-center gap-1">
                 <kbd className="rounded-sm bg-violet-200 px-2 py-1 text-xs">
                   3
                 </kbd>
+                <p className="text-xs">or</p>
+                <kbd className="rounded-sm bg-violet-200 px-2 py-1 text-xs">
+                  d
+                </kbd>
               </div>
             </div>
             <div className="flex flex-row items-center justify-between gap-1">
-              <p className="text-sm">Save Annotations</p>
+              <p className="text-sm">Load Image</p>
               <div className="flex flex-row items-center gap-1">
                 <kbd className="rounded-sm bg-violet-200 px-2 py-1 text-xs">
                   4
@@ -134,7 +128,7 @@ const Help: FC<HelpProps> = ({}) => {
               </div>
             </div>
             <div className="flex flex-row items-center justify-between gap-1">
-              <p className="text-sm">Toggle pairs view</p>
+              <p className="text-sm">Save Annotations</p>
               <div className="flex flex-row items-center gap-1">
                 <kbd className="rounded-sm bg-violet-200 px-2 py-1 text-xs">
                   5
@@ -142,10 +136,18 @@ const Help: FC<HelpProps> = ({}) => {
               </div>
             </div>
             <div className="flex flex-row items-center justify-between gap-1">
-              <p className="text-sm">Undo</p>
+              <p className="text-sm">Toggle pairs view</p>
               <div className="flex flex-row items-center gap-1">
                 <kbd className="rounded-sm bg-violet-200 px-2 py-1 text-xs">
                   6
+                </kbd>
+              </div>
+            </div>
+            <div className="flex flex-row items-center justify-between gap-1">
+              <p className="text-sm">Undo</p>
+              <div className="flex flex-row items-center gap-1">
+                <kbd className="rounded-sm bg-violet-200 px-2 py-1 text-xs">
+                  7
                 </kbd>
                 <p className="text-xs">or</p>
                 <kbd className="rounded-sm bg-violet-200 px-2 py-1 text-xs">
@@ -161,7 +163,7 @@ const Help: FC<HelpProps> = ({}) => {
               <p className="text-sm">Redo</p>
               <div className="flex flex-row items-center gap-1">
                 <kbd className="rounded-sm bg-violet-200 px-2 py-1 text-xs">
-                  7
+                  8
                 </kbd>
                 <p className="text-xs">or</p>
                 <kbd className="rounded-sm bg-violet-200 px-2 py-1 text-xs">
@@ -177,7 +179,7 @@ const Help: FC<HelpProps> = ({}) => {
               <p className="text-sm">Fit view</p>
               <div className="flex flex-row items-center gap-1">
                 <kbd className="rounded-sm bg-violet-200 px-2 py-1 text-xs">
-                  8
+                  9
                 </kbd>
               </div>
             </div>

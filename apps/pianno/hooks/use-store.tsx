@@ -137,7 +137,11 @@ const useStore = create<Store>()(
           setViewport: (viewport) => set({ viewport }),
           softReset: () => {
             // reset label and colors
-            set({ colors: initialState.colors, label: initialState.label });
+            set({
+              colors: initialState.colors,
+              currentColor: initialState.currentColor,
+              label: initialState.label,
+            });
           },
           toggle: () => set((state) => ({ toggled: !state.toggled })),
         },

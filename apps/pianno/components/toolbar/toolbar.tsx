@@ -18,6 +18,7 @@ import {
 import { useHotkeys } from 'react-hotkeys-hook';
 
 import { Button, buttonVariants } from '../ui/button';
+import ClearCanvas from './clear-canvas';
 import OpenImageDialog from './open';
 import Reset from './reset';
 import SaveDialog from './save';
@@ -160,6 +161,7 @@ const Toolbar = () => {
             {action.children}
           </Button>
         ))}
+        <ClearCanvas />
         <Reset />
       </div>
       {img.src === '#' && <ToolbarMessenger />}

@@ -73,38 +73,39 @@ const Annotation = (props: AnnotationProps) => {
 
   useEffect(() => {
     const onPointerDown = (e: PIXI.FederatedPointerEvent) => {
-      if(brushMode === 'drag') return;
+      if (brushMode === 'drag') return;
 
       if (!context) return;
       context.fillStyle = color;
       if (e.pointerType === 'mouse') {
-        // only draw on left click
+        // only allow left click to paint
         if (e.button !== 0) return;
       }
-      // not paint on touch / pen
-      else {
-        return;
-      }
 
-      setIsPainting(true);
-      viewport?.plugins.pause('drag');
-      const pos = viewport?.toWorld(e.global) ?? e.global;
-      prevPosition.current = pos;
+      if (!viewport) return;
+      // delay to ensure the first touch doesn't trigger a paint if the user is pinching
+      setTimeout(() => {
+        const pinch = viewport.plugins.get('pinch');
 
-      const x = Math.round(prevPosition.current.x - brushSize / 2);
-      const y = Math.round(prevPosition.current.y - brushSize / 2);
-      if (brushMode === 'eraser') {
-        context.clearRect(x, y, brushSize, brushSize);
-        const annotationsToRemove = [];
-        for (let i = 0; i < brushSize; i++) {
-          for (let j = 0; j < brushSize; j++) {
-            annotationsToRemove.push({ x: x + i, y: y + j });
-          }
+        if (pinch?.active || pinch?.pinching) return;
+
+        if (!context) return;
+        context.fillStyle = color;
+        setIsPainting(true);
+
+        viewport?.plugins.pause('drag');
+        const pos = viewport?.toWorld(e.global) ?? e.global;
+        prevPosition.current = pos;
+
+        const x = Math.round(prevPosition.current.x - brushSize / 2);
+        const y = Math.round(prevPosition.current.y - brushSize / 2);
+        if (brushMode === 'eraser') {
+          context.clearRect(x, y, brushSize, brushSize);
+        } else if (brushMode === 'pen') {
+          context.fillRect(x, y, brushSize, brushSize);
         }
-      } else if (brushMode === 'pen') {
-        context.fillRect(x, y, brushSize, brushSize);
-      }
-      sprite.texture.update();
+        sprite.texture.update();
+      }, 0);
     };
 
     const onPointerMove = (e: PIXI.FederatedPointerEvent) => {
@@ -142,12 +143,12 @@ const Annotation = (props: AnnotationProps) => {
     };
 
     app.stage.on('pointerdown', onPointerDown);
-    app.stage.on('pointerup', onPointerUp);
     app.stage.on('pointermove', onPointerMove);
+    app.stage.on('pointerup', onPointerUp);
     return () => {
       app.stage.off('pointerdown', onPointerDown);
-      app.stage.off('pointerup', onPointerUp);
       app.stage.off('pointermove', onPointerMove);
+      app.stage.off('pointerup', onPointerUp);
     };
   }, [
     app.stage,
@@ -157,8 +158,6 @@ const Annotation = (props: AnnotationProps) => {
     color,
     context,
     isPainting,
-    props.height,
-    props.width,
     setLabel,
     sprite.texture,
     viewport,

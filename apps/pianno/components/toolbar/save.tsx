@@ -1,6 +1,5 @@
 'use client';
 
-import { exportAnnotation, getAnnotationGroup } from '@/app/actions';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -21,8 +20,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
@@ -31,57 +38,48 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useAnnotationPoints } from '@/hooks/use-annotation-points';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import {
   useStoreActions,
-  useStoreColors,
-  useStoreLabel,
   useStoreToggled,
   useStoreViewport,
 } from '@/hooks/use-store';
 import { PIMEGA_DEVICES, PIMEGA_GEOMETRIES } from '@/lib/constants';
 import { ANNOTATION_DISTANCE_TYPES } from '@/lib/constants';
-import { AnnotationGroup, Metadata } from '@/lib/types';
+import { Metadata } from '@/lib/types';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { fileSave } from 'browser-fs-access';
+import dayjs from 'dayjs';
 import {
   BanIcon,
   BracesIcon,
   CheckIcon,
   CopyIcon,
-  MapPinIcon,
   SaveIcon,
-  SearchIcon,
 } from 'lucide-react';
-import { FC, useEffect, useState } from 'react';
+import { nanoid } from 'nanoid';
+import { FC, useEffect, useMemo, useState } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
 interface SaveDialogProps {
   disabled?: boolean;
 }
 
 const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
-  const [_, copy] = useCopyToClipboard();
-  const [isCopied, setIsCopied] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const colors = useStoreColors();
-  const label = useStoreLabel();
-  const viewport = useStoreViewport();
   const { setBrushMode } = useStoreActions();
   const toggled = useStoreToggled();
   const { toggle: togglePairs } = useStoreActions();
 
-  const [pairs, setPairs] = useState<AnnotationGroup>({});
+  const { points: pairs } = useAnnotationPoints();
   const canSave =
-    Object.values(pairs).length > 0 &&
-    !Object.values(pairs).some((pair) => pair.length !== 2);
-
-  useEffect(() => {
-    getAnnotationGroup(label).then((res) => {
-      setPairs(res);
-    });
-  }, [label]);
+    pairs.size > 0 &&
+    !Array.from(pairs.values()).some((pair) => pair.length !== 2);
 
   useHotkeys(
     ['5'],
@@ -89,7 +87,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
       if (!toggled) {
         togglePairs();
       }
-      setBrushMode(undefined);
+      setBrushMode('drag');
       setOpen(true);
     },
     { enabled: !disabled },
@@ -97,65 +95,12 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
 
   const handleOpenChange = () => {
     if (!open) {
-      setBrushMode(undefined);
-    } else {
-      setBrushMode('pen');
+      setBrushMode('drag');
     }
     if (!toggled) {
       togglePairs();
     }
     setOpen(!open);
-  };
-
-  const handleSaveClick = (data: Metadata) => {
-    // Create a blob of the data
-    const fileToSave = new Blob([JSON.stringify(data)], {
-      type: 'application/json',
-    });
-    // Save the file
-    fileSave(fileToSave, {
-      extensions: ['.json'],
-      fileName: 'annot.json',
-    })
-      .then(() => {
-        setOpen(false);
-        toast.success('Annotations saved successfully!');
-      })
-      .catch((err) => {
-        toast.error('Annotations could not be saved!');
-      });
-  };
-
-  const handleCopyClick = (data: Metadata) => {
-    // Save the file
-    copy(JSON.stringify(data))
-      .then(() => {
-        setIsCopied(true);
-        toast.success('Annotations copied to clipboard!');
-        setTimeout(() => {
-          setIsCopied(false);
-        }, 1000);
-      })
-      .catch((err) => {
-        toast.error('Annotations could not be copied!');
-      });
-  };
-
-  async function saveAction(data: FormData) {
-    const res = await exportAnnotation(data, label);
-    handleSaveClick(res);
-  }
-
-  async function copyAction(data: FormData) {
-    const res = await exportAnnotation(data, label);
-    handleCopyClick(res);
-  }
-
-  const typeFromColor = (color: string) => {
-    if (colors.vertical.includes(color)) return 'vertical';
-    if (colors.horizontal.includes(color)) return 'horizontal';
-    if (colors.euclidean.includes(color)) return 'euclidean';
-    return undefined;
   };
 
   return (
@@ -181,7 +126,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
             <AlertDialogHeader>
               <AlertDialogTitle>{"Can't save!"}</AlertDialogTitle>
               <AlertDialogDescription>
-                {Object.values(pairs).length === 0 ? (
+                {pairs.size === 0 ? (
                   <>
                     You need to annotate at least one pair of points before
                     saving.
@@ -219,7 +164,7 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
             </Button>
           </DialogTrigger>
           <DialogContent
-            className="left-auto right-1 translate-x-0 opacity-95 sm:max-w-[350px]"
+            className="left-auto right-1 max-w-[350px] translate-x-0 opacity-95 lg:max-w-[425px]"
             onPointerDownOutside={(e) => e.preventDefault()}
           >
             <DialogHeader>
@@ -229,17 +174,138 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                 save or copy to clipboard when you are done.
               </DialogDescription>
             </DialogHeader>
-            <form className="flex flex-col gap-2">
-              <div className="grid grid-cols-2 items-center gap-2">
-                <div className="relative">
-                  <Label
-                    className="absolute left-2 top-1 z-10 -translate-y-2 scale-75 text-sm font-semibold text-muted-foreground"
-                    htmlFor="device"
+            <hr />
+            <SaveForm />
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
+  );
+};
+
+export default SaveDialog;
+
+const formSchema = z.object({
+  annotation: z.array(
+    z.object({
+      color: z.string(),
+      pairDistance: z.coerce.number().min(-1).optional(),
+      pairDistanceType: z.string().optional(),
+    }),
+  ),
+  device: z.string(),
+  deviceId: z.coerce.number().min(1).max(5),
+  distance: z.coerce.number().min(0),
+  geometry: z.string(),
+});
+
+const SaveForm = () => {
+  const viewport = useStoreViewport();
+  const { points } = useAnnotationPoints();
+  const defaultAnnotation = useMemo(
+    () =>
+      Array.from(points.values()).map((pair) => ({
+        color: pair[0].color,
+        pairDistance: pair[0].distance || -2,
+        pairDistanceType: pair[0].type,
+      })),
+    [points],
+  );
+  const [isCopied, setIsCopied] = useState(false);
+  const [_, copy] = useCopyToClipboard();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    defaultValues: {
+      annotation: defaultAnnotation,
+    },
+    resolver: zodResolver(formSchema),
+  });
+
+  const { fields, replace } = useFieldArray({
+    control: form.control,
+    name: 'annotation',
+  });
+
+  useEffect(() => {
+    replace(defaultAnnotation);
+  }, [defaultAnnotation, replace]);
+
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    const metadata = formatMetadata(data);
+    const fileToSave = new Blob([JSON.stringify(metadata)], {
+      type: 'application/json',
+    });
+    fileSave(fileToSave, {
+      extensions: ['.json'],
+      fileName: `annot_${nanoid()}.json`,
+    })
+      .then(() => {
+        toast.success('Annotations saved successfully!');
+      })
+      .catch((err) => {
+        toast.error('Annotations could not be saved!');
+      });
+  };
+
+  const onCopy = (data: z.infer<typeof formSchema>) => {
+    const metadata = formatMetadata(data);
+    copy(JSON.stringify(metadata))
+      .then(() => {
+        setIsCopied(true);
+        toast.success('Annotations copied to clipboard!');
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 1000);
+      })
+      .catch((err) => {
+        toast.error('Annotations could not be copied!');
+      });
+  };
+
+  const snapToPair = (id: number) => {
+    const pair = points.get(fields[id].color);
+    if (!pair) return;
+    const point = pair[0];
+    viewport?.snap(point.x, point.y, {
+      removeOnComplete: true,
+    });
+    viewport?.setZoom(5);
+  };
+
+  const formatMetadata = (data: z.infer<typeof formSchema>) => {
+    const metadata: Metadata = {
+      annotations: data.annotation.map((a) => ({
+        distance: a.pairDistance || -1,
+        points: points.get(a.color)?.map((p) => ({ x: p.x, y: p.y })) || [],
+        type: a.pairDistanceType || 'euclidean',
+      })),
+      date: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      device: {
+        distance: data.distance,
+        geometry: data.geometry,
+        id: data.deviceId,
+        name: data.device,
+      },
+    };
+    return metadata;
+  };
+
+  return (
+    <Form {...form}>
+      <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+        <ScrollArea className="h-[65vh]">
+          <FormField
+            control={form.control}
+            name="device"
+            render={({ field }) => (
+              <FormItem className="p-4">
+                <FormLabel> Device</FormLabel>
+                <FormControl>
+                  <Select
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
                   >
-                    Device
-                  </Label>
-                  <Select name="device" required>
-                    <SelectTrigger id="device">
+                    <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -254,33 +320,43 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-                <div className="relative">
-                  <Label
-                    className="absolute left-2 top-1 z-10 -translate-y-2 scale-75 text-sm font-semibold text-muted-foreground"
-                    htmlFor="device-id"
+                </FormControl>
+                <FormDescription>
+                  Choose the pimega device used for the annotations.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="deviceId"
+            render={({ field }) => (
+              <FormItem className="p-4">
+                <FormLabel> Device ID</FormLabel>
+                <FormControl>
+                  <Input {...field} type="number" value={field.value || ''} />
+                </FormControl>
+                <FormDescription>
+                  Enter the pimega device identifier from 1 to 5 referring to
+                  the beamline.{' '}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="geometry"
+            render={({ field }) => (
+              <FormItem className="p-4">
+                <FormLabel> Geometry</FormLabel>
+                <FormControl>
+                  <Select
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
                   >
-                    #
-                  </Label>
-                  <Input
-                    className="peer"
-                    id="device-id"
-                    max={5}
-                    min={1}
-                    name="device-id"
-                    required
-                    type="number"
-                  />
-                </div>
-                <div className="relative">
-                  <Label
-                    className="absolute left-2 top-1 z-10 -translate-y-2 scale-75 text-sm font-semibold text-muted-foreground"
-                    htmlFor="geometry"
-                  >
-                    Geometry
-                  </Label>
-                  <Select name="geometry" required>
-                    <SelectTrigger id="geometry">
+                    <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -295,90 +371,80 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-                <div className="relative">
-                  <Label
-                    className="absolute top-1 z-10 -translate-y-2 scale-75 text-sm text-muted-foreground"
-                    htmlFor="distance"
-                  >
-                    Distance <span className="font-light">(mm)</span>
-                  </Label>
-                  <Input
-                    className="peer"
-                    id="distance"
-                    min={0}
-                    name="distance"
-                    required
-                    type="number"
-                  />
-                </div>
-              </div>
-              <div className="flex flex-row items-center gap-2"></div>
-
-              <div className="">
-                <ScrollArea className="h-[350px]">
-                  <div className="flex flex-col gap-2">
-                    {Object.entries(pairs || {}).map(([color, value]) => (
-                      <div
-                        className={'flex flex-row items-center gap-2 p-2'}
-                        key={color}
-                      >
-                        <Button
-                          className="group rounded-full border px-3"
-                          onClick={() => {
-                            viewport?.snap(value[0].x, value[0].y, {
-                              removeOnComplete: true,
-                            });
-                            viewport?.setZoom(5);
-                          }}
-                          size="icon"
-                          style={{ borderColor: color }}
-                          title="go to pair"
-                          type="button"
-                          variant={'outline'}
-                        >
-                          <MapPinIcon
-                            className="hidden h-4 w-4 scale-125 group-focus:block group-focus:animate-in"
-                            stroke={color}
-                          />
-                          <SearchIcon
-                            className="h-4 w-4 scale-125 group-focus:hidden"
-                            stroke={color}
-                          />
-                        </Button>
-                        <div className="relative">
-                          <Label
-                            className="absolute left-2 top-1 z-10 -translate-y-2 scale-75 text-sm font-semibold text-muted-foreground"
-                            htmlFor={color}
-                          >
-                            Distance{' '}
-                            <span className="font-light">(pixels)</span>
-                          </Label>
+                </FormControl>
+                <FormDescription>Choose the device geometry.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="distance"
+            render={({ field }) => (
+              <FormItem className="p-4">
+                <FormLabel> Distance</FormLabel>
+                <FormControl>
+                  <Input {...field} type="number" value={field.value || ''} />
+                </FormControl>
+                <FormDescription>
+                  Choose the distance for the measured image (in mm), can be 0
+                  for planar devices.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <span className="p-4 text-lg font-semibold text-muted-foreground">
+            Annotations
+          </span>
+          <hr />
+          <div className="flex items-center gap-1 p-4">
+            <div className="flex flex-col gap-2">
+              {
+                // Pair distance fields
+                fields.map((field, index) => (
+                  <FormField
+                    control={form.control}
+                    key={field.id}
+                    name={`annotation.${index}.pairDistance`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Distance (pixels)</FormLabel>
+                        <FormControl>
                           <Input
-                            className="w-full"
-                            id={color}
-                            min={-1}
-                            name={'pair-distance'}
-                            required
+                            {...field}
+                            onFocus={() => snapToPair(index)}
+                            style={{
+                              backgroundImage: `linear-gradient(75deg,hsl(0deg 0% 100%) 1%,${fields[index].color})`,
+                            }}
                             type="number"
+                            value={field.value || ''}
                           />
-                        </div>
-                        <div className="relative">
-                          <Label
-                            className="absolute left-2 top-1 z-10 -translate-y-2 scale-75 text-sm font-semibold text-muted-foreground"
-                            htmlFor={(value[0].x + value[0].y).toString()}
-                          >
-                            Type
-                          </Label>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))
+              }
+            </div>
+            <div className="flex flex-col gap-2">
+              {
+                // Pair distance type fields
+                fields.map((field, index) => (
+                  <FormField
+                    control={form.control}
+                    key={field.id}
+                    name={`annotation.${index}.pairDistanceType`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Type</FormLabel>
+                        <FormControl>
                           <Select
-                            defaultValue={typeFromColor(color)}
-                            name="pair-distance-type"
-                            required
+                            defaultValue={field.value}
+                            onValueChange={field.onChange}
                           >
-                            <SelectTrigger
-                              className="w-24"
-                              id={(value[0].x + value[0].y).toString()}
-                            >
+                            <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -393,47 +459,35 @@ const SaveDialog: FC<SaveDialogProps> = ({ disabled }) => {
                               ))}
                             </SelectContent>
                           </Select>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </div>
-              <DialogFooter className="relative">
-                <div className="flex flex-row gap-4">
-                  {!isCopied ? (
-                    <Button
-                      className="text-xs"
-                      formAction={copyAction}
-                      type="submit"
-                      variant="outline"
-                    >
-                      <CopyIcon className="mr-2 h-4 w-4" />
-                      Copy to clipboard
-                    </Button>
-                  ) : (
-                    <Button className="text-xs" variant="outline">
-                      <CheckIcon className="mr-2 h-4 w-4" />
-                      Copied!
-                    </Button>
-                  )}
-                  <Button
-                    className="text-xs"
-                    formAction={saveAction}
-                    type="submit"
-                    variant="default"
-                  >
-                    <BracesIcon className="mr-2 h-4 w-4" />
-                    Save JSON
-                  </Button>
-                </div>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      )}
-    </>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))
+              }
+            </div>
+          </div>
+        </ScrollArea>
+
+        <div className="flex items-center gap-2">
+          <Button type="submit" variant="default">
+            <BracesIcon className="mr-2 h-4 w-4" />
+            Save JSON
+          </Button>
+          <Button
+            onClick={form.handleSubmit(onCopy)}
+            size="icon"
+            variant="outline"
+          >
+            {isCopied ? (
+              <CheckIcon className="h-4 w-4" />
+            ) : (
+              <CopyIcon className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 };
-
-export default SaveDialog;

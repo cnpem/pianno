@@ -1,10 +1,5 @@
-import { getAnnotationGroup } from '@/app/actions';
-import {
-  useStoreColors,
-  useStoreLabel,
-  useStoreViewport,
-} from '@/hooks/use-store';
-import { AnnotationGroup } from '@/lib/types';
+import { useAnnotationPoints } from '@/hooks/use-annotation-points';
+import { useStoreColors, useStoreViewport } from '@/hooks/use-store';
 import { Graphics } from '@pixi/react';
 import * as PIXI from 'pixi.js';
 import { FC, useCallback, useEffect, useState } from 'react';
@@ -104,9 +99,6 @@ const annotationMarker = (props: annotationMarkerProps) => {
 };
 
 const Pairs: FC<PairsProps> = ({}) => {
-  const label = useStoreLabel();
-  const [annotationPoints, setAnnotationPoints] =
-    useState<AnnotationGroup | null>(null);
   const [markerRadius, setMarkerRadius] = useState<number>(0);
   const colors = useStoreColors();
   const viewport = useStoreViewport();
@@ -116,18 +108,13 @@ const Pairs: FC<PairsProps> = ({}) => {
     setMarkerRadius((viewport?.screenHeightInWorldPixels || 5) / 100);
   }, [viewport?.screenHeightInWorldPixels]);
 
-  useEffect(() => {
-    getAnnotationGroup(label).then((data) => {
-      if (!data) return;
-      setAnnotationPoints(data);
-    });
-  }, [label]);
+  const { points: annotationPoints } = useAnnotationPoints();
 
   const draw = useCallback(
     (g: PIXI.Graphics) => {
       g.clear();
-      if (annotationPoints) {
-        Object.values(annotationPoints).forEach((labelPoints, _) => {
+      if (annotationPoints.size > 0) {
+        Array.from(annotationPoints.values()).map((labelPoints) => {
           if (!labelPoints) return;
           const [a, b, ...outliers] = labelPoints;
           const color = a.color;

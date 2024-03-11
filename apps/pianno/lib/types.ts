@@ -60,7 +60,7 @@ export type Metadata = {
   device: {
     distance: number;
     geometry: string;
-    id: string;
+    id: number;
     name: string;
   };
 };

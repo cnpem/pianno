@@ -11,13 +11,6 @@ RUN turbo prune @pianno/app --docker
 # Installer
 FROM node:alpine AS installer
 RUN apk add --no-cache libc6-compat
-RUN apk --no-cache add \
-    build-base \
-    cairo-dev \
-    jpeg-dev \
-    pango-dev \
-    musl-dev \
-    giflib-dev
 RUN apk update
 
 WORKDIR /app
@@ -40,8 +33,6 @@ FROM node:alpine AS runner
 RUN apk add --update --no-cache tzdata
 ENV TZ=America/Sao_Paulo
 
-# Install system dependencies required for node-canvas
-RUN apk add --no-cache cairo pango libjpeg giflib
 WORKDIR /app
 
 RUN addgroup --system --gid 1001 nodejs

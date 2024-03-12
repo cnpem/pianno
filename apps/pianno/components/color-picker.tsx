@@ -7,8 +7,9 @@ import {
 } from '@/hooks/use-store';
 import { cn } from '@/lib/utils';
 import { MoveDiagonal, MoveHorizontal, MoveVertical } from 'lucide-react';
-import { FC } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { HexColorPicker } from 'react-colorful';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { Button } from './ui/button';
@@ -24,68 +25,108 @@ const ColorPicker: FC<ColorPickerProps> = ({}) => {
     setNewColor(value, type);
   }, 300);
 
+  // changing pallete "sideways" using the arrow keys
+  useHotkeys(['left'], () => {
+    if (euclidean.includes(currentColor)) {
+      setColor(horizontal[euclidean.indexOf(currentColor)] || horizontal[0]);
+      return;
+    }
+    if (horizontal.includes(currentColor)) {
+      setColor(vertical[horizontal.indexOf(currentColor)] || vertical[0]);
+      return;
+    }
+  });
+  useHotkeys(['right'], () => {
+    if (vertical.includes(currentColor)) {
+      setColor(horizontal[vertical.indexOf(currentColor)] || horizontal[0]);
+      return;
+    }
+    if (horizontal.includes(currentColor)) {
+      setColor(euclidean[horizontal.indexOf(currentColor)] || euclidean[0]);
+      return;
+    }
+  });
+
   return (
     <div className="grid grid-cols-3 gap-1 p-2">
       <PopoverPicker colorLabel="vertical" />
       <PopoverPicker colorLabel="horizontal" />
       <PopoverPicker colorLabel="euclidean" />
-      <div className="col-span-1 ml-1" id="vertical-pallete">
-        <div className="space-y-1">
-          {vertical.map((color) => (
-            <div
-              className={cn(
-                color === currentColor && 'border-4',
-                'h-4 w-4 cursor-pointer rounded-full transition-all hover:scale-125',
-              )}
-              key={color}
-              onClick={() => setColor(color)}
-              style={{
-                backgroundColor: color === currentColor ? 'transparent' : color,
-                borderColor: color,
-              }}
-              title={color}
-            ></div>
-          ))}
-        </div>
-      </div>
-      <div className="col-span-1 ml-1" id="horizontal-pallete">
-        <div className="space-y-1">
-          {horizontal.map((color) => (
-            <div
-              className={cn(
-                color === currentColor && 'border-4',
-                'h-4 w-4 cursor-pointer rounded-full transition-all hover:scale-125',
-              )}
-              key={color}
-              onClick={() => setColor(color)}
-              style={{
-                backgroundColor: color === currentColor ? 'transparent' : color,
-                borderColor: color,
-              }}
-              title={color}
-            ></div>
-          ))}
-        </div>
-      </div>
-      <div className="col-span-1 ml-1" id="euclidean-pallete">
-        <div className="space-y-1">
-          {euclidean.map((color) => (
-            <div
-              className={cn(
-                color === currentColor && 'border-4',
-                'h-4 w-4 cursor-pointer rounded-full transition-all hover:scale-125',
-              )}
-              key={color}
-              onClick={() => setColor(color)}
-              style={{
-                backgroundColor: color === currentColor ? 'transparent' : color,
-                borderColor: color,
-              }}
-              title={color}
-            ></div>
-          ))}
-        </div>
-      </div>
+      <PalleteColumn colorLabel="vertical" colors={vertical} />
+      <PalleteColumn colorLabel="horizontal" colors={horizontal} />
+      <PalleteColumn colorLabel="euclidean" colors={euclidean} />
+    </div>
+  );
+};
+
+const PalleteColorButton = ({
+  color,
+  isFocused,
+  onClick,
+}: {
+  color: string;
+  isFocused: boolean;
+  onClick: () => void;
+}) => {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (isFocused) {
+      ref.current?.focus();
+    }
+  }, [isFocused]);
+
+  return (
+    <button
+      className={cn(
+        isFocused && 'border-4',
+        'h-4 w-4 cursor-pointer rounded-full transition-all hover:scale-125 focus:scale-125 focus:outline-none',
+      )}
+      onClick={onClick}
+      ref={ref}
+      style={{
+        backgroundColor: isFocused ? 'transparent' : color,
+        borderColor: color,
+      }}
+      title={color}
+    ></button>
+  );
+};
+
+type PalleteColumnProps = {
+  colorLabel: 'euclidean' | 'horizontal' | 'vertical';
+  colors: string[];
+};
+const PalleteColumn = ({ colorLabel, colors }: PalleteColumnProps) => {
+  const currentColor = useStoreCurrentColor();
+  const { setColor } = useStoreActions();
+  const currentIsPallete = colors.includes(currentColor);
+
+  // changing color "up" and "down" using the arrow keys
+  useHotkeys(
+    ['up'],
+    () => setColor(colors[colors.indexOf(currentColor) - 1] || currentColor),
+    { enabled: currentIsPallete },
+  );
+  useHotkeys(
+    ['down'],
+    () => setColor(colors[colors.indexOf(currentColor) + 1] || currentColor),
+    { enabled: currentIsPallete },
+  );
+
+  return (
+    <div
+      className="col-span-1 ml-1 flex flex-col gap-1"
+      id={`${colorLabel}-pallete`}
+    >
+      {colors.map((color, index) => (
+        <PalleteColorButton
+          color={color}
+          isFocused={currentColor === color}
+          key={color}
+          onClick={() => setColor(color)}
+        />
+      ))}
     </div>
   );
 };

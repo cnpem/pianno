@@ -54,16 +54,16 @@ const Bunny = () => {
     const screenAspectRatio = app.screen.width / app.screen.height;
 
     if (screenAspectRatio < textureAspectRatio) {
-      return (2/3) * (app.screen.width / texture.width);
+      return (2 / 3) * (app.screen.width / texture.width);
     }
-    return (2/3) * (app.screen.height / texture.height);
-  }
+    return (2 / 3) * (app.screen.height / texture.height);
+  };
 
   return (
     <Sprite
       anchor={0.5}
-      texture={texture}
       scale={calcScale()}
+      texture={texture}
       x={app.screen.width / 2}
       y={app.screen.height / 2 + Math.sin(theta) * 15}
       // rotation={Math.cos(theta) * 0.98}

@@ -47,11 +47,23 @@ const Bunny = () => {
   const app = useApp();
   const src = '/pianno-floating-logo.png';
 
+  const texture = PIXI.Texture.from(src);
+
+  const calcScale = () => {
+    const textureAspectRatio = texture.width / texture.height;
+    const screenAspectRatio = app.screen.width / app.screen.height;
+
+    if (screenAspectRatio < textureAspectRatio) {
+      return (2/3) * (app.screen.width / texture.width);
+    }
+    return (2/3) * (app.screen.height / texture.height);
+  }
+
   return (
     <Sprite
       anchor={0.5}
-      image={src}
-      scale={0.4}
+      texture={texture}
+      scale={calcScale()}
       x={app.screen.width / 2}
       y={app.screen.height / 2 + Math.sin(theta) * 15}
       // rotation={Math.cos(theta) * 0.98}

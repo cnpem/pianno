@@ -14,17 +14,25 @@ export const useAnnotationPoints = () => {
   const label = useStoreLabel();
   const colors = useStoreColors();
   const { height, width } = useStoreImg();
-  const canvasRef = useRef<HTMLCanvasElement>(document.createElement('canvas'));
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  useEffect(() => {
+    if (!canvasRef.current) {
+      canvasRef.current = document.createElement('canvas');
+      const canvas = canvasRef.current;
+      canvas.width = width;
+      canvas.height = height;
+    }
+    return () => {
+      if (canvasRef.current) {
+        canvasRef.current.remove();
+        canvasRef.current = null;
+      }
+    };
+  }, [height, width]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
-    canvas.width = width;
-    canvas.height = height;
-  }, [height, label, width]);
-
-  const canvas = canvasRef.current;
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
-
-  useEffect(() => {
+    const ctx = canvas?.getContext('2d', { willReadFrequently: true });
     if (!width || !height || !ctx) return;
     const typeFromColor = (color: string) => {
       if (colors.vertical.includes(color)) return 'vertical';
@@ -43,7 +51,8 @@ export const useAnnotationPoints = () => {
     const img = new Image();
     img.src = label;
     img.onload = () => {
-      ctx?.drawImage(img, 0, 0);
+      ctx.clearRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0);
 
       const annot: PreffiledAnnotation = new Map();
       const data = ctx?.getImageData(0, 0, width, height).data;
@@ -77,7 +86,6 @@ export const useAnnotationPoints = () => {
     colors.euclidean,
     colors.horizontal,
     colors.vertical,
-    ctx,
     height,
     label,
     width,

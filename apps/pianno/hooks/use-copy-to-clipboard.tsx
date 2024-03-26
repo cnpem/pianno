@@ -1,28 +1,47 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-type CopiedValue = null | string
-type CopyFn = (text: string) => Promise<boolean> // Return success
+type CopyToClipboard = {
+  data: string;
+  isError: boolean;
+  message?: string;
+};
 
-export function useCopyToClipboard(): [CopiedValue, CopyFn] {
-  const [copiedText, setCopiedText] = useState<CopiedValue>(null)
+export const useCopyToClipboard = (): [
+  (text: string) => Promise<void>,
+  CopyToClipboard,
+] => {
+  const [copyResult, setCopyResult] = useState<CopyToClipboard>({
+    data: '',
+    isError: false,
+  });
 
-  const copy: CopyFn = async text => {
-    if (!navigator?.clipboard) {
-      console.warn('Clipboard not supported')
-      return false
+  const copyToClipboard = async (text: string) => {
+    if (!navigator.clipboard) {
+      setCopyResult({
+        data: text,
+        isError: true,
+        message: 'Clipboard API not available',
+      });
+      throw new Error('Clipboard API not available');
     }
 
-    // Try to save to clipboard then save it in the state if worked
     try {
-      await navigator.clipboard.writeText(text)
-      setCopiedText(text)
-      return true
-    } catch (error) {
-      console.warn('Copy failed', error)
-      setCopiedText(null)
-      return false
+      await navigator.clipboard.writeText(text);
+      setCopyResult({
+        data: text,
+        isError: false,
+        message: 'Copied to clipboard',
+      });
+    } catch (err) {
+      setCopyResult({
+        data: text,
+        isError: true,
+        message:
+          err instanceof Error ? err.message : 'Failed to copy to clipboard',
+      });
+      throw err;
     }
-  }
+  };
 
-  return [copiedText, copy]
-}
+  return [copyToClipboard, copyResult];
+};

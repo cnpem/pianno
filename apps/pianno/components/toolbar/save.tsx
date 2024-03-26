@@ -15,7 +15,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -199,6 +198,8 @@ const formSchema = z.object({
   geometry: z.string(),
 });
 
+type CopyState = 'copied' | 'error' | 'idle';
+
 const SaveForm = () => {
   const viewport = useStoreViewport();
   const { points } = useAnnotationPoints();
@@ -211,8 +212,8 @@ const SaveForm = () => {
       })),
     [points],
   );
-  const [isCopied, setIsCopied] = useState(false);
-  const [_, copy] = useCopyToClipboard();
+  const [isCopied, setIsCopied] = useState<CopyState>('idle');
+  const [copy] = useCopyToClipboard();
 
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
@@ -243,22 +244,26 @@ const SaveForm = () => {
         toast.success('Annotations saved successfully!');
       })
       .catch((err) => {
-        toast.error('Annotations could not be saved!');
+        toast.error(err.message || 'Annotations could not be saved!');
       });
   };
 
   const onCopy = (data: z.infer<typeof formSchema>) => {
     const metadata = formatMetadata(data);
-    copy(JSON.stringify(metadata))
+    copy(JSON.stringify(metadata, null, 2))
       .then(() => {
-        setIsCopied(true);
+        setIsCopied('copied');
         toast.success('Annotations copied to clipboard!');
         setTimeout(() => {
-          setIsCopied(false);
-        }, 1000);
+          setIsCopied('idle');
+        }, 2000);
       })
       .catch((err) => {
-        toast.error('Annotations could not be copied!');
+        setIsCopied('error');
+        toast.error(err.message || 'Annotations could not be copied!');
+        setTimeout(() => {
+          setIsCopied('idle');
+        }, 2000);
       });
   };
 
@@ -480,14 +485,22 @@ const SaveForm = () => {
             size="icon"
             variant="outline"
           >
-            {isCopied ? (
-              <CheckIcon className="h-4 w-4" />
-            ) : (
-              <CopyIcon className="h-4 w-4" />
-            )}
+            <CopyButtonIcon isCopied={isCopied} />
           </Button>
         </div>
       </form>
     </Form>
   );
+};
+
+const CopyButtonIcon = ({ isCopied }: { isCopied: CopyState }) => {
+  if (isCopied === 'copied') {
+    return <CheckIcon className="h-4 w-4" />;
+  }
+  if (isCopied === 'error') {
+    return <BanIcon className="h-4 w-4" />;
+  }
+  if (isCopied === 'idle') {
+    return <CopyIcon className="h-4 w-4" />;
+  }
 };

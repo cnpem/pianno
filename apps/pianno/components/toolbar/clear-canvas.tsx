@@ -9,7 +9,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { useStoreActions, useTemporalStore } from '@/hooks/use-store';
+import { useStoreActions } from '@/hooks/use-store';
+import { useTemporalStore } from '@/providers/store';
 import { Trash2Icon } from 'lucide-react';
 import { FC } from 'react';
 

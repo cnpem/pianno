@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { Toaster } from '@/components/ui/sonner';
+import { StoreProvider } from '@/providers/store';
 import { GeistSans } from 'geist/font';
 
 import './globals.css';
@@ -18,8 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={GeistSans.className}>
-        {children}
-        <Toaster richColors />
+        <StoreProvider>
+          {children}
+          <Toaster richColors />
+        </StoreProvider>
       </body>
     </html>
   );

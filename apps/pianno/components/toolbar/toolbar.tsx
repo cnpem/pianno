@@ -5,8 +5,8 @@ import {
   useStoreImageMetadata,
   useStoreImg,
 } from '@/hooks/use-store';
-import { useTemporalStore } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
+import { useTemporalStore } from '@/providers/store';
 import { type VariantProps } from 'class-variance-authority';
 import {
   AlertTriangleIcon,

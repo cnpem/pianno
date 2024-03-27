@@ -14,8 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { useStoreImageMetadata, useTemporalStore } from '@/hooks/use-store';
-import { useStoreActions } from '@/hooks/use-store';
+import { useStoreActions, useStoreImageMetadata } from '@/hooks/use-store';
 import { RAW_DATA_TYPES } from '@/lib/constants';
 import { openImageSchema } from '@/lib/types';
 import { fileOpen } from 'browser-fs-access';
@@ -38,7 +37,6 @@ interface OpenImageDialogProps {}
 const OpenImageDialog: FC<OpenImageDialogProps> = ({}) => {
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
-  const { clear } = useTemporalStore((state) => state);
   const formRef = useRef<HTMLFormElement>(null);
   const imgMetadata = useStoreImageMetadata();
 

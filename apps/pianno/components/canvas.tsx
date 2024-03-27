@@ -3,11 +3,11 @@
 import {
   useStoreActions,
   useStoreImg,
-  useStoreLabel,
   useStoreToggled,
   useStoreViewport,
 } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
+import { StoreContext } from '@/providers/store';
 import { ColorMapFilter } from '@pixi/filter-color-map';
 import {
   Container,
@@ -153,17 +153,42 @@ const Canvas = () => {
       </div>
       {src !== '#' && <Sidebar />}
       <Help />
-      <Stage
-        height={height}
-        options={{
-          backgroundAlpha: 0,
-          eventMode: 'static',
-        }}
-        width={width}
+      <StoreContextBridge
+        render={(children) => (
+          <Stage
+            height={height}
+            options={{
+              backgroundAlpha: 0,
+              eventMode: 'static',
+            }}
+            width={width}
+          >
+            {children}
+          </Stage>
+        )}
       >
         <CanvasWrapper setPos={setPos} />
-      </Stage>
+      </StoreContextBridge>
     </div>
+  );
+};
+
+type ContextBridgeProps = {
+  children: React.ReactNode;
+  render: (children: React.ReactNode) => React.ReactNode;
+};
+
+const StoreContextBridge = ({ children, render }: ContextBridgeProps) => {
+  return (
+    <StoreContext.Consumer>
+      {(value) =>
+        render(
+          <StoreContext.Provider value={value}>
+            {children}
+          </StoreContext.Provider>,
+        )
+      }
+    </StoreContext.Consumer>
   );
 };
 

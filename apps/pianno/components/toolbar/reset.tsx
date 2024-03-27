@@ -9,8 +9,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { useStoreActions, useTemporalStore } from '@/hooks/use-store';
+import { useStoreActions } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
+import { useTemporalStore } from '@/providers/store';
 import { RotateCcwIcon } from 'lucide-react';
 import { FC } from 'react';
 

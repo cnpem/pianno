@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 import { Toaster } from '@/components/ui/sonner';
 import { StoreProvider } from '@/providers/store';
-import { GeistSans } from 'geist/font';
+import { GeistSans } from 'geist/font/sans';
 
 import './globals.css';
 

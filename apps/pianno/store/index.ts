@@ -91,9 +91,14 @@ export const createStore = (initialState: State = defaultState) =>
               viewport?.fit(true, width, height);
             },
             reset: () => {
-              set(initialState);
-              // force reload to reset viewport
-              window.location.reload();
+              set({
+                brush: initialState.brush,
+                colors: initialState.colors,
+                currentColor: initialState.currentColor,
+                img: initialState.img,
+                imgMetadata: initialState.imgMetadata,
+                label: initialState.label,
+              });
             },
             setBrushMode: (mode) => {
               const brush = get().brush;

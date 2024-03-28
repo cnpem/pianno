@@ -9,21 +9,27 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { useStoreActions } from '@/hooks/use-store';
+import { useStoreActions, useStoreImg } from '@/hooks/use-store';
 import { useWindowSize } from '@/hooks/use-window-size';
 import { useTemporalStore } from '@/providers/store';
 import { RotateCcwIcon } from 'lucide-react';
 import { FC } from 'react';
 
-import { Button } from '../ui/button';
+import { Button, buttonVariants } from '../ui/button';
 
 interface ResetProps {}
 
 const Reset: FC<ResetProps> = ({}) => {
-  const { recenterViewport, reset } = useStoreActions();
+  const { recenterViewport, reset, softReset } = useStoreActions();
+  const img = useStoreImg();
   const { clear } = useTemporalStore((state) => state);
   const [width, height] = useWindowSize();
-  const onContinue = () => {
+  const handleClean = () => {
+    softReset();
+    clear();
+    recenterViewport(img.width, img.height);
+  };
+  const handleReset = () => {
     reset();
     clear();
     recenterViewport(width, height);
@@ -45,7 +51,15 @@ const Reset: FC<ResetProps> = ({}) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onContinue}>Continue</AlertDialogAction>
+          <AlertDialogAction disabled={img.src === '#'} onClick={handleClean}>
+            Clear Canvas
+          </AlertDialogAction>
+          <AlertDialogAction
+            className={buttonVariants({ variant: 'destructive' })}
+            onClick={handleReset}
+          >
+            Clear Everything
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -6,7 +6,17 @@ const withMDX = createMDX();
 const config = {
   output: 'standalone',
   reactStrictMode: true,
-  basePath: '/uwu'
+  basePath: '/uwu',
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/uwu',
+        permanent: false,
+        basePath: false,
+      },
+    ];
+  }
 };
 
 export default withMDX(config);

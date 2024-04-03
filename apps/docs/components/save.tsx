@@ -63,7 +63,7 @@ const SaveForm = () => {
     <div className="flex flex-col items-center border rounded-sm p-12">
       <form
         ref={ref}
-        className="shadow-lg p-4 border rounded-md flex flex-col gap-2 justify-between sm:max-w-[350px]"
+        className="shadow-lg p-4 border rounded-md space-y-4 max-w-[425px]"
       >
         <header>
           <p className="font-semibold text-lg">Save your Annotations</p>
@@ -72,110 +72,110 @@ const SaveForm = () => {
             save or copy to clipboard when you are done.
           </p>
         </header>
-        <div className="grid grid-cols-2 items-center gap-2">
-          <div className="relative">
-            <Label
-              className="absolute left-2 top-1 z-10 -translate-y-2 scale-75 text-sm font-semibold text-muted-foreground"
-              htmlFor="device"
-            >
-              Device
-            </Label>
-            <Select name="device" required>
-              <SelectTrigger id="device">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PIMEGA_DEVICES.map((device) => (
-                  <SelectItem
-                    className="cursor-pointer"
-                    key={device}
-                    value={device}
-                  >
-                    {device}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="relative">
-            <Label
-              className="absolute left-2 top-1 z-10 -translate-y-2 scale-75 text-sm font-semibold text-muted-foreground"
-              htmlFor="device-id"
-            >
-              #
-            </Label>
-            <Input
-              className="peer"
-              id="device-id"
-              max={5}
-              min={1}
-              name="device-id"
-              required
-              type="number"
-            />
-          </div>
-          <div className="relative">
-            <Label
-              className="absolute left-2 top-1 z-10 -translate-y-2 scale-75 text-sm font-semibold text-muted-foreground"
-              htmlFor="geometry"
-            >
-              Geometry
-            </Label>
-            <Select name="geometry" required>
-              <SelectTrigger id="geometry">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PIMEGA_GEOMETRIES.map((geometry) => (
-                  <SelectItem
-                    className="cursor-pointer"
-                    key={geometry}
-                    value={geometry}
-                  >
-                    {geometry}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="relative">
-            <Label
-              className="absolute top-1 z-10 -translate-y-2 scale-75 text-sm text-muted-foreground"
-              htmlFor="distance"
-            >
-              Distance <span className="font-light">(mm)</span>
-            </Label>
-            <Input
-              className="peer"
-              id="distance"
-              min={0}
-              name="distance"
-              required
-              type="number"
-            />
-          </div>
+        <hr />
+        <div className="flex flex-col gap-1">
+          <Label className="font-semibold" htmlFor="device">
+            Device
+          </Label>
+          <Select name="device" required>
+            <SelectTrigger id="device">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PIMEGA_DEVICES.map((device) => (
+                <SelectItem
+                  className="cursor-pointer"
+                  key={device}
+                  value={device}
+                >
+                  {device}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-muted-foreground text-sm">
+            Choose the pimega device used for the annotations.
+          </p>
         </div>
-        <div className="animate-pulse bg-muted h-44 rounded-md" />
-        <div className="flex flex-row gap-4">
-          {!isCopied ? (
-            <Button onClick={handleCopy} variant="outline">
-              <CopyIcon className="mr-2 h-4 w-4" />
-              Copy to clipboard
-            </Button>
-          ) : (
-            <Button variant="outline">
-              <CheckIcon className="mr-2 h-4 w-4" />
-              Copied!
-            </Button>
-          )}
+        <div className="flex flex-col gap-1">
+          <Label className="font-semibold" htmlFor="device-id">
+            Device ID
+          </Label>
+          <Input
+            className="peer"
+            id="device-id"
+            max={5}
+            min={1}
+            name="device-id"
+            required
+            type="number"
+          />
+          <p className="text-muted-foreground text-sm">
+            Enter the pimega device identifier from 1 to 5 referring to the
+            beamline.
+          </p>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Label className=" font-semibold" htmlFor="geometry">
+            Geometry
+          </Label>
+          <Select name="geometry" required>
+            <SelectTrigger id="geometry">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PIMEGA_GEOMETRIES.map((geometry) => (
+                <SelectItem
+                  className="cursor-pointer"
+                  key={geometry}
+                  value={geometry}
+                >
+                  {geometry}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-muted-foreground text-sm">
+            Choose the device geometry.
+          </p>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Label className="font-semibold" htmlFor="distance">
+            Distance <span className="font-light">(mm)</span>
+          </Label>
+          <Input
+            className="peer"
+            id="distance"
+            min={0}
+            name="distance"
+            required
+            type="number"
+          />
+          <p className="text-muted-foreground text-sm">
+            Choose the distance for the measured image (in mm), can be 0 for
+            planar devices.
+          </p>
+        </div>
+        <div className="animate-pulse bg-muted h-20 rounded-md" />
+        <div className="flex items-center gap-2">
           <Button type="submit" variant="default">
             <BracesIcon className="mr-2 h-4 w-4" />
             Save JSON
+          </Button>
+          <Button onClick={handleCopy} size="icon" variant="outline">
+            <CopyButtonIcon isCopied={isCopied} />
           </Button>
         </div>
       </form>
     </div>
   );
+};
+
+const CopyButtonIcon = ({ isCopied }: { isCopied: boolean }) => {
+  if (isCopied) {
+    return <CheckIcon className="h-4 w-4" />;
+  }
+  return <CopyIcon className="h-4 w-4" />;
 };
 
 export { SaveTool, SaveForm };

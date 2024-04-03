@@ -25,7 +25,7 @@ pnpm install
 pnpm dev
 ```
 
-This will start a development server at [http://localhost:3000](http://localhost:3000) and a docs server at [http://localhost:4321/uwu](http://localhost:4321/uwu).
+This will start a development server at [http://localhost:3000](http://localhost:3000) and a docs server at [http://localhost:4321](http://localhost:4321).
 
 There is also docker images available for the application and the docs, which can be run with the following commands:
 
@@ -33,7 +33,7 @@ There is also docker images available for the application and the docs, which ca
 docker compose up --build
 ```
 
-This will start the application at [http://localhost:3000](http://localhost:3000) and the docs at [http://localhost:4321/uwu](http://localhost:4321/uwu).
+This will start the application at [http://localhost:3000](http://localhost:3000) and the docs at [http://localhost:4321](http://localhost:4321).
 
 Or you can use the pre-built images available at the repository's registry:
 
@@ -49,11 +49,7 @@ docker run -p 3000:3000 ghcr.io/cnpem/cnpem/pianno:main
 docker run -p 4321:3000 ghcr.io/cnpem/cnpem/pianno-docs:main
 ```
 
-This will start the application at [http://localhost:3000](http://localhost:3000) and the docs at [http://localhost:4321/uwu](http://localhost:4321/uwu).
-
-<Callout title='Careful with the base paths!' type="warn">
-  Notice that the docs are served under the `/uwu` base path, so the `/` path will not lead to any content.
-</Callout>
+This will start the application at [http://localhost:3000](http://localhost:3000) and the docs at [http://localhost:4321](http://localhost:4321).
 
 ## Using <span className="font-mono text-violet-600 dark:text-violet-400">pianno</span>
 
@@ -64,22 +60,92 @@ The annotation process is divided in three main steps:
 Load the image to be annotated by clicking the <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">Load image<ImageIcon className='w-4 h-4'/></span>
    button.
     <Load />
+    The image must be in the `png` or `raw` format; for the latter, the user must provide the image dimensions.
+    <Callout>
+      It is very important to load an image ready for annotation, as the tool does not have any image editing features. So make sure to load an image that has good contrast, 
+      as the annotation process relies on the user's ability to distinguish the points. For 450D images, the user must rotate the image's modules to the correct orientation
+      before loading it as well.
+    </Callout>
+    For example, the image below is a good candidate for annotation:
+    ![Good image for annotation](/assets/example.png)
+
 </Step>
 
 <Step>
   Start annotating pairs of points on the loaded image using the <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">pen <PenIcon className="w-4 h-4" /></span> tool. 
   The <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">eraser<EraserIcon className="w-4 h-4" /></span>
-  tool can be useful in case of missannotation. It is very intuitive to use, just
+  tool can be useful in case of misannotation. It is very intuitive to use, just
   select a color corresponding to the type of alignment of the pair of points you
   intend to annotate and click on the image to paint the pixel marked on the cursor.
-</Step>
+
+  ### Horizontal annotation
+  Horizontal annotations are represented by pairs that should be aligned in the same vertical line (on the same x-axis).
+  {/* ![Horizontal annotation](/assets/horizontal_annotation.webm) */}
+  <video controls>
+    <source src="/uwu/assets/horizontal_annotation.webm" type="video/webm" />
+    Your browser does not support the video tag.
+  </video>
+
+  ### Vertical annotation
+  Vertical annotations are represented by pairs that should be aligned in the same horizontal line (on the same y-axis).
+  <video controls>
+    <source src="/uwu/assets/vertical_annotation.webm" type="video/webm" />
+    Your browser does not support the video tag.
+  </video>
+
+  ### Euclidean annotation
+  Euclidean annotations are represented by pairs that should match a certain distance in the image. The distance is calculated in pixels and should come from the detector's mechanical design.
+  <video controls>
+    <source src="/uwu/assets/euclidean_annotation.webm" type="video/webm" />
+    Your browser does not support the video tag.
+  </video>
+  </Step>
 <Step>
   Export the annotations to a JSON file by clicking the <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">save <SaveIcon className="w-4 h-4" /></span>
   button. 
   <SaveTool />
-  Then, one must fill a quick form with both the image metadata and the annotations
-  metadata. This file serves as input for the alignment process.
+  Then, one must fill a quick form with both the image and the annotations
+  metadata. This file serves as input for the alignment process of `ssc-pimega`.
   <SaveForm />
+
+  If everything went well, a success message will be displayed, and the user can download the JSON file with the annotations or copy the content to the clipboard.
+  The JSON should resemble the following structure:
+
+  ```json
+{   
+    "date": "YYYY-MM-DD HH:mm:ss",
+    "device": {
+        "name": "piXYZD",
+        "id": "number",
+        "geometry": "geometry",
+        "distance": "number"
+    },
+    "annotations": [
+        {
+            "type": "type",
+            "distance": "number",
+            "points": [
+                {
+                    "x": "x1",
+                    "y": "y1"
+                },
+                {
+                    "x": "x2",
+                    "y": "y2"
+                }
+            ]
+        }
+    ]
+}
+```
+
+<Callout title="A word of wisdom">
+Annotation is tedious process, where confusion in the orientation of x and y can clearly affect the optimization routine. 
+We strongly recommend that all the annotation processes should be done separately by different users. A collection of JSONs can be used as an input for the optimization process. 
+A bigger set of JSONs, each one containing a small set of annotation is recommended as a good practice for this particular problem.
+</Callout>
 </Step>
 
 </Steps>
+
+For more information on each step of the annotation process, please refer to the other sections of this documentation.

@@ -3,7 +3,8 @@ title: Annotation
 description: Start annotating your data with the pianno annotation tool.
 ---
 
-import { PenIcon, EraserIcon } from 'lucide-react';
+import { PenIcon, EraserIcon, EyeIcon, HandIcon } from "lucide-react";
+import { ColorPicker } from "@/components/colorpicker";
 
 The annotation process consists of using the <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">pen <PenIcon className="w-4 h-4" /></span> tool to mark pairs of points on the image that should be used to correct it's alignment.
 
@@ -11,14 +12,31 @@ For a pair of points **p** and **q**, there are three types of annotations that 
 
 - Horizontal alignment ( the x coordinate of **p** is the same as the
   x coordinate of **q** )
+  <video controls>
+    <source src="/uwu/assets/horizontal_annotation.webm" type="video/webm" />
+    Your browser does not support the video tag.
+  </video>
 - Vertical alignment ( the y coordinate of **p** is the same as the
   y coordinate of **q** )
+  <video controls>
+    <source src="/uwu/assets/vertical_annotation.webm" type="video/webm" />
+    Your browser does not support the video tag.
+  </video>
 - Euclidean alignment ( the distance between **p** and **q** satisfies
   a known value )
+  <video controls>
+    <source src="/uwu/assets/euclidean_annotation.webm" type="video/webm" />
+    Your browser does not support the video tag.
+  </video>
 
 To differentiate between these types of annotations, the user can select and create colors for
-each type of annotation in the `Color Picker` menu.
+each type of annotation in the `Color Picker` menu:
 
+<ColorPicker />
+
+From the menu above, we can see a preset of colors for each type of annotation is provided based on a viridis color map. But the user can add more colors by clicking on the
+three buttons with "arrows", each arrow represents an orientation and does the same thing which is add a new color to the color picker, but each one adds to a different type 
+of annotation, in this case represented by the column of the button.
 
 ## Creating an annotation
 
@@ -28,12 +46,12 @@ tool and a color for the type of annotation they want to create.
 With a color selected, the user can click on the image to create a point of that color. The user can click on
 the image again, a second point will be created with the same color.
 
-If the `Preview Mode` is enabled, the user will see a line connecting the two points and markers around
+If the <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">Preview Mode <EyeIcon className="w-4 h-4" /></span> is enabled, the user will see a line connecting the two points and markers around
 the points indicating the type of annotation that will be created.
 
 If there are more than two points of the same color, the user will see a line connecting
 the last two points and other markers indicating the points that should be erased before saving.
-There are three types of markers that can be displayed in the `Preview Mode`:
+There are three types of markers that can be displayed in the <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">Preview Mode <EyeIcon className="w-4 h-4" /></span>:
 
 - Annotation points ( the points that will be used to create the annotation )
 - Single points ( when just one point of a color is created )
@@ -47,4 +65,6 @@ that will be created:
 - Vertical alignment: a triangle pointing up or down in the direction of the other point of the annotation
 - Euclidean alignment: a circle around the point
 
-Before saving, the user needs to erase points manually by selecting the <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">eraser<EraserIcon className="w-4 h-4" /></span> tool.
+Before saving, the user needs to erase all the outliers manually by selecting the <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">eraser<EraserIcon className="w-4 h-4" /></span> tool.
+When annotating it may be useful to zoom in (scroll) on the image to make more precise annotations and to use the <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">pan <HandIcon className="w-4 h-4" /></span>
+tool (or simply middle-click and drag) over the image to see its surroundings.

@@ -3,19 +3,31 @@ title: Load Image
 description: Load an image from a PNG or RAW file.
 ---
 
-import { ImageIcon } from 'lucide-react';
-import { Callout } from 'fumadocs-ui/components/callout';
+import { ImageIcon } from "lucide-react";
+import { Callout } from "fumadocs-ui/components/callout";
 import Load from "@/components/load";
 
-In order to start annotating your images, you need to load them into the app. 
-You can do this by clicking the <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">Load image<ImageIcon className='w-4 h-4'/></span> button in the app toolbar, whose 
-simplified representation is shown below. This will open a dialog that allows
-you to select a `.png` or `.raw/.b` file from your computer, provided that you have 
-*filled correctly* the metadata fields for the `raw` images. 
+In order to start annotating your images, you need to load them into the app.
+You can do this by clicking the <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1 ">Load image<ImageIcon className='w-4 h-4'/></span>
+button in the app toolbar. This will open a dialog that allows you to select a `.png` or `.raw/.b` file from your computer, provided that you have
+_filled correctly_ the metadata fields for the `raw` images.
 
-<Load/>
+The expected metadata for the `raw` images is the following:
+
+- `Width` and `Height` of the image in pixels.
+- `Data type` of the image, which can be `int32`, `float32`, or `float64`. On load the image will be converted to `uint8` for visualization.
+
+A replica of the load button is shown below:
+
+<Load />
 
 <Callout>
-This is a simplified representation of the load image button, therefore it does not
-actually load any image.
+  It is very important to load an image ready for annotation, as the tool does
+  not have any image editing features. So make sure to load an image that has
+  good contrast, as the annotation process relies on the user's ability to
+  distinguish the points. For 450D images, the user must rotate the image's
+  modules to the correct orientation before loading it as well.
 </Callout>
+
+For example, the image below is a good candidate for annotation:
+![Good image for annotation](/assets/example.png)

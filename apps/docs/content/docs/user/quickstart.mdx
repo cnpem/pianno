@@ -78,23 +78,28 @@ Load the image to be annotated by clicking the <span className="inline-flex item
   select a color corresponding to the type of alignment of the pair of points you
   intend to annotate and click on the image to paint the pixel marked on the cursor.
 
-  ### Horizontal annotation
-  Horizontal annotations are represented by pairs that should be aligned in the same vertical line (on the same x-axis).
-  {/* ![Horizontal annotation](/assets/horizontal_annotation.webm) */}
-  <video controls>
-    <source src="/uwu/assets/horizontal_annotation.webm" type="video/webm" />
-    Your browser does not support the video tag.
-  </video>
+### Horizontal annotation
 
-  ### Vertical annotation
-  Vertical annotations are represented by pairs that should be aligned in the same horizontal line (on the same y-axis).
-  <video controls>
-    <source src="/uwu/assets/vertical_annotation.webm" type="video/webm" />
-    Your browser does not support the video tag.
-  </video>
+Horizontal annotations are represented by pairs that should be aligned in the same vertical line (on the same x-axis).
 
-  ### Euclidean annotation
-  Euclidean annotations are represented by pairs that should match a certain distance in the image. The distance is calculated in pixels and should come from the detector's mechanical design.
+<video controls>
+  <source src="/uwu/assets/horizontal_annotation.webm" type="video/webm" />
+  Your browser does not support the video tag.
+</video>
+
+### Vertical annotation
+
+Vertical annotations are represented by pairs that should be aligned in the same horizontal line (on the same y-axis).
+
+<video controls>
+  <source src="/uwu/assets/vertical_annotation.webm" type="video/webm" />
+  Your browser does not support the video tag.
+</video>
+
+### Euclidean annotation
+
+Euclidean annotations are represented by pairs that should match a certain distance in the image. The distance is calculated in pixels and should come from the detector's mechanical design.
+
   <video controls>
     <source src="/uwu/assets/euclidean_annotation.webm" type="video/webm" />
     Your browser does not support the video tag.
@@ -108,34 +113,34 @@ Load the image to be annotated by clicking the <span className="inline-flex item
   metadata. This file serves as input for the alignment process of `ssc-pimega`.
   <SaveForm />
 
-  If everything went well, a success message will be displayed, and the user can download the JSON file with the annotations or copy the content to the clipboard.
-  The JSON should resemble the following structure:
+If everything went well, a success message will be displayed, and the user can download the JSON file with the annotations or copy the content to the clipboard.
+The JSON should resemble the following structure:
 
-  ```json
-{   
-    "date": "YYYY-MM-DD HH:mm:ss",
-    "device": {
-        "name": "piXYZD",
-        "id": "number",
-        "geometry": "geometry",
-        "distance": "number"
-    },
-    "annotations": [
+```json
+{
+  "date": "YYYY-MM-DD HH:mm:ss",
+  "device": {
+    "name": "piXYZD",
+    "id": "number",
+    "geometry": "geometry",
+    "distance": "number"
+  },
+  "annotations": [
+    {
+      "type": "type",
+      "distance": "number",
+      "points": [
         {
-            "type": "type",
-            "distance": "number",
-            "points": [
-                {
-                    "x": "x1",
-                    "y": "y1"
-                },
-                {
-                    "x": "x2",
-                    "y": "y2"
-                }
-            ]
+          "x": "x1",
+          "y": "y1"
+        },
+        {
+          "x": "x2",
+          "y": "y2"
         }
-    ]
+      ]
+    }
+  ]
 }
 ```
 
